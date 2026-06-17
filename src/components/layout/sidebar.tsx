@@ -29,7 +29,7 @@ export function AppSidebar() {
 
           const isActive =
             pathname === route.href ||
-            (route.href !== "/dashboard" && pathname.startsWith(route.href));
+            (route.href !== "/" && pathname.startsWith(route.href));
 
           return (
             <Link

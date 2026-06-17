@@ -1,9 +1,7 @@
 import {
-  BarChart3,
   ClipboardList,
   Gauge,
   Package,
-  Settings,
   Users,
 } from "lucide-react";
 
@@ -25,7 +23,7 @@ export type PathValue = (typeof PATHS)[PathKey];
 export const APP_ROUTES = [
   {
     title: "Dashboard",
-    href: PATHS.DASHBOARD,
+    href: PATHS.HOME,
     icon: Gauge,
   },
   {
@@ -43,14 +41,14 @@ export const APP_ROUTES = [
     href: PATHS.SERVICES,
     icon: Package,
   },
-  {
-    title: "Reports",
-    href: PATHS.REPORTS,
-    icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    href: PATHS.SETTINGS,
-    icon: Settings,
-  },
+  // {
+  //   title: "Reports",
+  //   href: PATHS.REPORTS,
+  //   icon: BarChart3,
+  // },
+  // {
+  //   title: "Settings",
+  //   href: PATHS.SETTINGS,
+  //   icon: Settings,
+  // },
 ] as const;
