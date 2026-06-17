@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login.schema";
-import { PATHS } from "@/constants/paths";
+import { PATHS } from "@/constants/routes";
 
 export function LoginForm() {
 
@@ -51,7 +51,7 @@ export function LoginForm() {
       return;
     }
   
-    router.push(PATHS.DASHBOARD);
+    router.push(PATHS.HOME);
     router.refresh();
   }
 
