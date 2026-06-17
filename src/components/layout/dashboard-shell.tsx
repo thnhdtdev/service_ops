@@ -25,7 +25,7 @@ const supabase = createClient(cookieStore);
     : null;
 
   return (
-    <div className="min-h-screen bg-black text-zinc-50">
+    <div className="min-h-screen">
       <div className="flex">
         <AppSidebar />
 

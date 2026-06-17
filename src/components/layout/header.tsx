@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { APP_ROUTES, PATHS } from "@/constants/routes";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import { ModeToggle } from "@/components/layout/mode-toggle";
 
 type HeaderUser = {
   name: string;
@@ -65,6 +66,7 @@ function getPageDescription(pathname: string) {
 export function AppHeader({ user }: AppHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
+
   const pageTitle = getPageTitle(pathname);
   const pageDescription = getPageDescription(pathname);
 
@@ -78,15 +80,11 @@ export function AppHeader({ user }: AppHeaderProps) {
   }
 
   return (
-    <header className="flex min-h-24 items-center justify-between border-b border-zinc-800 bg-zinc-950 px-5 py-4 text-zinc-50 lg:px-7">
+    <header className="flex min-h-24 items-center justify-between border-b border-border bg-background px-5 py-4 lg:px-7">
       <div className="flex items-center gap-4">
         <Sheet>
           <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-zinc-300 hover:bg-zinc-900 hover:text-white lg:hidden"
-            >
+            <Button variant="ghost" size="icon" className="lg:hidden">
               <Menu className="size-5" />
               <span className="sr-only">Open sidebar</span>
             </Button>
@@ -94,20 +92,17 @@ export function AppHeader({ user }: AppHeaderProps) {
         </Sheet>
 
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white lg:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
             {pageTitle}
           </h1>
-          <p className="mt-1 max-w-2xl text-sm text-zinc-400">
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             {pageDescription}
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button
-          asChild
-          className="bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
-        >
+        <Button asChild>
           <Link href={PATHS.CREATE_ORDER}>
             <Plus className="mr-2 size-4" />
             <span className="hidden sm:inline">Create Order</span>
@@ -115,19 +110,16 @@ export function AppHeader({ user }: AppHeaderProps) {
           </Link>
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hidden text-zinc-300 hover:bg-zinc-900 hover:text-white sm:inline-flex"
-        >
+        <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
           <Bell className="size-5" />
           <span className="sr-only">Notifications</span>
         </Button>
 
+
         <Button
           variant="ghost"
           size="icon"
-          className="hidden text-zinc-300 hover:bg-zinc-900 hover:text-white sm:inline-flex"
+          className="hidden sm:inline-flex"
           asChild
         >
           <Link href={PATHS.SETTINGS}>
@@ -136,17 +128,19 @@ export function AppHeader({ user }: AppHeaderProps) {
           </Link>
         </Button>
 
+        <ModeToggle />
+
         {user ? (
-          <div className="ml-2 flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2">
-            <div className="flex size-8 items-center justify-center rounded-full bg-emerald-500 text-zinc-950">
+          <div className="ml-2 flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
+            <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <User className="size-4" />
             </div>
 
             <div className="hidden text-left md:block">
-              <p className="max-w-32 truncate text-sm font-semibold text-white">
+              <p className="max-w-32 truncate text-sm font-medium text-foreground">
                 {user.name}
               </p>
-              <p className="max-w-32 truncate text-xs text-zinc-400">
+              <p className="max-w-32 truncate text-xs text-muted-foreground">
                 {user.email}
               </p>
             </div>
@@ -156,14 +150,13 @@ export function AppHeader({ user }: AppHeaderProps) {
               variant="ghost"
               size="icon"
               onClick={handleLogout}
-              className="text-zinc-300 hover:bg-zinc-800 hover:text-white"
             >
               <LogOut className="size-4" />
               <span className="sr-only">Logout</span>
             </Button>
           </div>
         ) : (
-          <Button asChild variant="outline" className="border-zinc-700 text-black">
+          <Button asChild variant="outline">
             <Link href={PATHS.LOGIN}>
               <LogIn className="mr-2 size-4" />
               Login

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 
 import "@/style/globals.css";
+import { ThemeProvider } from "@/components/theme-provider"
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -26,7 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${montserrat.variable} h-full`}>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange>
+        {children}
+        </ThemeProvider>
+        </body>
     </html>
   );
 }
