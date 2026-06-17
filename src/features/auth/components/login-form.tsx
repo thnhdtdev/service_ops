@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,12 +21,15 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login.schema";
+import { PATHS } from "@/constants/paths";
 
 export function LoginForm() {
+
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, },
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -33,8 +38,21 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(data: LoginSchema) {
-    console.log(data);
+
+  async function onSubmit(values: LoginSchema) {  
+    const supabase = createClient();
+  
+    const { error } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    });
+  
+    if (error) {
+      return;
+    }
+  
+    router.push(PATHS.DASHBOARD);
+    router.refresh();
   }
 
   return (
