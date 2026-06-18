@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CircleHelp, FileText } from "lucide-react";
 
-import { APP_ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { APP_ROUTES } from "@/constants/routes";
 
 export function AppSidebar() {
   const pathname = usePathname();
