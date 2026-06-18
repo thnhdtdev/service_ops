@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, LogIn, LogOut, Menu, Plus, Settings, User } from "lucide-react";
+import { Bell, LogIn, LogOut, Menu, Settings, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { APP_ROUTES, PATHS } from "@/constants/routes";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "@/components/layout/mode-toggle";
+import { CreateOrderDialog } from "@/features/orders/components/create-order-dialog";
 
 type HeaderUser = {
   name: string;
@@ -102,13 +103,7 @@ export function AppHeader({ user }: AppHeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button asChild>
-          <Link href={PATHS.CREATE_ORDER}>
-            <Plus className="mr-2 size-4" />
-            <span className="hidden sm:inline">Create Order</span>
-            <span className="sm:hidden">Create</span>
-          </Link>
-        </Button>
+        <CreateOrderDialog/>
 
         <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
           <Bell className="size-5" />

@@ -28,15 +28,5 @@ export const attentionOrdersMock: AttentionOrder[] = [
     paymentStatus: "paid",
     totalAmount: 120000,
     dueAt: "2026-06-18T17:00:00.000Z",
-  },
-  {
-    id: "3",
-    orderCode: "SO-20260618-003",
-    customerName: "Chị Hằng",
-    serviceSummary: "Giặt chăn",
-    status: "received",
-    paymentStatus: "deposit",
-    totalAmount: 80000,
-    dueAt: "2026-06-19T10:00:00.000Z",
-  },
+  }
 ];
