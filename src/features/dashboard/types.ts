@@ -17,5 +17,5 @@ export type AttentionOrder = {
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   totalAmount: number;
-  dueAt: string;
+  dueAt: string | null;
 };

@@ -1,17 +1,13 @@
-import { cookies } from "next/headers";
-
-import { createClient } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/layout/header";
 import { AppSidebar } from "@/components/layout/sidebar";
-
+import { createClient } from "@/lib/supabase/server";
 
 type DashboardShellProps = {
   children: React.ReactNode;
 };
 
 export async function DashboardShell({ children }: DashboardShellProps) {
-const cookieStore = await cookies();
-const supabase = createClient(cookieStore);
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -25,12 +21,13 @@ const supabase = createClient(cookieStore);
     : null;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="flex">
         <AppSidebar />
 
         <div className="flex min-h-screen flex-1 flex-col">
           <AppHeader user={currentUser} />
+
           <main className="flex-1 p-5 lg:p-7">{children}</main>
         </div>
       </div>

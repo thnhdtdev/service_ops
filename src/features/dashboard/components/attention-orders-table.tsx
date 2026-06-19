@@ -36,8 +36,6 @@ function getPaymentStatusClassName(status: PaymentStatus) {
   switch (status) {
     case "unpaid":
       return "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-300";
-    case "deposit":
-      return "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-300";
     case "paid":
       return "border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-300";
     default:
@@ -120,8 +118,8 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
                   </td>
 
                   <td className="px-5 py-4 text-muted-foreground">
-                    {formatTime(order.dueAt)}
-                  </td>
+                    {order.dueAt ? formatTime(order.dueAt) : "-"}
+                  </td> 
 
                   <td className="px-5 py-4 text-right">
                     <Button asChild variant="ghost" size="sm">

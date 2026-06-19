@@ -5,19 +5,21 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { createClient } from "@/lib/supabase/client";
+import { useActiveServices } from "@/features/services/hooks/use-active-services";
+import type { CreateOrderFormValues } from "@/features/orders/type";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PAYMENT_METHOD_LABEL } from "@/constants/payment-method";
 import { PAYMENT_STATUS_LABEL } from "@/constants/payment-status";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
-import { createClient } from "@/lib/supabase/client";
 import { formatCurrency } from "@/lib/format";
 import {
   calculateOrderLineTotal,
   calculateOrderTotal,
 } from "@/features/orders/utils/calculate-order-total";
 import { generateOrderCode } from "@/features/orders/utils/generate-order-code";
-import type { CreateOrderFormValues, Service } from "@/features/orders/type";
 
 type CreateOrderFormProps = {
   onSuccess?: () => void;
@@ -42,10 +44,13 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
   const router = useRouter();
   const supabase = createClient();
 
-  const [services, setServices] = useState<Service[]>([]);
-  const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+  const {
+    services,
+    isLoadingServices,
+    error: servicesError,
+  } = useActiveServices();
 
   const form = useForm<CreateOrderFormValues>({
     defaultValues,
@@ -68,28 +73,6 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
   const watchedItems = watch("items");
   const paymentStatus = watch("paymentStatus");
 
-  useEffect(() => {
-    async function fetchServices() {
-      setIsLoadingServices(true);
-
-      const { data, error } = await supabase
-        .from("services")
-        .select("id, name, unit, unit_price, description, is_active")
-        .eq("is_active", true)
-        .order("name", { ascending: true });
-
-      if (error) {
-        setFormError("Không thể tải danh sách dịch vụ.");
-        setIsLoadingServices(false);
-        return;
-      }
-
-      setServices((data ?? []) as Service[]);
-      setIsLoadingServices(false);
-    }
-
-    fetchServices();
-  }, [supabase]);
 
   const orderPreviewItems = useMemo(() => {
     return watchedItems
