@@ -1,14 +1,18 @@
 import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { AttentionOrdersTable } from "@/features/dashboard/components/attention-orders-table";
+import { DashboardStats } from "@/features/dashboard/components/dashboard-stats";
+import {
+  attentionOrdersMock,
+  dashboardStatsMock,
+} from "@/features/dashboard/services/dashboard.mock";
 
 export default function DashboardPage() {
   return (
-    <DashboardShell>
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-        <h2 className="text-xl font-semibold">Dashboard Content</h2>
-        <p className="mt-2 text-sm text-zinc-400">
-          Header and footer are working correctly.
-        </p>
-      </div>
-    </DashboardShell>
+        <DashboardShell>
+          <div className="space-y-6">
+            <DashboardStats stats={dashboardStatsMock} />
+            <AttentionOrdersTable orders={attentionOrdersMock} />
+          </div>
+        </DashboardShell>
   );
 }
