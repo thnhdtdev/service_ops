@@ -12,153 +12,142 @@ import { ModeToggle } from "@/components/layout/mode-toggle";
 import { CreateOrderDialog } from "@/features/orders/components/create-order-dialog";
 
 type HeaderUser = {
-  name: string;
-  email: string;
+	name: string;
+	email: string;
 } | null;
 
 type AppHeaderProps = {
-  user: HeaderUser;
+	user: HeaderUser;
 };
 
 function getPageTitle(pathname: string) {
-  if (pathname === PATHS.CREATE_ORDER) return "Create Order";
+	if (pathname === PATHS.CREATE_ORDER) return "Create Order";
 
-  if (pathname.startsWith("/orders/") && pathname !== PATHS.CREATE_ORDER) {
-    return "Order Detail";
-  }
+	if (pathname.startsWith("/orders/") && pathname !== PATHS.CREATE_ORDER) {
+		return "Order Detail";
+	}
 
-  const route = APP_ROUTES.find((item) => item.href === pathname);
+	const route = APP_ROUTES.find((item) => item.href === pathname);
 
-  return route?.title ?? "Dashboard";
+	return route?.title ?? "Dashboard";
 }
 
 function getPageDescription(pathname: string) {
-  if (pathname === PATHS.DASHBOARD) {
-    return "Overview of today orders and business performance.";
-  }
+	if (pathname === PATHS.DASHBOARD) {
+		return "Overview of today orders and business performance.";
+	}
 
-  if (pathname === PATHS.ORDERS) {
-    return "Manage service orders, payment status, and processing status.";
-  }
+	if (pathname === PATHS.ORDERS) {
+		return "Manage service orders, payment status, and processing status.";
+	}
 
-  if (pathname === PATHS.CREATE_ORDER) {
-    return "Create a new laundry or shoe care service order.";
-  }
+	if (pathname === PATHS.CREATE_ORDER) {
+		return "Create a new laundry or shoe care service order.";
+	}
 
-  if (pathname === PATHS.CUSTOMERS) {
-    return "Manage customer information and order history.";
-  }
+	if (pathname === PATHS.CUSTOMERS) {
+		return "Manage customer information and order history.";
+	}
 
-  if (pathname === PATHS.SERVICES) {
-    return "Manage service pricing and availability.";
-  }
+	if (pathname === PATHS.SERVICES) {
+		return "Manage service pricing and availability.";
+	}
 
-  if (pathname === PATHS.REPORTS) {
-    return "View revenue, order statistics, and unpaid orders.";
-  }
+	if (pathname === PATHS.REPORTS) {
+		return "View revenue, order statistics, and unpaid orders.";
+	}
 
-  if (pathname === PATHS.SETTINGS) {
-    return "Manage system settings and business information.";
-  }
+	if (pathname === PATHS.SETTINGS) {
+		return "Manage system settings and business information.";
+	}
 
-  return "Manage your laundry and shoe care operations.";
+	return "Manage your laundry and shoe care operations.";
 }
 
 export function AppHeader({ user }: AppHeaderProps) {
-  const pathname = usePathname();
-  const router = useRouter();
+	const pathname = usePathname();
+	const router = useRouter();
 
-  const pageTitle = getPageTitle(pathname);
-  const pageDescription = getPageDescription(pathname);
+	const pageTitle = getPageTitle(pathname);
+	const pageDescription = getPageDescription(pathname);
 
-  async function handleLogout() {
-    const supabase = createClient();
+	async function handleLogout() {
+		const supabase = createClient();
 
-    await supabase.auth.signOut();
+		await supabase.auth.signOut();
 
-    router.push(PATHS.LOGIN);
-    router.refresh();
-  }
+		router.push(PATHS.LOGIN);
+		router.refresh();
+	}
 
-  return (
-    <header className="flex min-h-24 items-center justify-between border-b border-border bg-background px-5 py-4 lg:px-7">
-      <div className="flex items-center gap-4">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="lg:hidden">
-              <Menu className="size-5" />
-              <span className="sr-only">Open sidebar</span>
-            </Button>
-          </SheetTrigger>
-        </Sheet>
+	return (
+		<header className="flex min-h-24 items-center justify-between border-b border-border bg-background px-5 py-4 lg:px-7">
+			<div className="flex items-center gap-4">
+				<Sheet>
+					<SheetTrigger asChild>
+						<Button variant="ghost" size="icon" className="lg:hidden">
+							<Menu className="size-5" />
+							<span className="sr-only">Open sidebar</span>
+						</Button>
+					</SheetTrigger>
+				</Sheet>
 
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
-            {pageTitle}
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            {pageDescription}
-          </p>
-        </div>
-      </div>
+				<div>
+					<h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
+						{pageTitle}
+					</h1>
+					<p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+						{pageDescription}
+					</p>
+				</div>
+			</div>
 
-      <div className="flex items-center gap-2">
-        <CreateOrderDialog/>
+			<div className="flex items-center gap-2">
+				<CreateOrderDialog />
 
-        <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
-          <Bell className="size-5" />
-          <span className="sr-only">Notifications</span>
-        </Button>
+				<Button variant="ghost" size="icon" className="hidden sm:inline-flex">
+					<Bell className="size-5" />
+					<span className="sr-only">Notifications</span>
+				</Button>
 
+				<Button variant="ghost" size="icon" className="hidden sm:inline-flex" asChild>
+					<Link href={PATHS.SETTINGS}>
+						<Settings className="size-5" />
+						<span className="sr-only">Settings</span>
+					</Link>
+				</Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hidden sm:inline-flex"
-          asChild
-        >
-          <Link href={PATHS.SETTINGS}>
-            <Settings className="size-5" />
-            <span className="sr-only">Settings</span>
-          </Link>
-        </Button>
+				<ModeToggle />
 
-        <ModeToggle />
+				{user ? (
+					<div className="ml-2 flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
+						<div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+							<User className="size-4" />
+						</div>
 
-        {user ? (
-          <div className="ml-2 flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
-            <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <User className="size-4" />
-            </div>
+						<div className="hidden text-left md:block">
+							<p className="max-w-32 truncate text-sm font-medium text-foreground">
+								{user.name}
+							</p>
+							<p className="max-w-32 truncate text-xs text-muted-foreground">
+								{user.email}
+							</p>
+						</div>
 
-            <div className="hidden text-left md:block">
-              <p className="max-w-32 truncate text-sm font-medium text-foreground">
-                {user.name}
-              </p>
-              <p className="max-w-32 truncate text-xs text-muted-foreground">
-                {user.email}
-              </p>
-            </div>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleLogout}
-            >
-              <LogOut className="size-4" />
-              <span className="sr-only">Logout</span>
-            </Button>
-          </div>
-        ) : (
-          <Button asChild variant="outline">
-            <Link href={PATHS.LOGIN}>
-              <LogIn className="mr-2 size-4" />
-              Login
-            </Link>
-          </Button>
-        )}
-      </div>
-    </header>
-  );
+						<Button type="button" variant="ghost" size="icon" onClick={handleLogout}>
+							<LogOut className="size-4" />
+							<span className="sr-only">Logout</span>
+						</Button>
+					</div>
+				) : (
+					<Button asChild variant="outline">
+						<Link href={PATHS.LOGIN}>
+							<LogIn className="mr-2 size-4" />
+							Login
+						</Link>
+					</Button>
+				)}
+			</div>
+		</header>
+	);
 }

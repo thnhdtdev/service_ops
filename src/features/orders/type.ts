@@ -1,23 +1,23 @@
 import type { ServiceUnit } from "@/constants/service-unit";
 
 export type Service = {
-  id: string;
-  name: string;
-  unit: ServiceUnit;
-  unit_price: number;
-  description: string | null;
-  is_active: boolean;
+	id: string;
+	name: string;
+	unit: ServiceUnit;
+	unit_price: number;
+	description: string | null;
+	is_active: boolean;
 };
 
 export type CreateOrderFormValues = {
-  customerName: string;
-  customerPhone: string;
-  dueAt: string;
-  note: string;
-  paymentStatus: "unpaid" | "paid";
-  paymentMethod: "cash" | "bank_transfer" | "other";
-  items: {
-    serviceId: string;
-    quantity: number;
-  }[];
+	customerName: string;
+	customerPhone: string;
+	dueAt: string;
+	note: string;
+	paymentStatus: "unpaid" | "paid";
+	paymentMethod: "cash" | "bank_transfer" | "other";
+	items: {
+		serviceId: string;
+		quantity: number;
+	}[];
 };
