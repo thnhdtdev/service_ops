@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -9,17 +9,16 @@ import { createClient } from "@/lib/supabase/client";
 import { useActiveServices } from "@/features/services/hooks/use-active-services";
 import type { CreateOrderFormValues } from "@/features/orders/type";
 
-import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/format";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { PAYMENT_METHOD_LABEL } from "@/constants/payment-method";
 import { PAYMENT_STATUS_LABEL } from "@/constants/payment-status";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
-import { formatCurrency } from "@/lib/format";
+import { generateOrderCode } from "@/features/orders/utils/generate-order-code";
 import {
   calculateOrderLineTotal,
-  calculateOrderTotal,
 } from "@/features/orders/utils/calculate-order-total";
-import { generateOrderCode } from "@/features/orders/utils/generate-order-code";
 
 type CreateOrderFormProps = {
   onSuccess?: () => void;
@@ -60,49 +59,52 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
     control,
     register,
     handleSubmit,
-    watch,
     reset,
     formState: { errors },
   } = form;
+
+  const watchedItems =
+  useWatch({
+    control,
+    name: "items",
+  }) ?? [];
+
+const paymentStatus = useWatch({
+  control,
+  name: "paymentStatus",
+});
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
   });
 
-  const watchedItems = watch("items");
-  const paymentStatus = watch("paymentStatus");
-
-
-  const orderPreviewItems = useMemo(() => {
-    return watchedItems
-      .map((item) => {
-        const service = services.find((serviceItem) => {
-          return serviceItem.id === item.serviceId;
-        });
-
-        const quantity = Number(item.quantity || 0);
-        const unitPrice = Number(service?.unit_price || 0);
-
-        return {
-          service,
+  const totalAmount = useMemo(() => {
+    return watchedItems.reduce((total, item) => {
+      const selectedService = services.find((service) => {
+        return service.id === item.serviceId;
+      });
+  
+      if (!selectedService) {
+        return total;
+      }
+  
+      const quantity = Number(item.quantity || 0);
+      const unitPrice = Number(selectedService.unit_price || 0);
+  
+      if (quantity <= 0) {
+        return total;
+      }
+  
+      return (
+        total +
+        calculateOrderLineTotal({
           quantity,
           unitPrice,
-          lineTotal: calculateOrderLineTotal({
-            quantity,
-            unitPrice,
-          }),
-        };
-      })
-      .filter((item) => item.service && item.quantity > 0);
+        })
+      );
+    }, 0);
   }, [watchedItems, services]);
-
-  const totalAmount = calculateOrderTotal(
-    orderPreviewItems.map((item) => ({
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-    }))
-  );
 
   async function onSubmit(values: CreateOrderFormValues) {
     setFormError("");
