@@ -21,7 +21,7 @@ export async function DashboardShell({ children }: DashboardShellProps) {
 		: null;
 
 	return (
-		<div className="min-h-screen bg-background text-foreground">
+		<div className="bg-background text-foreground min-h-screen">
 			<div className="flex">
 				<AppSidebar />
 

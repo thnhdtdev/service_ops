@@ -257,8 +257,26 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 					<div className="space-y-2">
 						<label className="text-sm font-medium">Số điện thoại</label>
-						<Input placeholder="Ví dụ: 0909123456" {...register("customerPhone")} />
-					</div>
+						<Input
+							type="tel"
+							placeholder="123"
+							{...register("customerPhone", {
+								required: "Vui lòng số điện thoại",
+								pattern: {
+									value: /^(0|\+84)(\d{9})$/,
+									message: "Số điện thoại không hợp lệ",
+								},
+								onChange: (e) => {
+									e.target.value = e.target.value.replace(/[^0-9+]/g, "");
+								  }
+							})}
+						/>
+						{errors.customerPhone ? (
+							<p className="text-sm text-destructive">
+								{errors.customerPhone.message}
+							</p>
+						) : null}						
+						</div>
 				</div>
 			</section>
 
@@ -319,7 +337,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 										))}
 									</select>
 								</div>
-
+								
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Số lượng</label>
 									<Input

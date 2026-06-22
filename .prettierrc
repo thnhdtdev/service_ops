@@ -18,4 +18,4 @@
 	"tabWidth": 4,
 	"endOfLine": "lf",
 	"plugins": ["prettier-plugin-tailwindcss"]
-  }
+}
