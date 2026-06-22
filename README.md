@@ -8,26 +8,26 @@ This project is designed for small local service stores that need a simple and f
 
 ## Main Features
 
-* Fast order creation
-* Automatic price calculation based on service type and quantity
-* Order status management
-* Payment status tracking
-* Customer management
-* Service pricing management
-* Daily revenue summary
-* Responsive dashboard for desktop and mobile
+- Fast order creation
+- Automatic price calculation based on service type and quantity
+- Order status management
+- Payment status tracking
+- Customer management
+- Service pricing management
+- Daily revenue summary
+- Responsive dashboard for desktop and mobile
 
 ## Tech Stack
 
-* Next.js
-* TypeScript
-* Tailwind CSS
-* Shadcn UI
-* React Hook Form
-* Zod
-* TanStack Query
-* Supabase
-* Vercel
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Shadcn UI
+- React Hook Form
+- Zod
+- TanStack Query
+- Supabase
+- Vercel
 
 ## Project Goal
 
@@ -35,12 +35,12 @@ The goal of this project is to build a practical full-stack web application base
 
 ## Future Improvements
 
-* AI-generated customer messages
-* AI Facebook post generator
-* Public receipt/order page
-* Advanced revenue reports
-* Role-based access control
-* Customer retention suggestions
+- AI-generated customer messages
+- AI Facebook post generator
+- Public receipt/order page
+- Advanced revenue reports
+- Role-based access control
+- Customer retention suggestions
 
 ## Status
 
