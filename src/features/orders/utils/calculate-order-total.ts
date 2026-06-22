@@ -9,7 +9,7 @@ export function calculateOrderLineTotal(item: CalculateOrderItem) {
 }
 
 export function calculateOrderTotal(items: CalculateOrderItem[]) {
-	return items?.reduce((total, item) => {
+	return items.reduce((total, item) => {
 		return total + calculateOrderLineTotal(item);
 	}, 0);
 }
