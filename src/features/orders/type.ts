@@ -21,3 +21,11 @@ export type CreateOrderFormValues = {
 		quantity: number;
 	}[];
 };
+
+export type DashboardStats = {
+	ordersToday: number;
+	processingOrders: number;
+	completedOrders: number;
+	unpaidOrders: number;
+	todayRevenue: number;
+  };

@@ -259,7 +259,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						<label className="text-sm font-medium">Số điện thoại</label>
 						<Input
 							type="tel"
-							placeholder="123"
+							placeholder="09xxxxxxxx"
 							{...register("customerPhone", {
 								required: "Vui lòng số điện thoại",
 								pattern: {
