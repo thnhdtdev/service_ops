@@ -28,4 +28,4 @@ export type DashboardStats = {
 	completedOrders: number;
 	unpaidOrders: number;
 	todayRevenue: number;
-  };
+};

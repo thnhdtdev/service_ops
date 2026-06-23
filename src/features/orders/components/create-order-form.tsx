@@ -229,13 +229,13 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 			{formError ? (
-				<div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+				<div className="border-destructive/30 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
 					{formError}
 				</div>
 			) : null}
 
-			<section className="rounded-2xl border border-border bg-card p-4">
-				<h3 className="text-base font-semibold text-card-foreground">
+			<section className="border-border bg-card rounded-2xl border p-4">
+				<h3 className="text-card-foreground text-base font-semibold">
 					Thông tin khách hàng
 				</h3>
 
@@ -249,7 +249,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 							})}
 						/>
 						{errors.customerName ? (
-							<p className="text-sm text-destructive">
+							<p className="text-destructive text-sm">
 								{errors.customerName.message}
 							</p>
 						) : null}
@@ -264,27 +264,27 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 								required: "Vui lòng số điện thoại",
 								pattern: {
 									value: /^(0|\+84)(\d{9})$/,
-									message: "Số điện thoại không hợp lệ",
+									message: "Số điện thoại không hợp lệ"
 								},
 								onChange: (e) => {
 									e.target.value = e.target.value.replace(/[^0-9+]/g, "");
-								  }
+								}
 							})}
 						/>
 						{errors.customerPhone ? (
-							<p className="text-sm text-destructive">
+							<p className="text-destructive text-sm">
 								{errors.customerPhone.message}
 							</p>
-						) : null}						
-						</div>
+						) : null}
+					</div>
 				</div>
 			</section>
 
-			<section className="rounded-2xl border border-border bg-card p-4">
+			<section className="border-border bg-card rounded-2xl border p-4">
 				<div className="flex items-center justify-between gap-4">
 					<div>
-						<h3 className="text-base font-semibold text-card-foreground">Dịch vụ</h3>
-						<p className="mt-1 text-sm text-muted-foreground">
+						<h3 className="text-card-foreground text-base font-semibold">Dịch vụ</h3>
+						<p className="text-muted-foreground mt-1 text-sm">
 							Chọn dịch vụ, nhập số lượng và hệ thống sẽ tự tính tiền.
 						</p>
 					</div>
@@ -316,12 +316,12 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						return (
 							<div
 								key={field.id}
-								className="grid gap-3 rounded-xl border border-border p-3 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.8fr_auto]"
+								className="border-border grid gap-3 rounded-xl border p-3 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.8fr_auto]"
 							>
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Dịch vụ</label>
 									<select
-										className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+										className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 										{...register(`items.${index}.serviceId`, {
 											required: true
 										})}
@@ -337,7 +337,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 										))}
 									</select>
 								</div>
-								
+
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Số lượng</label>
 									<Input
@@ -353,7 +353,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Đơn vị</label>
-									<div className="flex h-10 items-center rounded-md border border-border bg-muted px-3 text-sm text-muted-foreground">
+									<div className="border-border bg-muted text-muted-foreground flex h-10 items-center rounded-md border px-3 text-sm">
 										{selectedService
 											? SERVICE_UNIT_LABEL[selectedService.unit]
 											: "-"}
@@ -362,7 +362,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Thành tiền</label>
-									<div className="flex h-10 items-center rounded-md border border-border bg-muted px-3 text-sm font-medium">
+									<div className="border-border bg-muted flex h-10 items-center rounded-md border px-3 text-sm font-medium">
 										{formatCurrency(lineTotal)}
 									</div>
 								</div>
@@ -385,8 +385,8 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 				</div>
 			</section>
 
-			<section className="rounded-2xl border border-border bg-card p-4">
-				<h3 className="text-base font-semibold text-card-foreground">
+			<section className="border-border bg-card rounded-2xl border p-4">
+				<h3 className="text-card-foreground text-base font-semibold">
 					Thanh toán và ghi chú
 				</h3>
 
@@ -394,7 +394,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					<div className="space-y-2">
 						<label className="text-sm font-medium">Trạng thái thanh toán</label>
 						<select
-							className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 							{...register("paymentStatus")}
 						>
 							<option value="unpaid">{PAYMENT_STATUS_LABEL.unpaid}</option>
@@ -406,7 +406,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						<div className="space-y-2">
 							<label className="text-sm font-medium">Phương thức thanh toán</label>
 							<select
-								className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+								className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 								{...register("paymentMethod")}
 							>
 								<option value="cash">{PAYMENT_METHOD_LABEL.cash}</option>
@@ -430,10 +430,10 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 				</div>
 			</section>
 
-			<section className="rounded-2xl border border-border bg-card p-4">
+			<section className="border-border bg-card rounded-2xl border p-4">
 				<div className="flex items-center justify-between">
-					<span className="text-sm text-muted-foreground">Tổng tiền</span>
-					<span className="text-2xl font-bold text-foreground">
+					<span className="text-muted-foreground text-sm">Tổng tiền</span>
+					<span className="text-foreground text-2xl font-bold">
 						{formatCurrency(totalAmount)}
 					</span>
 				</div>

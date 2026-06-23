@@ -7,27 +7,28 @@ import { formatCurrency, formatTime } from "@/lib/format";
 import type { AttentionOrder } from "@/features/dashboard/types";
 import { ORDER_STATUS_LABEL, type OrderStatus } from "@/constants/order-status";
 import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
+import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
 
 type AttentionOrdersTableProps = {
 	orders: AttentionOrder[];
 };
 
-function getOrderStatusClassName(status: OrderStatus) {
-	switch (status) {
-		case "received":
-			return "border-slate-500/30 bg-slate-500/10 text-slate-600 dark:text-slate-300";
-		case "processing":
-			return "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-300";
-		case "completed":
-			return "border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-300";
-		case "delivered":
-			return "border-zinc-500/30 bg-zinc-500/10 text-zinc-600 dark:text-zinc-300";
-		case "cancelled":
-			return "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-300";
-		default:
-			return "";
-	}
-}
+// function getOrderStatusClassName(status: OrderStatus) {
+// 	switch (status) {
+// 		case "received":
+// 			return "border-slate-500/30 bg-slate-500/10 text-slate-600 dark:text-slate-300";
+// 		case "processing":
+// 			return "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-300";
+// 		case "completed":
+// 			return "border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-300";
+// 		case "delivered":
+// 			return "border-zinc-500/30 bg-zinc-500/10 text-zinc-600 dark:text-zinc-300";
+// 		case "cancelled":
+// 			return "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-300";
+// 		default:
+// 			return "";
+// 	}
+// }
 
 function getPaymentStatusClassName(status: PaymentStatus) {
 	switch (status) {
@@ -63,7 +64,7 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 							<th className="px-5 py-3 font-medium">Order Code</th>
 							<th className="px-5 py-3 font-medium">Customer</th>
 							<th className="px-5 py-3 font-medium">Service</th>
-							<th className="px-5 py-3 font-medium">Status</th>
+							{/* <th className="px-5 py-3 font-medium">Status</th> */}
 							<th className="px-5 py-3 font-medium">Payment</th>
 							<th className="px-5 py-3 font-medium">Amount</th>
 							<th className="px-5 py-3 font-medium">Due Time</th>
@@ -86,14 +87,14 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 										{order.serviceSummary}
 									</td>
 
-									<td className="px-5 py-4">
+									{/* <td className="px-5 py-4">
 										<Badge
 											variant="outline"
 											className={cn(getOrderStatusClassName(order.status))}
 										>
 											{ORDER_STATUS_LABEL[order.status]}
 										</Badge>
-									</td>
+									</td> */}
 
 									<td className="px-5 py-4">
 										<Badge
@@ -115,9 +116,18 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 									</td>
 
 									<td className="px-5 py-4 text-right">
-										<Button asChild variant="ghost" size="sm">
-											<Link href={`/orders/${order.id}`}>View</Link>
-										</Button>
+										<div className="flex justify-end gap-2">
+											{order.paymentStatus === "unpaid" ? (
+												<MarkOrderPaidButton
+													orderId={order.id}
+													amount={order.totalAmount}
+												/>
+											) : null}
+
+											{/* <Button asChild variant="ghost" size="sm">
+												<Link href={`/orders/${order.id}`}>Xem</Link>
+											</Button> */}
+										</div>
 									</td>
 								</tr>
 							))
