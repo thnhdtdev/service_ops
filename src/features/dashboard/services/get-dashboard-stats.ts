@@ -29,10 +29,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
 	const [
 		ordersTodayResult,
-		processingOrdersResult,
-		completedOrdersResult,
 		unpaidOrdersResult,
-		todayPaymentsResult
+		paidOrdersTodayResult,
+		todayPaymentsResult,
+		todayOrdersValueResult
 	] = await Promise.all([
 		supabase
 			.from("orders")
@@ -43,35 +43,33 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 		supabase
 			.from("orders")
 			.select("id", { count: "exact", head: true })
-			.eq("status", "processing"),
-
-		supabase
-			.from("orders")
-			.select("id", { count: "exact", head: true })
-			.eq("status", "completed"),
-
-		supabase
-			.from("orders")
-			.select("id", { count: "exact", head: true })
 			.eq("payment_status", "unpaid"),
 
-		supabase.from("payments").select("amount").gte("paid_at", start).lt("paid_at", end)
+		supabase
+			.from("payments")
+			.select("id", { count: "exact", head: true })
+			.gte("paid_at", start)
+			.lt("paid_at", end),
+
+		supabase.from("payments").select("amount").gte("paid_at", start).lt("paid_at", end),
+
+		supabase
+			.from("orders")
+			.select("total_amount")
+			.gte("created_at", start)
+			.lt("created_at", end)
 	]);
 
 	if (ordersTodayResult.error) {
 		throw new Error("Không thể tải tổng đơn hôm nay.");
 	}
 
-	if (processingOrdersResult.error) {
-		throw new Error("Không thể tải đơn đang xử lý.");
-	}
-
-	if (completedOrdersResult.error) {
-		throw new Error("Không thể tải đơn đã xong.");
-	}
-
 	if (unpaidOrdersResult.error) {
 		throw new Error("Không thể tải đơn chưa thanh toán.");
+	}
+
+	if (paidOrdersTodayResult.error) {
+		throw new Error("Không thể tải đơn đã thanh toán hôm nay.");
 	}
 
 	if (todayPaymentsResult.error) {
@@ -82,11 +80,15 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 		return total + Number(payment.amount);
 	}, 0);
 
+	const todayOrderValue = (todayOrdersValueResult.data ?? []).reduce((total, order) => {
+		return total + Number(order.total_amount);
+	}, 0);
+
 	return {
 		ordersToday: ordersTodayResult.count ?? 0,
-		processingOrders: processingOrdersResult.count ?? 0,
-		completedOrders: completedOrdersResult.count ?? 0,
 		unpaidOrders: unpaidOrdersResult.count ?? 0,
-		todayRevenue
+		paidOrdersToday: paidOrdersTodayResult.count ?? 0,
+		todayRevenue,
+		todayOrderValue
 	};
 }

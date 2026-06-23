@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatTime } from "@/lib/format";
 import type { AttentionOrder } from "@/features/dashboard/types";
-import { ORDER_STATUS_LABEL, type OrderStatus } from "@/constants/order-status";
+// import { ORDER_STATUS_LABEL, type OrderStatus } from "@/constants/order-status";
 import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
 import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
 

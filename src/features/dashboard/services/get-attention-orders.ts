@@ -12,7 +12,6 @@ type RawAttentionOrder = {
 	id: string;
 	order_code: string;
 	customer_name: string;
-	status: AttentionOrder["status"];
 	payment_status: AttentionOrder["paymentStatus"];
 	total_amount: number;
 	due_at: string | null;
@@ -21,6 +20,27 @@ type RawAttentionOrder = {
 
 function formatQuantity(value: number) {
 	return Number.isInteger(value) ? String(value) : String(value);
+}
+
+function getVietnamTodayRange() {
+	const now = new Date();
+
+	const vietnamDate = new Intl.DateTimeFormat("en-CA", {
+		timeZone: "Asia/Ho_Chi_Minh",
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit"
+	}).format(now);
+
+	const start = new Date(`${vietnamDate}T00:00:00+07:00`);
+	const end = new Date(start);
+
+	end.setDate(end.getDate() + 1);
+
+	return {
+		start: start.toISOString(),
+		end: end.toISOString()
+	};
 }
 
 function getServiceSummary(items: RawOrderItem[]) {
@@ -39,26 +59,27 @@ function getServiceSummary(items: RawOrderItem[]) {
 
 export async function getAttentionOrders(): Promise<AttentionOrder[]> {
 	const supabase = await createClient();
+	const { start, end } = getVietnamTodayRange();
 
 	const { data, error } = await supabase
 		.from("orders")
 		.select(
 			`
-      id,
-      order_code,
-      customer_name,
-      status,
-      payment_status,
-      total_amount,
-      due_at,
-      order_items (
-        service_name,
-        quantity,
-        unit
-      )
-    `
+    id,
+    order_code,
+    customer_name,
+    payment_status,
+    total_amount,
+    due_at,
+    order_items (
+      service_name,
+      quantity,
+      unit
+    )
+  `
 		)
-		.or("payment_status.eq.unpaid,status.in.(received,processing,completed)")
+		.gte("created_at", start)
+		.lt("created_at", end)
 		.order("created_at", { ascending: false })
 		.limit(10);
 
@@ -71,7 +92,7 @@ export async function getAttentionOrders(): Promise<AttentionOrder[]> {
 		orderCode: order.order_code,
 		customerName: order.customer_name,
 		serviceSummary: getServiceSummary(order.order_items ?? []),
-		status: order.status,
+		// status: order.status,
 		paymentStatus: order.payment_status,
 		totalAmount: Number(order.total_amount),
 		dueAt: order.due_at

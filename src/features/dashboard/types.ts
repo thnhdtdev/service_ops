@@ -1,12 +1,11 @@
-import type { OrderStatus } from "@/constants/order-status";
 import type { PaymentStatus } from "@/constants/payment-status";
 
 export type DashboardStats = {
 	ordersToday: number;
-	processingOrders: number;
-	completedOrders: number;
 	unpaidOrders: number;
+	paidOrdersToday: number;
 	todayRevenue: number;
+	todayOrderValue: number;
 };
 
 export type AttentionOrder = {
@@ -14,7 +13,6 @@ export type AttentionOrder = {
 	orderCode: string;
 	customerName: string;
 	serviceSummary: string;
-	status: OrderStatus;
 	paymentStatus: PaymentStatus;
 	totalAmount: number;
 	dueAt: string | null;
