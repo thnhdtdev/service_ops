@@ -1,6 +1,6 @@
+import { formatCurrency } from "@/lib/format";
 import type { DashboardStats as DashboardStatsType } from "@/features/dashboard/types";
 import { DASHBOARD_STATS_CONFIG } from "@/features/dashboard/config/dashboard-stats.config";
-import { formatCurrency } from "@/lib/format";
 
 import { DashboardStatCard } from "./dashboard-stat-card";
 

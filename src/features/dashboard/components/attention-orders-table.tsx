@@ -5,30 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatTime } from "@/lib/format";
 import type { AttentionOrder } from "@/features/dashboard/types";
-// import { ORDER_STATUS_LABEL, type OrderStatus } from "@/constants/order-status";
 import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
 import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
 
 type AttentionOrdersTableProps = {
 	orders: AttentionOrder[];
 };
-
-// function getOrderStatusClassName(status: OrderStatus) {
-// 	switch (status) {
-// 		case "received":
-// 			return "border-slate-500/30 bg-slate-500/10 text-slate-600 dark:text-slate-300";
-// 		case "processing":
-// 			return "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-300";
-// 		case "completed":
-// 			return "border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-300";
-// 		case "delivered":
-// 			return "border-zinc-500/30 bg-zinc-500/10 text-zinc-600 dark:text-zinc-300";
-// 		case "cancelled":
-// 			return "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-300";
-// 		default:
-// 			return "";
-// 	}
-// }
 
 function getPaymentStatusClassName(status: PaymentStatus) {
 	switch (status) {
