@@ -4,14 +4,13 @@ import { getAttentionOrders } from "@/features/dashboard/services/get-attention-
 import { getDashboardStats } from "@/features/dashboard/services/get-dashboard-stats";
 
 export default async function OrdersPage() {
-    const attentionOrders = await getAttentionOrders();
-    const dashboardStats = await getDashboardStats();
+	const attentionOrders = await getAttentionOrders();
+	const dashboardStats = await getDashboardStats();
 
-
-    return (
-        <div className="space-y-6"> 
-            <DashboardStats stats={dashboardStats} />
-            <AttentionOrdersTable orders={attentionOrders} />
-        </div>
-    );
+	return (
+		<div className="space-y-6">
+			<DashboardStats stats={dashboardStats} />
+			<AttentionOrdersTable orders={attentionOrders} />
+		</div>
+	);
 }
