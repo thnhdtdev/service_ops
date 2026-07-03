@@ -81,7 +81,7 @@ export function AppHeader({ user }: AppHeaderProps) {
 	}
 
 	return (
-		<header className="flex min-h-24 items-center justify-between border-b border-border bg-background px-5 py-4 lg:px-7">
+		<header className="border-border bg-background flex min-h-24 items-center justify-between border-b px-5 py-4 lg:px-7">
 			<div className="flex items-center gap-4">
 				<Sheet>
 					<SheetTrigger asChild>
@@ -93,10 +93,10 @@ export function AppHeader({ user }: AppHeaderProps) {
 				</Sheet>
 
 				<div>
-					<h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
+					<h1 className="text-foreground text-2xl font-bold tracking-tight lg:text-3xl">
 						{pageTitle}
 					</h1>
-					<p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+					<p className="text-muted-foreground mt-1 max-w-2xl text-sm">
 						{pageDescription}
 					</p>
 				</div>
@@ -120,16 +120,16 @@ export function AppHeader({ user }: AppHeaderProps) {
 				<ModeToggle />
 
 				{user ? (
-					<div className="ml-2 flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
-						<div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+					<div className="border-border bg-card ml-2 flex items-center gap-3 rounded-xl border px-3 py-2">
+						<div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-full">
 							<User className="size-4" />
 						</div>
 
 						<div className="hidden text-left md:block">
-							<p className="max-w-32 truncate text-sm font-medium text-foreground">
+							<p className="text-foreground max-w-32 truncate text-sm font-medium">
 								{user.name}
 							</p>
-							<p className="max-w-32 truncate text-xs text-muted-foreground">
+							<p className="text-muted-foreground max-w-32 truncate text-xs">
 								{user.email}
 							</p>
 						</div>

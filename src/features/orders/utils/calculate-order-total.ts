@@ -1,5 +1,3 @@
-import { de } from "zod/locales";
-
 export type CalculateOrderItem = {
 	quantity: number;
 	unitPrice: number;

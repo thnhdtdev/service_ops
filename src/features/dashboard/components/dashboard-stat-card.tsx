@@ -20,24 +20,24 @@ export function DashboardStatCard({
 	return (
 		<div
 			className={cn(
-				"rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm",
+				"border-border bg-card text-card-foreground rounded-2xl border p-5 shadow-sm",
 				className
 			)}
 		>
 			<div className="flex items-start justify-between gap-4">
 				<div>
-					<p className="text-sm font-medium text-muted-foreground">{title}</p>
+					<p className="text-muted-foreground text-sm font-medium">{title}</p>
 
-					<p className="mt-3 text-2xl font-bold tracking-tight text-foreground">
+					<p className="text-foreground mt-3 text-2xl font-bold tracking-tight">
 						{value}
 					</p>
 
 					{description ? (
-						<p className="mt-2 text-sm text-muted-foreground">{description}</p>
+						<p className="text-muted-foreground mt-2 text-sm">{description}</p>
 					) : null}
 				</div>
 
-				<div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+				<div className="bg-primary/10 text-primary flex size-11 shrink-0 items-center justify-center rounded-xl">
 					<Icon className="size-5" />
 				</div>
 			</div>

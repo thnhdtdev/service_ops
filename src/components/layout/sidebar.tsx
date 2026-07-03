@@ -11,15 +11,15 @@ export function AppSidebar() {
 	const pathname = usePathname();
 
 	return (
-		<aside className="hidden h-screen w-[280px] shrink-0 border-r border-border bg-background text-foreground lg:flex lg:flex-col">
-			<div className="flex h-24 items-center gap-3 border-b border-border px-7">
-				<div className="flex size-12 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-primary-foreground">
+		<aside className="border-border bg-background text-foreground hidden h-screen w-[280px] shrink-0 border-r lg:flex lg:flex-col">
+			<div className="border-border flex h-24 items-center gap-3 border-b px-7">
+				<div className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-2xl text-lg font-bold">
 					S
 				</div>
 
 				<div>
-					<h1 className="text-lg font-bold leading-none text-foreground">ServiceOps</h1>
-					<p className="mt-1 text-sm text-muted-foreground">Operations</p>
+					<h1 className="text-foreground text-lg leading-none font-bold">ServiceOps</h1>
+					<p className="text-muted-foreground mt-1 text-sm">Operations</p>
 				</div>
 			</div>
 
@@ -36,7 +36,7 @@ export function AppSidebar() {
 							key={route.href}
 							href={route.href}
 							className={cn(
-								"flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+								"text-muted-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
 								isActive && "bg-accent text-accent-foreground"
 							)}
 						>
@@ -47,15 +47,15 @@ export function AppSidebar() {
 				})}
 			</nav>
 
-			<div className="border-t border-border p-5">
-				<p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+			<div className="border-border border-t p-5">
+				<p className="text-muted-foreground mb-3 text-xs font-semibold tracking-wide uppercase">
 					Support
 				</p>
 
 				<div className="space-y-2">
 					<Link
 						href="#"
-						className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+						className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
 					>
 						<CircleHelp className="size-4" />
 						Help Center
@@ -63,7 +63,7 @@ export function AppSidebar() {
 
 					<Link
 						href="#"
-						className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+						className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
 					>
 						<FileText className="size-4" />
 						Documentation

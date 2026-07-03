@@ -2,7 +2,7 @@ import {
 	Banknote,
 	CheckCircle2,
 	ClipboardList,
-	Clock3,
+	ReceiptText,
 	WalletCards,
 	type LucideIcon
 } from "lucide-react";
@@ -25,27 +25,28 @@ export const DASHBOARD_STATS_CONFIG: DashboardStatItem[] = [
 		icon: ClipboardList
 	},
 	{
-		key: "processingOrders",
-		title: "Đơn đang xử lý",
-		description: "Các đơn hiện đang được thực hiện",
-		icon: Clock3
+		key: "unpaidOrders",
+		title: "Đơn chưa thanh toán",
+		description: "Các đơn còn chưa thu tiền",
+		icon: WalletCards
 	},
 	{
-		key: "completedOrders",
-		title: "Đơn đã xong",
-		description: "Các đơn đã hoàn tất và sẵn sàng trả khách",
+		key: "paidOrdersToday",
+		title: "Đơn đã thanh toán hôm nay",
+		description: "Số đơn đã được ghi nhận thanh toán hôm nay",
 		icon: CheckCircle2
 	},
 	{
-		key: "unpaidOrders",
-		title: "Đơn chưa thanh toán",
-		description: "Các đơn chưa thanh toán hoặc chưa thanh toán đủ",
-		icon: WalletCards
+		key: "todayOrderValue",
+		title: "Giá trị đơn hôm nay",
+		description: "Tổng giá trị các đơn được tạo trong ngày",
+		icon: ReceiptText,
+		format: "currency"
 	},
 	{
 		key: "todayRevenue",
 		title: "Doanh thu hôm nay",
-		description: "Tổng doanh thu đã thanh toán trong ngày",
+		description: "Tổng tiền đã thu trong ngày",
 		icon: Banknote,
 		format: "currency"
 	}
