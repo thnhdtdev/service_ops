@@ -12,7 +12,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
 	title: "ServiceOps",
-	description: "Order management system for laundry and shoe care operations.",
+	description: "Hệ thống quản lý đơn hàng giặt ủi và chăm sóc giày.",
 	icons: {
 		icon: "/favicons.png",
 		shortcut: "/favicons.png",

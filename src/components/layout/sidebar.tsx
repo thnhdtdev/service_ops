@@ -19,7 +19,7 @@ export function AppSidebar() {
 
 				<div>
 					<h1 className="text-foreground text-lg leading-none font-bold">ServiceOps</h1>
-					<p className="text-muted-foreground mt-1 text-sm">Operations</p>
+					<p className="text-muted-foreground mt-1 text-sm">Quản lý vận hành</p>
 				</div>
 			</div>
 
@@ -49,7 +49,7 @@ export function AppSidebar() {
 
 			<div className="border-border border-t p-5">
 				<p className="text-muted-foreground mb-3 text-xs font-semibold tracking-wide uppercase">
-					Support
+					Hỗ trợ
 				</p>
 
 				<div className="space-y-2">
@@ -58,7 +58,7 @@ export function AppSidebar() {
 						className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
 					>
 						<CircleHelp className="size-4" />
-						Help Center
+						Trung tâm trợ giúp
 					</Link>
 
 					<Link
@@ -66,7 +66,7 @@ export function AppSidebar() {
 						className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
 					>
 						<FileText className="size-4" />
-						Documentation
+						Tài liệu hướng dẫn
 					</Link>
 				</div>
 			</div>

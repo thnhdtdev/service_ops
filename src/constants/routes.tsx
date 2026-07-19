@@ -17,22 +17,22 @@ export type PathValue = (typeof PATHS)[PathKey];
 
 export const APP_ROUTES = [
 	{
-		title: "Dashboard",
+		title: "Tổng quan",
 		href: PATHS.HOME,
 		icon: Gauge
 	},
 	{
-		title: "Orders",
+		title: "Đơn hàng",
 		href: PATHS.ORDERS,
 		icon: ClipboardList
 	},
 	{
-		title: "Customers",
+		title: "Khách hàng",
 		href: PATHS.CUSTOMERS,
 		icon: Users
 	},
 	{
-		title: "Services",
+		title: "Dịch vụ",
 		href: PATHS.SERVICES,
 		icon: Package
 	}

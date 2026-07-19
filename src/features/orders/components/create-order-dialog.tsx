@@ -22,8 +22,8 @@ export function CreateOrderDialog() {
 			<DialogTrigger asChild>
 				<Button>
 					<Plus className="mr-2 size-4" />
-					<span className="hidden sm:inline">Create Order</span>
-					<span className="sm:hidden">Create</span>
+					<span className="hidden sm:inline">Tạo đơn hàng</span>
+					<span className="sm:hidden">Tạo đơn</span>
 				</Button>
 			</DialogTrigger>
 

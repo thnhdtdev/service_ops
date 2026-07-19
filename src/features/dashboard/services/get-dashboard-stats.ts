@@ -61,6 +61,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 	]);
 
 	if (ordersTodayResult.error) {
+		console.error("Supabase orders error:", ordersTodayResult.error);
 		throw new Error("Không thể tải tổng đơn hôm nay.");
 	}
 

@@ -18,7 +18,7 @@ export default async function DashboardPage() {
 			<div className="space-y-6">
 				<div className="flex items-center justify-end">
 					<Select defaultValue="today">
-						<SelectTrigger className="w-[180px]">
+						<SelectTrigger className="w-45">
 							<SelectValue placeholder="Chọn thời gian" />
 						</SelectTrigger>
 						<SelectContent>
@@ -36,12 +36,12 @@ export default async function DashboardPage() {
 				<div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 					<div className="lg:col-span-2">
 						<div className="bg-card text-card-foreground flex h-[300px] items-center justify-center rounded-xl border p-6 shadow">
-							Biểu đồ Revenue Growth
+							Biểu đồ tăng trưởng doanh thu
 						</div>
 					</div>
 					<div>
 						<div className="bg-card text-card-foreground flex h-[300px] items-center justify-center rounded-xl border p-6 shadow">
-							Biểu đồ Service Distribution
+							Biểu đồ phân bổ dịch vụ
 						</div>
 					</div>
 				</div>

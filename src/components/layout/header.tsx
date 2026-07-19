@@ -21,47 +21,47 @@ type AppHeaderProps = {
 };
 
 function getPageTitle(pathname: string) {
-	if (pathname === PATHS.CREATE_ORDER) return "Create Order";
+	if (pathname === PATHS.CREATE_ORDER) return "Tạo đơn hàng";
 
 	if (pathname.startsWith("/orders/") && pathname !== PATHS.CREATE_ORDER) {
-		return "Order Detail";
+		return "Chi tiết đơn hàng";
 	}
 
 	const route = APP_ROUTES.find((item) => item.href === pathname);
 
-	return route?.title ?? "Dashboard";
+	return route?.title ?? "Tổng quan";
 }
 
 function getPageDescription(pathname: string) {
 	if (pathname === PATHS.DASHBOARD) {
-		return "Overview of today orders and business performance.";
+		return "Tổng quan đơn hàng hôm nay và tình hình kinh doanh.";
 	}
 
 	if (pathname === PATHS.ORDERS) {
-		return "Manage service orders, payment status, and processing status.";
+		return "Quản lý đơn hàng, trạng thái thanh toán và tiến độ xử lý.";
 	}
 
 	if (pathname === PATHS.CREATE_ORDER) {
-		return "Create a new laundry or shoe care service order.";
+		return "Tạo đơn hàng giặt ủi hoặc chăm sóc giày mới.";
 	}
 
 	if (pathname === PATHS.CUSTOMERS) {
-		return "Manage customer information and order history.";
+		return "Quản lý thông tin khách hàng và lịch sử đơn hàng.";
 	}
 
 	if (pathname === PATHS.SERVICES) {
-		return "Manage service pricing and availability.";
+		return "Quản lý giá và trạng thái cung cấp dịch vụ.";
 	}
 
 	if (pathname === PATHS.REPORTS) {
-		return "View revenue, order statistics, and unpaid orders.";
+		return "Xem doanh thu, thống kê đơn hàng và các đơn chưa thanh toán.";
 	}
 
 	if (pathname === PATHS.SETTINGS) {
-		return "Manage system settings and business information.";
+		return "Quản lý thiết lập hệ thống và thông tin cửa hàng.";
 	}
 
-	return "Manage your laundry and shoe care operations.";
+	return "Quản lý hoạt động giặt ủi và chăm sóc giày.";
 }
 
 export function AppHeader({ user }: AppHeaderProps) {
@@ -87,7 +87,7 @@ export function AppHeader({ user }: AppHeaderProps) {
 					<SheetTrigger asChild>
 						<Button variant="ghost" size="icon" className="lg:hidden">
 							<Menu className="size-5" />
-							<span className="sr-only">Open sidebar</span>
+							<span className="sr-only">Mở thanh điều hướng</span>
 						</Button>
 					</SheetTrigger>
 				</Sheet>
@@ -107,13 +107,13 @@ export function AppHeader({ user }: AppHeaderProps) {
 
 				<Button variant="ghost" size="icon" className="hidden sm:inline-flex">
 					<Bell className="size-5" />
-					<span className="sr-only">Notifications</span>
+					<span className="sr-only">Thông báo</span>
 				</Button>
 
 				<Button variant="ghost" size="icon" className="hidden sm:inline-flex" asChild>
 					<Link href={PATHS.SETTINGS}>
 						<Settings className="size-5" />
-						<span className="sr-only">Settings</span>
+						<span className="sr-only">Cài đặt</span>
 					</Link>
 				</Button>
 
@@ -136,14 +136,14 @@ export function AppHeader({ user }: AppHeaderProps) {
 
 						<Button type="button" variant="ghost" size="icon" onClick={handleLogout}>
 							<LogOut className="size-4" />
-							<span className="sr-only">Logout</span>
+							<span className="sr-only">Đăng xuất</span>
 						</Button>
 					</div>
 				) : (
 					<Button asChild variant="outline">
 						<Link href={PATHS.LOGIN}>
 							<LogIn className="mr-2 size-4" />
-							Login
+							Đăng nhập
 						</Link>
 					</Button>
 				)}

@@ -28,14 +28,14 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 		<section className="border-border bg-card text-card-foreground rounded-2xl border shadow-sm">
 			<div className="border-border flex items-center justify-between gap-4 border-b px-5 py-4">
 				<div>
-					<h2 className="text-lg font-semibold tracking-tight">Orders Need Attention</h2>
+					<h2 className="text-lg font-semibold tracking-tight">Đơn hàng cần chú ý</h2>
 					<p className="text-muted-foreground mt-1 text-sm">
-						Orders that are unpaid, processing, completed, or close to due time.
+						Các đơn chưa thanh toán, đang xử lý, đã hoàn thành hoặc sắp đến hẹn.
 					</p>
 				</div>
 
 				<Button asChild variant="outline" size="sm">
-					<Link href="/orders">View all</Link>
+					<Link href="/orders">Xem tất cả</Link>
 				</Button>
 			</div>
 
@@ -43,14 +43,14 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 				<table className="w-full min-w-[900px] text-sm">
 					<thead>
 						<tr className="border-border text-muted-foreground border-b text-left">
-							<th className="px-5 py-3 font-medium">Order Code</th>
-							<th className="px-5 py-3 font-medium">Customer</th>
-							<th className="px-5 py-3 font-medium">Service</th>
-							{/* <th className="px-5 py-3 font-medium">Status</th> */}
-							<th className="px-5 py-3 font-medium">Payment</th>
-							<th className="px-5 py-3 font-medium">Amount</th>
-							<th className="px-5 py-3 font-medium">Due Time</th>
-							<th className="px-5 py-3 text-right font-medium">Action</th>
+							<th className="px-5 py-3 font-medium">Mã đơn</th>
+							<th className="px-5 py-3 font-medium">Khách hàng</th>
+							<th className="px-5 py-3 font-medium">Dịch vụ</th>
+							{/* <th className="px-5 py-3 font-medium">Trạng thái</th> */}
+							<th className="px-5 py-3 font-medium">Thanh toán</th>
+							<th className="px-5 py-3 font-medium">Thành tiền</th>
+							<th className="px-5 py-3 font-medium">Thời gian hẹn</th>
+							<th className="px-5 py-3 text-right font-medium">Thao tác</th>
 						</tr>
 					</thead>
 
@@ -119,7 +119,7 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 									colSpan={8}
 									className="text-muted-foreground px-5 py-10 text-center"
 								>
-									No attention orders found.
+									Không có đơn hàng nào cần chú ý.
 								</td>
 							</tr>
 						)}
