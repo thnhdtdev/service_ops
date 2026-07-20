@@ -1,6 +1,8 @@
 import { AppHeader } from "@/components/layout/header";
 import { AppSidebar } from "@/components/layout/sidebar";
+import { PATHS } from "@/constants/routes";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 type DashboardShellProps = {
 	children: React.ReactNode;
@@ -13,12 +15,14 @@ export async function DashboardShell({ children }: DashboardShellProps) {
 		data: { user }
 	} = await supabase.auth.getUser();
 
-	const currentUser = user
-		? {
-				name: user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
-				email: user.email || ""
-			}
-		: null;
+	if (!user) {
+		redirect(PATHS.LOGIN);
+	}
+
+	const currentUser = {
+		name: user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
+		email: user.email || ""
+	};
 
 	return (
 		<div className="bg-background text-foreground min-h-screen">

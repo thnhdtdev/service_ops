@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Bell, LogIn, LogOut, Menu, Settings, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,6 @@ function getPageDescription(pathname: string) {
 
 export function AppHeader({ user }: AppHeaderProps) {
 	const pathname = usePathname();
-	const router = useRouter();
 
 	const pageTitle = getPageTitle(pathname);
 	const pageDescription = getPageDescription(pathname);
@@ -74,10 +73,14 @@ export function AppHeader({ user }: AppHeaderProps) {
 	async function handleLogout() {
 		const supabase = createClient();
 
-		await supabase.auth.signOut();
+		const { error } = await supabase.auth.signOut();
 
-		router.push(PATHS.LOGIN);
-		router.refresh();
+		if (error) {
+			console.error("Không thể đăng xuất:", error.message);
+			return;
+		}
+
+		window.location.replace(PATHS.LOGIN);
 	}
 
 	return (
