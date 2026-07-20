@@ -92,7 +92,6 @@ export async function getAttentionOrders(): Promise<AttentionOrder[]> {
 		orderCode: order.order_code,
 		customerName: order.customer_name,
 		serviceSummary: getServiceSummary(order.order_items ?? []),
-		// status: order.status,
 		paymentStatus: order.payment_status,
 		totalAmount: Number(order.total_amount),
 		dueAt: order.due_at

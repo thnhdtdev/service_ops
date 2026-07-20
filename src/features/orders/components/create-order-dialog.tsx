@@ -22,12 +22,12 @@ export function CreateOrderDialog() {
 			<DialogTrigger asChild>
 				<Button>
 					<Plus className="mr-2 size-4" />
-					<span className="hidden sm:inline">Create Order</span>
-					<span className="sm:hidden">Create</span>
+					<span className="hidden sm:inline">Tạo đơn hàng</span>
+					<span className="sm:hidden">Tạo đơn</span>
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className="max-h-[90vh] w-[95vw] overflow-y-auto sm:max-w-[1000px]">
+			<DialogContent className="max-h-[90vh] w-[95vw] overflow-y-auto sm:max-w-250">
 				<DialogHeader>
 					<DialogTitle>Tạo đơn hàng mới</DialogTitle>
 					<DialogDescription>

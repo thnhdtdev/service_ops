@@ -12,7 +12,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
 	title: "ServiceOps",
-	description: "Order management system for laundry and shoe care operations.",
+	description: "Hệ thống quản lý đơn hàng giặt ủi và chăm sóc giày.",
 	icons: {
 		icon: "/favicons.png",
 		shortcut: "/favicons.png",
@@ -28,14 +28,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning className={`${montserrat.variable} h-full`}>
 			<body>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-				</ThemeProvider>
+				<ThemeProvider defaultTheme="system">{children}</ThemeProvider>
 			</body>
 		</html>
 	);
