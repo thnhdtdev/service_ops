@@ -27,7 +27,7 @@ export function CreateOrderDialog() {
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className="max-h-[90vh] w-[95vw] overflow-y-auto sm:max-w-[1000px]">
+			<DialogContent className="max-h-[90vh] w-[95vw] overflow-y-auto sm:max-w-250">
 				<DialogHeader>
 					<DialogTitle>Tạo đơn hàng mới</DialogTitle>
 					<DialogDescription>

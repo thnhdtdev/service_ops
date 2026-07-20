@@ -28,14 +28,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning className={`${montserrat.variable} h-full`}>
 			<body>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-				</ThemeProvider>
+				<ThemeProvider defaultTheme="system">{children}</ThemeProvider>
 			</body>
 		</html>
 	);
