@@ -1,0 +1,16 @@
+{
+	"name": "service-ops",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev:frontend": "npm --prefix frontend run dev",
+		"build:frontend": "npm --prefix frontend run build",
+		"lint:frontend": "npm --prefix frontend run lint",
+		"format:frontend": "npm --prefix frontend run format",
+		"format:check:frontend": "npm --prefix frontend run format:check",
+		"test:backend": "go -C backend test ./..."
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}
