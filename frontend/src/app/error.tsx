@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { CircleAlert, LayoutDashboard, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PATHS } from "@/constants/routes";
 
 type ErrorPageProps = {
@@ -20,36 +20,40 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
 	}, [error]);
 
 	return (
-		<main className="bg-background text-foreground flex min-h-screen items-center justify-center px-5 py-10">
-			<Card className="w-full max-w-lg">
-				<CardHeader>
-					<CardTitle>
-						<h1 className="text-xl font-semibold">Đã xảy ra lỗi</h1>
-					</CardTitle>
-					<CardDescription>
-						Hệ thống chưa thể tải nội dung này. Bạn có thể thử lại hoặc quay về trang
-						chính.
-					</CardDescription>
-				</CardHeader>
+		<main className="bg-background text-foreground flex min-h-[100dvh] items-center justify-center px-5 py-10">
+			<section
+				role="alert"
+				aria-labelledby="error-title"
+				className="border-border bg-card w-full max-w-xl rounded-2xl border p-6 shadow-sm sm:p-8"
+			>
+				<div className="bg-destructive/10 text-destructive flex size-11 items-center justify-center rounded-xl">
+					<CircleAlert aria-hidden="true" className="size-5" />
+				</div>
 
-				<CardContent>
-					<div
-						role="alert"
-						className="border-destructive/30 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-sm"
-					>
-						Có lỗi ngoài dự kiến. Vui lòng thử lại sau ít phút.
-					</div>
+				<h1
+					id="error-title"
+					className="mt-5 text-xl font-semibold tracking-tight sm:text-2xl"
+				>
+					Không thể hoàn tất thao tác
+				</h1>
+				<p className="text-muted-foreground mt-2 max-w-md text-sm leading-6">
+					Nội dung chưa được tải do một lỗi ngoài dự kiến. Bạn có thể thử lại hoặc quay về
+					trang tổng quan.
+				</p>
 
-					<div className="mt-5 flex flex-wrap gap-3">
-						<Button type="button" onClick={reset}>
-							Thử lại
-						</Button>
-						<Button asChild variant="outline">
-							<Link href={PATHS.HOME}>Về trang chính</Link>
-						</Button>
-					</div>
-				</CardContent>
-			</Card>
+				<div className="mt-6 flex flex-col gap-3 sm:flex-row">
+					<Button type="button" onClick={() => reset()}>
+						<RotateCcw aria-hidden="true" data-icon="inline-start" />
+						Thử lại
+					</Button>
+					<Button asChild variant="outline">
+						<Link href={PATHS.HOME}>
+							<LayoutDashboard aria-hidden="true" data-icon="inline-start" />
+							Về trang tổng quan
+						</Link>
+					</Button>
+				</div>
+			</section>
 		</main>
 	);
 }
