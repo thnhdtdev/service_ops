@@ -293,11 +293,35 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						type="button"
 						variant="outline"
 						size="sm"
+						disabled={isLoadingServices || !!servicesError || services.length === 0}
 						onClick={() => append({ serviceId: "", quantity: 1 })}
 					>
 						<Plus className="mr-2 size-4" />
 						Thêm dịch vụ
 					</Button>
+				</div>
+
+				<div className="mt-3" aria-live="polite">
+					{isLoadingServices ? (
+						<p role="status" className="text-muted-foreground text-sm">
+							Đang tải danh sách dịch vụ...
+						</p>
+					) : servicesError ? (
+						<p
+							role="alert"
+							className="border-destructive/30 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-sm"
+						>
+							{servicesError}
+						</p>
+					) : services.length === 0 ? (
+						<p role="status" className="text-muted-foreground text-sm">
+							Chưa có dịch vụ đang hoạt động.
+						</p>
+					) : (
+						<p role="status" className="text-muted-foreground text-sm">
+							Đã tải {services.length} dịch vụ.
+						</p>
+					)}
 				</div>
 
 				<div className="mt-4 space-y-3">
@@ -322,12 +346,23 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 									<label className="text-sm font-medium">Dịch vụ</label>
 									<select
 										className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+										disabled={
+											isLoadingServices ||
+											!!servicesError ||
+											services.length === 0
+										}
 										{...register(`items.${index}.serviceId`, {
 											required: true
 										})}
 									>
 										<option value="">
-											{isLoadingServices ? "Đang tải..." : "Chọn dịch vụ"}
+											{isLoadingServices
+												? "Đang tải..."
+												: servicesError
+													? "Không thể tải dịch vụ"
+													: services.length === 0
+														? "Chưa có dịch vụ"
+														: "Chọn dịch vụ"}
 										</option>
 
 										{services.map((service) => (
@@ -444,7 +479,15 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					Xóa form
 				</Button>
 
-				<Button type="submit" disabled={isSubmitting || isLoadingServices}>
+				<Button
+					type="submit"
+					disabled={
+						isSubmitting ||
+						isLoadingServices ||
+						!!servicesError ||
+						services.length === 0
+					}
+				>
 					{isSubmitting ? "Đang tạo..." : "Tạo đơn hàng"}
 				</Button>
 			</div>

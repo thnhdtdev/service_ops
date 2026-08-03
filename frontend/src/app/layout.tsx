@@ -26,7 +26,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" suppressHydrationWarning className={`${montserrat.variable} h-full`}>
+		<html lang="vi" suppressHydrationWarning className={`${montserrat.variable} h-full`}>
 			<body>
 				<ThemeProvider defaultTheme="system">{children}</ThemeProvider>
 			</body>

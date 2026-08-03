@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -14,6 +15,7 @@ import { PATHS } from "@/constants/routes";
 
 export function LoginForm() {
 	const router = useRouter();
+	const [loginError, setLoginError] = useState("");
 	const {
 		register,
 		handleSubmit,
@@ -27,19 +29,26 @@ export function LoginForm() {
 	});
 
 	async function onSubmit(values: LoginSchema) {
-		const supabase = createClient();
+		setLoginError("");
 
-		const { error } = await supabase.auth.signInWithPassword({
-			email: values.email,
-			password: values.password
-		});
+		try {
+			const supabase = createClient();
 
-		if (error) {
-			return;
+			const { error } = await supabase.auth.signInWithPassword({
+				email: values.email,
+				password: values.password
+			});
+
+			if (error) {
+				setLoginError("Đăng nhập thất bại. Vui lòng kiểm tra email, mật khẩu và thử lại.");
+				return;
+			}
+
+			router.push(PATHS.HOME);
+			router.refresh();
+		} catch {
+			setLoginError("Không thể đăng nhập lúc này. Vui lòng thử lại sau.");
 		}
-
-		router.push(PATHS.HOME);
-		router.refresh();
 	}
 
 	return (
@@ -49,8 +58,17 @@ export function LoginForm() {
 				<CardDescription>Nhập email và mật khẩu để truy cập tài khoản.</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form onSubmit={handleSubmit(onSubmit)} noValidate>
+				<form onSubmit={handleSubmit(onSubmit, () => setLoginError(""))} noValidate>
 					<FieldGroup>
+						{loginError ? (
+							<div
+								role="alert"
+								className="border-destructive/30 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-sm"
+							>
+								{loginError}
+							</div>
+						) : null}
+
 						<Field data-invalid={!!errors.email}>
 							<FieldLabel htmlFor="email">Email</FieldLabel>
 							<Input

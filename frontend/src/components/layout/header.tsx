@@ -1,13 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, LogIn, LogOut, Menu, Settings, User } from "lucide-react";
+import { Bell, LogIn, LogOut, Menu, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { APP_ROUTES, PATHS } from "@/constants/routes";
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger
+} from "@/components/ui/sheet";
+import { AppNavigation } from "@/components/layout/sidebar";
 import { ModeToggle } from "@/components/layout/mode-toggle";
 import { CreateOrderDialog } from "@/features/orders/components/create-order-dialog";
 
@@ -66,33 +75,51 @@ function getPageDescription(pathname: string) {
 
 export function AppHeader({ user }: AppHeaderProps) {
 	const pathname = usePathname();
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const [logoutError, setLogoutError] = useState("");
 
 	const pageTitle = getPageTitle(pathname);
 	const pageDescription = getPageDescription(pathname);
 
 	async function handleLogout() {
-		const supabase = createClient();
+		setLogoutError("");
+		setIsLoggingOut(true);
 
-		const { error } = await supabase.auth.signOut();
+		try {
+			const supabase = createClient();
+			const { error } = await supabase.auth.signOut();
 
-		if (error) {
-			console.error("Không thể đăng xuất:", error.message);
-			return;
+			if (error) {
+				setLogoutError("Đăng xuất thất bại. Vui lòng thử lại.");
+				return;
+			}
+
+			window.location.replace(PATHS.LOGIN);
+		} catch {
+			setLogoutError("Không thể đăng xuất lúc này. Vui lòng thử lại sau.");
+		} finally {
+			setIsLoggingOut(false);
 		}
-
-		window.location.replace(PATHS.LOGIN);
 	}
 
 	return (
 		<header className="border-border bg-background flex min-h-24 items-center justify-between border-b px-5 py-4 lg:px-7">
 			<div className="flex items-center gap-4">
-				<Sheet>
+				<Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
 					<SheetTrigger asChild>
 						<Button variant="ghost" size="icon" className="lg:hidden">
 							<Menu className="size-5" />
 							<span className="sr-only">Mở thanh điều hướng</span>
 						</Button>
 					</SheetTrigger>
+					<SheetContent side="left" className="w-[280px] p-0 sm:max-w-[280px]">
+						<SheetHeader className="border-border border-b px-5 py-5">
+							<SheetTitle>ServiceOps</SheetTitle>
+							<SheetDescription>Quản lý vận hành</SheetDescription>
+						</SheetHeader>
+						<AppNavigation onNavigate={() => setIsMobileMenuOpen(false)} />
+					</SheetContent>
 				</Sheet>
 
 				<div>
@@ -113,34 +140,47 @@ export function AppHeader({ user }: AppHeaderProps) {
 					<span className="sr-only">Thông báo</span>
 				</Button>
 
-				<Button variant="ghost" size="icon" className="hidden sm:inline-flex" asChild>
-					<Link href={PATHS.SETTINGS}>
-						<Settings className="size-5" />
-						<span className="sr-only">Cài đặt</span>
-					</Link>
-				</Button>
-
 				<ModeToggle />
 
 				{user ? (
-					<div className="border-border bg-card ml-2 flex items-center gap-3 rounded-xl border px-3 py-2">
-						<div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-full">
-							<User className="size-4" />
+					<div className="ml-2 flex flex-col items-end gap-1">
+						<div className="border-border bg-card flex items-center gap-3 rounded-xl border px-3 py-2">
+							<div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-full">
+								<User className="size-4" />
+							</div>
+
+							<div className="hidden text-left md:block">
+								<p className="text-foreground max-w-32 truncate text-sm font-medium">
+									{user.name}
+								</p>
+								<p className="text-muted-foreground max-w-32 truncate text-xs">
+									{user.email}
+								</p>
+							</div>
+
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon"
+								onClick={handleLogout}
+								disabled={isLoggingOut}
+								aria-busy={isLoggingOut}
+							>
+								<LogOut className="size-4" />
+								<span className="sr-only">
+									{isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
+								</span>
+							</Button>
 						</div>
 
-						<div className="hidden text-left md:block">
-							<p className="text-foreground max-w-32 truncate text-sm font-medium">
-								{user.name}
+						{logoutError ? (
+							<p
+								role="alert"
+								className="text-destructive max-w-56 text-right text-xs"
+							>
+								{logoutError}
 							</p>
-							<p className="text-muted-foreground max-w-32 truncate text-xs">
-								{user.email}
-							</p>
-						</div>
-
-						<Button type="button" variant="ghost" size="icon" onClick={handleLogout}>
-							<LogOut className="size-4" />
-							<span className="sr-only">Đăng xuất</span>
-						</Button>
+						) : null}
 					</div>
 				) : (
 					<Button asChild variant="outline">
