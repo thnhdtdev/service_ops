@@ -28,7 +28,7 @@ export function DashboardStatCard({
 				<div>
 					<p className="text-muted-foreground text-sm font-medium">{title}</p>
 
-					<p className="text-foreground mt-3 text-2xl font-bold tracking-tight">
+					<p className="text-foreground mt-3 text-2xl leading-none font-bold tracking-tight tabular-nums">
 						{value}
 					</p>
 

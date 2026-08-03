@@ -345,7 +345,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Dịch vụ</label>
 									<select
-										className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+										className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 										disabled={
 											isLoadingServices ||
 											!!servicesError ||
@@ -388,7 +388,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Đơn vị</label>
-									<div className="border-border bg-muted text-muted-foreground flex h-10 items-center rounded-md border px-3 text-sm">
+									<div className="border-border bg-muted text-muted-foreground flex h-9 items-center rounded-md border px-3 text-sm">
 										{selectedService
 											? SERVICE_UNIT_LABEL[selectedService.unit]
 											: "-"}
@@ -397,7 +397,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Thành tiền</label>
-									<div className="border-border bg-muted flex h-10 items-center rounded-md border px-3 text-sm font-medium">
+									<div className="border-border bg-muted flex h-9 items-center rounded-md border px-3 text-sm font-medium tabular-nums">
 										{formatCurrency(lineTotal)}
 									</div>
 								</div>
@@ -429,7 +429,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					<div className="space-y-2">
 						<label className="text-sm font-medium">Trạng thái thanh toán</label>
 						<select
-							className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+							className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 							{...register("paymentStatus")}
 						>
 							<option value="unpaid">{PAYMENT_STATUS_LABEL.unpaid}</option>
@@ -441,7 +441,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						<div className="space-y-2">
 							<label className="text-sm font-medium">Phương thức thanh toán</label>
 							<select
-								className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+								className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 								{...register("paymentMethod")}
 							>
 								<option value="cash">{PAYMENT_METHOD_LABEL.cash}</option>
@@ -468,7 +468,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 			<section className="border-border bg-card rounded-2xl border p-4">
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Tổng tiền</span>
-					<span className="text-foreground text-2xl font-bold">
+					<span className="text-foreground text-2xl font-bold tabular-nums">
 						{formatCurrency(totalAmount)}
 					</span>
 				</div>
