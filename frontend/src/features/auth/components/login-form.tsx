@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CircleAlert } from "lucide-react";
+import { ArrowRight, CircleAlert, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { PATHS } from "@/constants/routes";
 export function LoginForm() {
 	const router = useRouter();
 	const [loginError, setLoginError] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 	const {
 		register,
 		handleSubmit,
@@ -54,22 +55,19 @@ export function LoginForm() {
 	return (
 		<div className="w-full">
 			<header>
-				<p className="text-primary text-sm font-semibold">Chào mừng trở lại</p>
-				<h1 className="text-foreground mt-2 text-3xl font-bold tracking-tight">
-					Đăng nhập vào ServiceOps
-				</h1>
-				<p className="text-muted-foreground mt-3 text-sm leading-6">
-					Dùng tài khoản được cấp để tiếp tục vào hệ thống.
+				<h1 className="text-foreground text-4xl font-bold tracking-[-0.03em]">Đăng nhập</h1>
+				<p className="text-muted-foreground mt-4 text-base leading-7">
+					Tiếp tục vào không gian vận hành ServiceOps.
 				</p>
 			</header>
 
 			<form
 				onSubmit={handleSubmit(onSubmit, () => setLoginError(""))}
-				className="mt-8"
+				className="mt-9"
 				aria-busy={isSubmitting}
 				noValidate
 			>
-				<FieldGroup className="gap-6">
+				<FieldGroup className="gap-5">
 					{loginError ? (
 						<div
 							role="alert"
@@ -80,42 +78,70 @@ export function LoginForm() {
 						</div>
 					) : null}
 
-					<Field data-invalid={!!errors.email}>
+					<Field data-invalid={!!errors.email} className="gap-2.5">
 						<FieldLabel htmlFor="email">Email</FieldLabel>
-						<Input
-							id="email"
-							type="email"
-							autoComplete="email"
-							placeholder="ten@cuahang.vn"
-							className="bg-card h-11"
-							disabled={isSubmitting}
-							aria-invalid={!!errors.email}
-							aria-describedby={errors.email ? "email-error" : undefined}
-							{...register("email")}
-						/>
+						<div className="relative">
+							<Mail
+								aria-hidden="true"
+								className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2"
+							/>
+							<Input
+								id="email"
+								type="email"
+								autoComplete="email"
+								placeholder="ten@cuahang.vn"
+								className="bg-card h-12 rounded-lg pl-10"
+								disabled={isSubmitting}
+								aria-invalid={!!errors.email}
+								aria-describedby={errors.email ? "email-error" : undefined}
+								{...register("email")}
+							/>
+						</div>
 						<FieldError id="email-error" errors={[errors.email]} />
 					</Field>
 
-					<Field data-invalid={!!errors.password}>
+					<Field data-invalid={!!errors.password} className="gap-2.5">
 						<FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
-						<Input
-							id="password"
-							type="password"
-							autoComplete="current-password"
-							placeholder="Nhập mật khẩu"
-							className="bg-card h-11"
-							disabled={isSubmitting}
-							aria-invalid={!!errors.password}
-							aria-describedby={errors.password ? "password-error" : undefined}
-							{...register("password")}
-						/>
+						<div className="relative">
+							<LockKeyhole
+								aria-hidden="true"
+								className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2"
+							/>
+							<Input
+								id="password"
+								type={showPassword ? "text" : "password"}
+								autoComplete="current-password"
+								placeholder="Nhập mật khẩu"
+								className="bg-card h-12 rounded-lg pr-12 pl-10"
+								disabled={isSubmitting}
+								aria-invalid={!!errors.password}
+								aria-describedby={errors.password ? "password-error" : undefined}
+								{...register("password")}
+							/>
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon"
+								className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1.5 size-9 -translate-y-1/2"
+								onClick={() => setShowPassword((current) => !current)}
+								disabled={isSubmitting}
+								aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+								aria-pressed={showPassword}
+							>
+								{showPassword ? (
+									<EyeOff aria-hidden="true" />
+								) : (
+									<Eye aria-hidden="true" />
+								)}
+							</Button>
+						</div>
 						<FieldError id="password-error" errors={[errors.password]} />
 					</Field>
 
 					<Button
 						type="submit"
 						size="lg"
-						className="mt-1 h-11 w-full"
+						className="mt-1 h-12 w-full rounded-lg"
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
@@ -126,9 +152,11 @@ export function LoginForm() {
 				</FieldGroup>
 			</form>
 
-			<p className="text-muted-foreground mt-8 text-center text-xs leading-5">
-				Nếu chưa có tài khoản, hãy liên hệ quản lý cửa hàng.
-			</p>
+			<div className="mt-8 border-t pt-5">
+				<p className="text-muted-foreground text-sm leading-6">
+					Chưa có tài khoản? Liên hệ quản lý cửa hàng để được cấp quyền.
+				</p>
+			</div>
 		</div>
 	);
 }
