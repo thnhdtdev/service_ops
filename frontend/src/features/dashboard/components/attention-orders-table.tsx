@@ -15,9 +15,9 @@ type AttentionOrdersTableProps = {
 function getPaymentStatusClassName(status: PaymentStatus) {
 	switch (status) {
 		case "unpaid":
-			return "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-300";
+			return "border-warning/30 bg-warning/10 text-warning";
 		case "paid":
-			return "border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-300";
+			return "border-success/30 bg-success/10 text-success";
 		default:
 			return "";
 	}
@@ -89,11 +89,11 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 										</Badge>
 									</td>
 
-									<td className="px-5 py-4 font-medium">
+									<td className="px-5 py-4 font-medium whitespace-nowrap tabular-nums">
 										{formatCurrency(order.totalAmount)}
 									</td>
 
-									<td className="text-muted-foreground px-5 py-4">
+									<td className="text-muted-foreground px-5 py-4 whitespace-nowrap tabular-nums">
 										{order.dueAt ? formatTime(order.dueAt) : "-"}
 									</td>
 

@@ -70,34 +70,67 @@ func serviceHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == http.MethodPost {
+	if r.Method == http.MethodPost{
 		var newService LaudryService
 
 		err := json.NewDecoder(r.Body).Decode(&newService)
-		if err != nil {
+		if err != nil{
+			http.Error(w, "Dữ liệu gửi lên không hợp lệ", http.StatusBadRequest)
+			return
+		}
+		//Neu ten rong 
+		if newService.Name == "" {
 			http.Error(
-				w,
-				"Dữ liệu gửi lên không hợp lệ",
+				w, 
+				"Ten khong duoc de trong",
 				http.StatusBadRequest,
 			)
 			return
 		}
 
-		//Tạo id tự động
-		newService.ID = len(services) + 1
-
-		//Thêm Phần tử mới vào danh sách
-		services = append(services, newService)
-
-		w.WriteHeader(http.StatusCreated)
-
-		err = json.NewEncoder(w).Encode(newService)
-		if err != nil {
-			fmt.Println("Không thể trả về JSON:", err)
+		if newService.Price <= 0{
+			http.Error(
+				w, 
+				"Gia phai lon hon 0",
+				http.StatusBadRequest, 
+			)
+			return
 		}
 
-		return
+		newService.ID = len(services)+1
+		services = append(services, newService)
+		
+		w.WriteHeader(http.StatusCreated)
 	}
+
+	// if r.Method == http.MethodPost {
+	// 	var newService LaudryService
+
+	// 	err := json.NewDecoder(r.Body).Decode(&newService)
+	// 	if err != nil {
+	// 		http.Error(
+	// 			w,
+	// 			"Dữ liệu gửi lên không hợp lệ",
+	// 			http.StatusBadRequest,
+	// 		)
+	// 		return
+	// 	}
+
+	// 	//Tạo id tự động
+	// 	newService.ID = len(services) + 1
+
+	// 	//Thêm Phần tử mới vào danh sách
+	// 	services = append(services, newService)
+
+	// 	w.WriteHeader(http.StatusCreated)
+
+	// 	err = json.NewEncoder(w).Encode(newService)
+	// 	if err != nil {
+	// 		fmt.Println("Không thể trả về JSON:", err)
+	// 	}
+
+	// 	return
+	// }
 
 	http.Error(
 		w,

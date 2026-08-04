@@ -293,11 +293,35 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						type="button"
 						variant="outline"
 						size="sm"
+						disabled={isLoadingServices || !!servicesError || services.length === 0}
 						onClick={() => append({ serviceId: "", quantity: 1 })}
 					>
 						<Plus className="mr-2 size-4" />
 						Thêm dịch vụ
 					</Button>
+				</div>
+
+				<div className="mt-3" aria-live="polite">
+					{isLoadingServices ? (
+						<p role="status" className="text-muted-foreground text-sm">
+							Đang tải danh sách dịch vụ...
+						</p>
+					) : servicesError ? (
+						<p
+							role="alert"
+							className="border-destructive/30 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-sm"
+						>
+							{servicesError}
+						</p>
+					) : services.length === 0 ? (
+						<p role="status" className="text-muted-foreground text-sm">
+							Chưa có dịch vụ đang hoạt động.
+						</p>
+					) : (
+						<p role="status" className="text-muted-foreground text-sm">
+							Đã tải {services.length} dịch vụ.
+						</p>
+					)}
 				</div>
 
 				<div className="mt-4 space-y-3">
@@ -321,13 +345,24 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Dịch vụ</label>
 									<select
-										className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+										className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+										disabled={
+											isLoadingServices ||
+											!!servicesError ||
+											services.length === 0
+										}
 										{...register(`items.${index}.serviceId`, {
 											required: true
 										})}
 									>
 										<option value="">
-											{isLoadingServices ? "Đang tải..." : "Chọn dịch vụ"}
+											{isLoadingServices
+												? "Đang tải..."
+												: servicesError
+													? "Không thể tải dịch vụ"
+													: services.length === 0
+														? "Chưa có dịch vụ"
+														: "Chọn dịch vụ"}
 										</option>
 
 										{services.map((service) => (
@@ -353,7 +388,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Đơn vị</label>
-									<div className="border-border bg-muted text-muted-foreground flex h-10 items-center rounded-md border px-3 text-sm">
+									<div className="border-border bg-muted text-muted-foreground flex h-9 items-center rounded-md border px-3 text-sm">
 										{selectedService
 											? SERVICE_UNIT_LABEL[selectedService.unit]
 											: "-"}
@@ -362,7 +397,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 								<div className="space-y-2">
 									<label className="text-sm font-medium">Thành tiền</label>
-									<div className="border-border bg-muted flex h-10 items-center rounded-md border px-3 text-sm font-medium">
+									<div className="border-border bg-muted flex h-9 items-center rounded-md border px-3 text-sm font-medium tabular-nums">
 										{formatCurrency(lineTotal)}
 									</div>
 								</div>
@@ -394,7 +429,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					<div className="space-y-2">
 						<label className="text-sm font-medium">Trạng thái thanh toán</label>
 						<select
-							className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+							className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 							{...register("paymentStatus")}
 						>
 							<option value="unpaid">{PAYMENT_STATUS_LABEL.unpaid}</option>
@@ -406,7 +441,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						<div className="space-y-2">
 							<label className="text-sm font-medium">Phương thức thanh toán</label>
 							<select
-								className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+								className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
 								{...register("paymentMethod")}
 							>
 								<option value="cash">{PAYMENT_METHOD_LABEL.cash}</option>
@@ -433,7 +468,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 			<section className="border-border bg-card rounded-2xl border p-4">
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Tổng tiền</span>
-					<span className="text-foreground text-2xl font-bold">
+					<span className="text-foreground text-2xl font-bold tabular-nums">
 						{formatCurrency(totalAmount)}
 					</span>
 				</div>
@@ -444,7 +479,15 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					Xóa form
 				</Button>
 
-				<Button type="submit" disabled={isSubmitting || isLoadingServices}>
+				<Button
+					type="submit"
+					disabled={
+						isSubmitting ||
+						isLoadingServices ||
+						!!servicesError ||
+						services.length === 0
+					}
+				>
 					{isSubmitting ? "Đang tạo..." : "Tạo đơn hàng"}
 				</Button>
 			</div>

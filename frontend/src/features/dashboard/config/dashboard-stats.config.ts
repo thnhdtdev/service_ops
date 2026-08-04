@@ -32,7 +32,7 @@ export const DASHBOARD_STATS_CONFIG: DashboardStatItem[] = [
 	},
 	{
 		key: "paidOrdersToday",
-		title: "Đơn đã thanh toán hôm nay",
+		title: "Đã thanh toán hôm nay",
 		description: "Số đơn đã được ghi nhận thanh toán hôm nay",
 		icon: CheckCircle2
 	},

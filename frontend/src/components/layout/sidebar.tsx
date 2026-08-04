@@ -1,75 +1,89 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CircleHelp, FileText } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { APP_ROUTES } from "@/constants/routes";
 
-export function AppSidebar() {
+type AppNavigationProps = {
+	className?: string;
+	onNavigate?: () => void;
+};
+
+type AppBrandProps = {
+	className?: string;
+};
+
+export function AppBrand({ className }: AppBrandProps) {
+	return (
+		<div className={cn("flex min-w-0 items-center gap-3", className)}>
+			<Image
+				src="/favicons.png"
+				alt=""
+				width={40}
+				height={40}
+				className="size-10 shrink-0 rounded-xl shadow-sm ring-1 ring-black/5"
+			/>
+
+			<div className="min-w-0">
+				<p className="text-foreground truncate text-base leading-tight font-bold tracking-tight">
+					ServiceOps
+				</p>
+				<p className="text-muted-foreground mt-0.5 truncate text-xs">Quản lý vận hành</p>
+			</div>
+		</div>
+	);
+}
+
+export function AppNavigation({ className, onNavigate }: AppNavigationProps) {
 	const pathname = usePathname();
 
 	return (
-		<aside className="border-border bg-background text-foreground hidden h-screen w-[280px] shrink-0 border-r lg:flex lg:flex-col">
-			<div className="border-border flex h-24 items-center gap-3 border-b px-7">
-				<div className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-2xl text-lg font-bold">
-					S
-				</div>
+		<nav
+			aria-label="Điều hướng chính"
+			className={cn("flex-1 space-y-1.5 px-3 py-4", className)}
+		>
+			{APP_ROUTES.map((route) => {
+				const Icon = route.icon;
 
-				<div>
-					<h1 className="text-foreground text-lg leading-none font-bold">ServiceOps</h1>
-					<p className="text-muted-foreground mt-1 text-sm">Quản lý vận hành</p>
-				</div>
+				const isActive =
+					pathname === route.href ||
+					(route.href !== "/" && pathname.startsWith(`${route.href}/`));
+
+				return (
+					<Link
+						key={route.href}
+						href={route.href}
+						onClick={onNavigate}
+						aria-current={isActive ? "page" : undefined}
+						className={cn(
+							"text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-offset-background relative flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+							isActive &&
+								"bg-accent text-foreground before:bg-primary font-semibold before:absolute before:inset-y-2.5 before:left-0 before:w-0.5 before:rounded-full"
+						)}
+					>
+						<Icon aria-hidden="true" className="size-5 shrink-0" />
+						<span className="truncate">{route.title}</span>
+					</Link>
+				);
+			})}
+		</nav>
+	);
+}
+
+export function AppSidebar() {
+	return (
+		<aside
+			aria-label="Thanh điều hướng"
+			className="border-border bg-card text-foreground sticky top-0 hidden h-dvh w-60 shrink-0 self-start border-r lg:flex lg:flex-col"
+		>
+			<div className="border-border flex h-20 shrink-0 items-center border-b px-5">
+				<AppBrand />
 			</div>
 
-			<nav className="flex-1 space-y-2 px-5 py-5">
-				{APP_ROUTES.map((route) => {
-					const Icon = route.icon;
-
-					const isActive =
-						pathname === route.href ||
-						(route.href !== "/" && pathname.startsWith(route.href));
-
-					return (
-						<Link
-							key={route.href}
-							href={route.href}
-							className={cn(
-								"text-muted-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
-								isActive && "bg-accent text-accent-foreground"
-							)}
-						>
-							<Icon className="size-5" />
-							<span>{route.title}</span>
-						</Link>
-					);
-				})}
-			</nav>
-
-			<div className="border-border border-t p-5">
-				<p className="text-muted-foreground mb-3 text-xs font-semibold tracking-wide uppercase">
-					Hỗ trợ
-				</p>
-
-				<div className="space-y-2">
-					<Link
-						href="#"
-						className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
-					>
-						<CircleHelp className="size-4" />
-						Trung tâm trợ giúp
-					</Link>
-
-					<Link
-						href="#"
-						className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
-					>
-						<FileText className="size-4" />
-						Tài liệu hướng dẫn
-					</Link>
-				</div>
-			</div>
+			<AppNavigation />
 		</aside>
 	);
 }

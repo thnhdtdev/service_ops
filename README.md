@@ -27,9 +27,9 @@ The frontend and backend remain independent applications. The root `package.json
 
 ### Backend
 
-- Go
-
-The Go backend is currently being initialized and does not contain an executable package yet.
+- Go standard library HTTP server
+- JSON structured logging
+- Graceful shutdown
 
 ## Requirements
 
@@ -67,6 +67,12 @@ npm run lint:frontend
 # Build the frontend
 npm run build:frontend
 
+# Start the Go API on http://localhost:8080
+npm run dev:backend
+
+# Build the Go API into backend/bin
+npm run build:backend
+
 # Check frontend formatting
 npm run format:check:frontend
 
@@ -74,7 +80,7 @@ npm run format:check:frontend
 npm run test:backend
 ```
 
-`test:backend` will report that no packages were found until Go source code is added to `backend/`.
+The API health endpoint is available at `GET /health`.
 
 ## Main features
 
