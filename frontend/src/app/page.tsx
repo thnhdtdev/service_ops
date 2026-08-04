@@ -7,6 +7,10 @@ import {
 	RevenueChartSection,
 	RevenueChartSkeleton
 } from "@/features/dashboard/components/revenue-chart-section";
+import {
+	ServiceMixChartSkeleton,
+	ServiceMixSection
+} from "@/features/dashboard/components/service-mix-section";
 
 export default async function DashboardPage() {
 	const dashboardStats = await getDashboardStats();
@@ -22,11 +26,9 @@ export default async function DashboardPage() {
 							<RevenueChartSection />
 						</Suspense>
 					</div>
-					<div>
-						<div className="bg-card text-card-foreground flex h-[300px] items-center justify-center rounded-xl border p-6 shadow">
-							Biểu đồ phân bổ dịch vụ
-						</div>
-					</div>
+					<Suspense fallback={<ServiceMixChartSkeleton />}>
+						<ServiceMixSection />
+					</Suspense>
 				</div>
 			</div>
 		</DashboardShell>
