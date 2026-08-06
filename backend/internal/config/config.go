@@ -11,6 +11,8 @@ const (
 type Config struct {
 	Port        string
 	Environment string
+	SupabaseURL string
+	SupabasePublishableKey string
 }
 
 // Load reads configuration from environment variables and applies safe defaults.
@@ -18,6 +20,8 @@ func Load() Config {
 	return Config{
 		Port:        valueOrDefault("PORT", defaultPort),
 		Environment: valueOrDefault("APP_ENV", defaultEnvironment),
+		SupabaseURL: valueOrDefault("SUPABASE_URL", ""),
+		SupabasePublishableKey: valueOrDefault("SUPABASE_PUBLISHABLE_KEY", ""),
 	}
 }
 
