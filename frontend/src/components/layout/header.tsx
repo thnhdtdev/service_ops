@@ -44,6 +44,10 @@ function getPageTitle(pathname: string) {
 		return "Chi tiết đơn hàng";
 	}
 
+	if (pathname.startsWith(`${PATHS.CUSTOMERS}/`)) {
+		return "Hồ sơ khách hàng";
+	}
+
 	const route = APP_ROUTES.find((item) => item.href === pathname);
 
 	return route?.title ?? "Tổng quan";
@@ -64,6 +68,10 @@ function getPageDescription(pathname: string) {
 
 	if (pathname === PATHS.CUSTOMERS) {
 		return "Quản lý thông tin khách hàng và lịch sử đơn hàng.";
+	}
+
+	if (pathname.startsWith(`${PATHS.CUSTOMERS}/`)) {
+		return "Đối chiếu thông tin khách hàng, dịch vụ và thanh toán trên từng đơn.";
 	}
 
 	if (pathname === PATHS.SERVICES) {
