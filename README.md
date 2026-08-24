@@ -7,7 +7,7 @@ ServiceOps is a web-based operations management system for laundry and shoe-care
 ```text
 service_ops/
 |-- frontend/        # Next.js application
-|-- backend/         # Go API
+|-- backend/         # Current Go API prototype (planned migration to Node.js)
 |-- package.json     # Commands shared from the repository root
 |-- .gitignore
 `-- README.md
@@ -25,11 +25,17 @@ The frontend and backend remain independent applications. The root `package.json
 - React Hook Form and Zod
 - Supabase client
 
-### Backend
+### Current backend prototype
 
 - Go standard library HTTP server
 - JSON structured logging
 - Graceful shutdown
+
+### Planned backend
+
+- Node.js
+- TypeScript
+- Supabase database and authentication integration
 
 ## Requirements
 
@@ -67,16 +73,16 @@ npm run lint:frontend
 # Build the frontend
 npm run build:frontend
 
-# Start the Go API on http://localhost:8080
+# Start the current Go API prototype on http://localhost:8080
 npm run dev:backend
 
-# Build the Go API into backend/bin
+# Build the current Go API prototype into backend/bin
 npm run build:backend
 
 # Check frontend formatting
 npm run format:check:frontend
 
-# Test all Go packages
+# Test the current Go packages
 npm run test:backend
 ```
 
@@ -93,7 +99,7 @@ The API health endpoint is available at `GET /health`.
 
 ## Planned improvements
 
-- Go API implementation
+- Migrate the backend prototype from Go to Node.js and TypeScript
 - AI-generated customer messages and Facebook posts
 - Public receipt and order pages
 - Advanced revenue reports
