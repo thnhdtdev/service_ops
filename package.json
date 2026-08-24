@@ -1,18 +1,28 @@
 {
-	"name": "service-ops",
-	"version": "0.1.0",
-	"private": true,
-	"scripts": {
-		"dev:frontend": "npm --prefix frontend run dev",
-		"dev:backend": "go -C backend run ./cmd/api",
-		"build:frontend": "npm --prefix frontend run build",
-		"build:backend": "go -C backend build -o bin/api ./cmd/api",
-		"lint:frontend": "npm --prefix frontend run lint",
-		"format:frontend": "npm --prefix frontend run format",
-		"format:check:frontend": "npm --prefix frontend run format:check",
-		"test:backend": "go -C backend test ./..."
-	},
-	"engines": {
-		"node": ">=20"
-	}
+  "name": "service-ops",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "tsx watch backend/src/server.ts",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "tsc --project backend/tsconfig.json",
+    "start:backend": "node backend/dist/server.js",
+    "typecheck:backend": "tsc --project backend/tsconfig.json --noEmit",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "format:frontend": "npm --prefix frontend run format",
+    "format:check:frontend": "npm --prefix frontend run format:check",
+    "test:backend": "tsx --test backend/src/app.test.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "fastify": "^5.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
 }

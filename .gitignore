@@ -15,12 +15,6 @@
 **/build/
 **/dist/
 
-# Go build output
-backend/bin/
-**/*.exe
-**/*.out
-**/*.test
-
 # Environment files (commit example templates only)
 .env*
 !.env.example

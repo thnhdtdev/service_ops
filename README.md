@@ -7,7 +7,7 @@ ServiceOps is a web-based operations management system for laundry and shoe-care
 ```text
 service_ops/
 |-- frontend/        # Next.js application
-|-- backend/         # Backend workspace (Node.js and TypeScript planned)
+|-- backend/         # Node.js and TypeScript API
 |-- package.json     # Commands shared from the repository root
 |-- .gitignore
 `-- README.md
@@ -25,25 +25,24 @@ The frontend and backend remain independent applications. The root `package.json
 - React Hook Form and Zod
 - Supabase client
 
-### Backend direction
+### Backend
 
-- Node.js
+- Node.js 20 or newer
 - TypeScript
-- Supabase database and authentication integration
-
-The existing files in `backend/` are a legacy Go prototype. They will be replaced as the Node.js backend is implemented.
+- Fastify
+- Supabase database and authentication integration (planned)
 
 ## Requirements
 
 - Node.js 20 or newer
 - npm
-- Go is only required to run the legacy backend prototype
 
 ## Setup
 
-Install the frontend dependencies:
+Install the backend dependencies from the repository root, then install the frontend dependencies:
 
 ```bash
+npm install
 npm --prefix frontend install
 ```
 
@@ -69,26 +68,24 @@ npm run lint:frontend
 # Build the frontend
 npm run build:frontend
 
+# Start the backend development server on http://localhost:3001
+npm run dev:backend
+
+# Type-check the backend
+npm run typecheck:backend
+
+# Test the backend
+npm run test:backend
+
+# Build and start the compiled backend
+npm run build:backend
+npm run start:backend
+
 # Check frontend formatting
 npm run format:check:frontend
 ```
 
-### Legacy backend prototype
-
-The following commands are temporary and will be replaced during the Node.js migration:
-
-```bash
-# Start the legacy Go API on http://localhost:8080
-npm run dev:backend
-
-# Build the legacy Go API into backend/bin
-npm run build:backend
-
-# Test the legacy Go packages
-npm run test:backend
-```
-
-The legacy API health endpoint is available at `GET /health`.
+The backend health endpoint is available at `GET http://localhost:3001/health`.
 
 ## Main features
 
@@ -101,7 +98,7 @@ The legacy API health endpoint is available at `GET /health`.
 
 ## Planned improvements
 
-- Implement the backend with Node.js and TypeScript, then retire the legacy Go prototype
+- Connect the Node.js API to Supabase and move sensitive business operations behind the API
 - AI-generated customer messages and Facebook posts
 - Public receipt and order pages
 - Advanced revenue reports
@@ -110,4 +107,4 @@ The legacy API health endpoint is available at `GET /health`.
 
 ## Status
 
-This project is under active development. The frontend is functional, while the Node.js backend migration has not started yet.
+This project is under active development. The frontend is functional, and the Node.js backend foundation is in place.
