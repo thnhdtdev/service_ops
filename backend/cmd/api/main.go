@@ -1,140 +1,45 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"errors"
+	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
+
+	"github.com/thnhdtdev/service_ops/backend/internal/auth"
+	"github.com/thnhdtdev/service_ops/backend/internal/config"
+	"github.com/thnhdtdev/service_ops/backend/internal/httpapi"
 )
 
-//Tạo một struct HealthResponse để định nghĩa cấu trúc dữ liệu trả về cho endpoint /health
-type HealthResponse struct {
-	Status string `json:"status"`
-	Service string `json:"service"`
-}
-
-type LaudryService struct {
-	ID int `json:"id"`
-	Name string `json:"name"`
-	Price int `json:"price"`
-}
-
-var services = []LaudryService{
-	{ID: 1, Name: "Giặt ủi", Price: 10000},
-	{ID: 2, Name: "Giặt khô", Price: 15000},
-	{ID: 3, Name: "Ủi quần áo", Price: 5000},
-}
-
-
 func main() {
-	//Khi người dùng truy cập thì vào func homeHandler
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/health", healthHandler)
-	http.HandleFunc("/services", serviceHandler)
-
-	fmt.Println("Starting server on :8080")
-
-	err := http.ListenAndServe(":8080", nil)
-
-	//Nếu biến err đang chứa lỗi thì in ra lỗi đó
-	if err != nil {
-		fmt.Println("Error starting server:", err)
-	}
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "ServiceOps Backend đang hoạt động")
-}
-
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	response := HealthResponse{
-		Status:  "ok",
-		Service: "ServiceName",
+	// Nạp backend/.env khi chạy local. Các biến môi trường đã tồn tại
+	// (ví dụ trên production) được giữ nguyên và có độ ưu tiên cao hơn.
+	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
+		log.Fatalf("load .env file: %v", err)
 	}
 
-	//Kiểu dữ liệu trả về là JSON
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		fmt.Println("Error encoding JSON response:", err)
-	}
-}
+	// Đọc port và cấu hình Supabase từ biến môi trường.
+	cfg := config.Load()
+	address := ":" + cfg.Port
 
-func serviceHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	if r.Method == http.MethodGet {
-		err := json.NewEncoder(w).Encode(services)
-		if err != nil {
-			fmt.Println("Không thể trả về JSON:", err)
-		}
-		return
-	}
-
-	if r.Method == http.MethodPost{
-		var newService LaudryService
-
-		err := json.NewDecoder(r.Body).Decode(&newService)
-		if err != nil{
-			http.Error(w, "Dữ liệu gửi lên không hợp lệ", http.StatusBadRequest)
-			return
-		}
-		//Neu ten rong 
-		if newService.Name == "" {
-			http.Error(
-				w, 
-				"Ten khong duoc de trong",
-				http.StatusBadRequest,
-			)
-			return
-		}
-
-		if newService.Price <= 0{
-			http.Error(
-				w, 
-				"Gia phai lon hon 0",
-				http.StatusBadRequest, 
-			)
-			return
-		}
-
-		newService.ID = len(services)+1
-		services = append(services, newService)
-		
-		w.WriteHeader(http.StatusCreated)
-	}
-
-	// if r.Method == http.MethodPost {
-	// 	var newService LaudryService
-
-	// 	err := json.NewDecoder(r.Body).Decode(&newService)
-	// 	if err != nil {
-	// 		http.Error(
-	// 			w,
-	// 			"Dữ liệu gửi lên không hợp lệ",
-	// 			http.StatusBadRequest,
-	// 		)
-	// 		return
-	// 	}
-
-	// 	//Tạo id tự động
-	// 	newService.ID = len(services) + 1
-
-	// 	//Thêm Phần tử mới vào danh sách
-	// 	services = append(services, newService)
-
-	// 	w.WriteHeader(http.StatusCreated)
-
-	// 	err = json.NewEncoder(w).Encode(newService)
-	// 	if err != nil {
-	// 		fmt.Println("Không thể trả về JSON:", err)
-	// 	}
-
-	// 	return
-	// }
-
-	http.Error(
-		w,
-		"Phương thức không được hỗ trợ",
-		http.StatusMethodNotAllowed,
+	// Tạo một Auth client duy nhất và tái sử dụng cho tất cả request.
+	authClient, err := auth.NewClient(
+		cfg.SupabaseURL,
+		cfg.SupabasePublishableKey,
 	)
+	if err != nil {
+		log.Fatalf("invalid authentication configuration: %v", err)
+	}
+
+	// Router nhận Auth client để bảo vệ các endpoint cần đăng nhập.
+	handler := httpapi.NewHandler(authClient)
+
+	log.Printf("ServiceOps API is running on %s", address)
+
+	// ListenAndServe chặn tại đây và phục vụ request cho đến khi có lỗi.
+	if err := http.ListenAndServe(address, handler); err != nil {
+		log.Fatalf("start HTTP server: %v", err)
+	}
 }

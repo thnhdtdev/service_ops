@@ -1,11 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
+import { findCustomerByPhone } from "@/features/customers/api/find-customer-by-phone";
+import type { CustomerSummary } from "@/features/customers/types";
+import { useCustomerLookup } from "@/features/customers/hooks/use-customer-lookup";
+import { normalizeCustomerPhone } from "@/features/customers/utils/normalize-customer-phone";
 import { useActiveServices } from "@/features/services/hooks/use-active-services";
 import type { CreateOrderFormValues } from "@/features/orders/type";
 
@@ -51,17 +55,32 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 	const {
 		control,
+		clearErrors,
+		getValues,
 		register,
 		handleSubmit,
 		reset,
+		setFocus,
+		setValue,
 		formState: { errors }
 	} = form;
 
-	const watchedItems =
-		useWatch({
-			control,
-			name: "items"
-		}) ?? [];
+	const watchedItemsValue = useWatch({
+		control,
+		name: "items"
+	});
+	const watchedItems = useMemo(() => watchedItemsValue ?? [], [watchedItemsValue]);
+
+	const customerPhone = useWatch({
+		control,
+		name: "customerPhone"
+	});
+	const {
+		customer: matchedCustomer,
+		status: customerLookupStatus,
+		error: customerLookupError
+	} = useCustomerLookup(customerPhone);
+	const previousMatchedCustomer = useRef<CustomerSummary | null>(null);
 
 	const paymentStatus = useWatch({
 		control,
@@ -72,6 +91,24 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 		control,
 		name: "items"
 	});
+
+	useEffect(() => {
+		const previousCustomer = previousMatchedCustomer.current;
+
+		if (matchedCustomer) {
+			setValue("customerName", matchedCustomer.name, {
+				shouldDirty: true,
+				shouldValidate: true
+			});
+			clearErrors("customerName");
+		} else if (previousCustomer && getValues("customerName") === previousCustomer.name) {
+			setValue("customerName", "", {
+				shouldDirty: true
+			});
+		}
+
+		previousMatchedCustomer.current = matchedCustomer;
+	}, [clearErrors, getValues, matchedCustomer, setValue]);
 
 	const totalAmount = useMemo(() => {
 		return watchedItems.reduce((total, item) => {
@@ -148,29 +185,49 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 		setIsSubmitting(true);
 
 		const customerName = values.customerName.trim();
-		const customerPhone = values.customerPhone.trim();
+		const normalizedCustomerPhone = normalizeCustomerPhone(values.customerPhone);
+
+		if (!normalizedCustomerPhone) {
+			setFormError("Số điện thoại khách hàng không hợp lệ.");
+			setIsSubmitting(false);
+			return;
+		}
 
 		try {
-			const { data: customer, error: customerError } = await supabase
-				.from("customers")
-				.insert({
-					name: customerName,
-					phone: customerPhone || null
-				})
-				.select("id")
-				.single();
+			let customer = await findCustomerByPhone(normalizedCustomerPhone);
 
-			if (customerError) {
-				throw customerError;
+			if (!customer) {
+				const { data: createdCustomer, error: customerError } = await supabase
+					.from("customers")
+					.insert({
+						name: customerName,
+						phone: normalizedCustomerPhone
+					})
+					.select("id, name, phone")
+					.single();
+
+				if (customerError || !createdCustomer) {
+					// Một request khác có thể vừa tạo cùng số điện thoại.
+					// Tìm lại trước khi kết luận thao tác thất bại.
+					customer = await findCustomerByPhone(normalizedCustomerPhone);
+
+					if (!customer) {
+						throw customerError ?? new Error("Không thể tạo hồ sơ khách hàng.");
+					}
+				} else {
+					customer = createdCustomer as CustomerSummary;
+				}
 			}
+
+			const orderCustomerName = customer.name;
 
 			const { data: order, error: orderError } = await supabase
 				.from("orders")
 				.insert({
 					order_code: generateOrderCode(),
 					customer_id: customer.id,
-					customer_name: customerName,
-					customer_phone: customerPhone || null,
+					customer_name: orderCustomerName,
+					customer_phone: normalizedCustomerPhone,
 					status: "received",
 					payment_status: values.paymentStatus,
 					total_amount: totalAmount,
@@ -241,9 +298,85 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 				<div className="mt-4 grid gap-4 md:grid-cols-2">
 					<div className="space-y-2">
-						<label className="text-sm font-medium">Tên khách hàng</label>
+						<label htmlFor="customer-phone" className="text-sm font-medium">
+							Số điện thoại
+						</label>
 						<Input
-							placeholder="Ví dụ: Chị Linh"
+							id="customer-phone"
+							type="tel"
+							placeholder="09xxxxxxxx"
+							autoComplete="tel"
+							{...register("customerPhone", {
+								required: "Vui lòng nhập số điện thoại",
+								validate: (value) =>
+									normalizeCustomerPhone(value) !== null ||
+									"Số điện thoại không hợp lệ",
+								onChange: (event) => {
+									event.target.value = event.target.value.replace(/[^0-9+]/g, "");
+								}
+							})}
+						/>
+						{errors.customerPhone ? (
+							<p className="text-destructive text-sm">
+								{errors.customerPhone.message}
+							</p>
+						) : null}
+
+						<div aria-live="polite">
+							{customerLookupStatus === "searching" ? (
+								<p role="status" className="text-muted-foreground text-sm">
+									Đang tìm khách hàng...
+								</p>
+							) : customerLookupStatus === "found" && matchedCustomer ? (
+								<div className="border-success/30 bg-success/10 text-success flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
+									<p>
+										Khách hàng cũ: <strong>{matchedCustomer.name}</strong>
+									</p>
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										className="text-foreground shrink-0"
+										onClick={() => {
+											setValue("customerPhone", "");
+											setValue("customerName", "");
+											setFocus("customerPhone");
+										}}
+									>
+										Đổi khách
+									</Button>
+								</div>
+							) : customerLookupStatus === "not-found" ? (
+								<p
+									role="status"
+									className="border-primary/30 bg-primary/5 text-foreground rounded-lg border px-3 py-2 text-sm"
+								>
+									Khách hàng mới. Hồ sơ sẽ được tạo cùng đơn hàng.
+								</p>
+							) : customerLookupStatus === "error" ? (
+								<p
+									role="alert"
+									className="border-destructive/30 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-sm"
+								>
+									{customerLookupError}
+								</p>
+							) : null}
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<label htmlFor="customer-name" className="text-sm font-medium">
+							Tên khách hàng
+						</label>
+						<Input
+							id="customer-name"
+							placeholder={
+								matchedCustomer
+									? "Thông tin từ hồ sơ khách hàng"
+									: "Ví dụ: Chị Linh"
+							}
+							readOnly={!!matchedCustomer}
+							className={matchedCustomer ? "bg-muted" : undefined}
 							{...register("customerName", {
 								required: "Vui lòng nhập tên khách hàng"
 							})}
@@ -253,27 +386,9 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 								{errors.customerName.message}
 							</p>
 						) : null}
-					</div>
-
-					<div className="space-y-2">
-						<label className="text-sm font-medium">Số điện thoại</label>
-						<Input
-							type="tel"
-							placeholder="09xxxxxxxx"
-							{...register("customerPhone", {
-								required: "Vui lòng số điện thoại",
-								pattern: {
-									value: /^(0|\+84)(\d{9})$/,
-									message: "Số điện thoại không hợp lệ"
-								},
-								onChange: (e) => {
-									e.target.value = e.target.value.replace(/[^0-9+]/g, "");
-								}
-							})}
-						/>
-						{errors.customerPhone ? (
-							<p className="text-destructive text-sm">
-								{errors.customerPhone.message}
+						{matchedCustomer ? (
+							<p className="text-muted-foreground text-xs">
+								Tên được lấy từ hồ sơ hiện có và không bị cập nhật ngầm.
 							</p>
 						) : null}
 					</div>
