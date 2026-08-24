@@ -7,7 +7,7 @@ ServiceOps is a web-based operations management system for laundry and shoe-care
 ```text
 service_ops/
 |-- frontend/        # Next.js application
-|-- backend/         # Current Go API prototype (planned migration to Node.js)
+|-- backend/         # Backend workspace (Node.js and TypeScript planned)
 |-- package.json     # Commands shared from the repository root
 |-- .gitignore
 `-- README.md
@@ -25,23 +25,19 @@ The frontend and backend remain independent applications. The root `package.json
 - React Hook Form and Zod
 - Supabase client
 
-### Current backend prototype
-
-- Go standard library HTTP server
-- JSON structured logging
-- Graceful shutdown
-
-### Planned backend
+### Backend direction
 
 - Node.js
 - TypeScript
 - Supabase database and authentication integration
 
+The existing files in `backend/` are a legacy Go prototype. They will be replaced as the Node.js backend is implemented.
+
 ## Requirements
 
 - Node.js 20 or newer
 - npm
-- The Go version declared in `backend/go.mod`
+- Go is only required to run the legacy backend prototype
 
 ## Setup
 
@@ -73,20 +69,26 @@ npm run lint:frontend
 # Build the frontend
 npm run build:frontend
 
-# Start the current Go API prototype on http://localhost:8080
-npm run dev:backend
-
-# Build the current Go API prototype into backend/bin
-npm run build:backend
-
 # Check frontend formatting
 npm run format:check:frontend
+```
 
-# Test the current Go packages
+### Legacy backend prototype
+
+The following commands are temporary and will be replaced during the Node.js migration:
+
+```bash
+# Start the legacy Go API on http://localhost:8080
+npm run dev:backend
+
+# Build the legacy Go API into backend/bin
+npm run build:backend
+
+# Test the legacy Go packages
 npm run test:backend
 ```
 
-The API health endpoint is available at `GET /health`.
+The legacy API health endpoint is available at `GET /health`.
 
 ## Main features
 
@@ -99,7 +101,7 @@ The API health endpoint is available at `GET /health`.
 
 ## Planned improvements
 
-- Migrate the backend prototype from Go to Node.js and TypeScript
+- Implement the backend with Node.js and TypeScript, then retire the legacy Go prototype
 - AI-generated customer messages and Facebook posts
 - Public receipt and order pages
 - Advanced revenue reports
@@ -108,4 +110,4 @@ The API health endpoint is available at `GET /health`.
 
 ## Status
 
-This project is under active development.
+This project is under active development. The frontend is functional, while the Node.js backend migration has not started yet.
