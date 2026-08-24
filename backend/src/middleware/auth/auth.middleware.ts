@@ -1,0 +1,28 @@
+import { FastifyReply, FastifyRequest } from "fastify";
+import {supabase} from "../../lib/supabase";
+
+export async function requireAuth(
+        request: FastifyRequest,
+        reply: FastifyReply,
+){
+    const authrization = request.headers.authorization;
+
+    //check if the authorization header is present and starts with "Bearer "
+    if(!authrization?.startsWith("Bearer ")){
+        return reply.status(401).send({
+            message: "Unauthorized",
+        })
+    }
+        
+    const token = authrization?.slice(7);
+
+    const {data: {user}, error} = await supabase.auth.getUser(token);
+
+    //check if there is an error or if the user is not found
+    if(error || !user){
+        return reply.status(401).send({
+            message: "Invalid or expired token",
+        })
+    }
+        request.user = user;
+}
