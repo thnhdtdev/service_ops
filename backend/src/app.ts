@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 
 import { env } from "./config/env.js";
 import {authRoutes} from "./modules/auth/auth.routes.js";
+import {servicesRoutes} from "./modules/services/services.routes.js";
 
 export function buildApp() {
   const app = Fastify({
@@ -21,6 +22,6 @@ export function buildApp() {
   });
 
   app.register(authRoutes, { prefix: "/api" });
-
+  app.register(servicesRoutes,{prefix:"/api/services"})
   return app;
 }

@@ -25,4 +25,5 @@ export async function requireAuth(
         })
     }
         request.user = user;
+        request.accessToken = token;
 }
