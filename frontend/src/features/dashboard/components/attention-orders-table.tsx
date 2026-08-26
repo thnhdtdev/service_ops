@@ -40,7 +40,7 @@ export function AttentionOrdersTable({ orders }: AttentionOrdersTableProps) {
 			</div>
 
 			<div className="overflow-x-auto">
-				<table className="w-full min-w-[900px] text-sm">
+				<table className="w-full min-w-225 text-sm">
 					<thead>
 						<tr className="border-border text-muted-foreground border-b text-left">
 							<th className="px-5 py-3 font-medium">Mã đơn</th>
