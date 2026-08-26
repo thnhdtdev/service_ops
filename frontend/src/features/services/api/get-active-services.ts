@@ -1,18 +1,18 @@
-import { createClient } from "@/lib/supabase/client";
+import { apiFetch } from "@/lib/api/client";
 import type { Service } from "@/features/services/types";
 
+type ServicesResponse = {
+  services: Service[];
+};
+
 export async function getActiveServices(): Promise<Service[]> {
-	const supabase = createClient();
+  const response = await apiFetch("/api/services?active=true");
 
-	const { data, error } = await supabase
-		.from("services")
-		.select("id, name, unit, unit_price, description, is_active")
-		.eq("is_active", true)
-		.order("name", { ascending: true });
+  if (!response.ok) {
+    throw new Error("Không thể tải danh sách dịch vụ.");
+  }
 
-	if (error) {
-		throw new Error("Không thể tải danh sách dịch vụ.");
-	}
+  const data = (await response.json()) as ServicesResponse;
 
-	return (data ?? []) as Service[];
+  return data.services;
 }
