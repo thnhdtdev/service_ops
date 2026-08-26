@@ -13,6 +13,7 @@ export async function authRoutes(app: FastifyInstance) {
         user: {
           id: request.user.id,
           email: request.user.email,
+          role: request.role
         },
       };
     },
