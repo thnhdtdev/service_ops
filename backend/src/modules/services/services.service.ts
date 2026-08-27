@@ -1,9 +1,18 @@
-import { createUserSupabase } from "../../lib/supabase";
+import { createUserSupabase, supabase } from "../../lib/supabase";
 export type CreateServiceInput = {
   name: string,
   unit: string,
   unit_price: number,
   description?: string | null
+}
+
+export type UpdateService = {
+  name: string,
+  unit: string,
+  unit_price: number,
+  description?: string | null,
+  is_active?: boolean
+
 }
 
 export async function getServices(
@@ -69,6 +78,38 @@ export async function createService(
 
     if(error){
       throw error;
+    }
+
+    return data;
+}
+
+export async function updateService(
+  accessToken: string,
+  id: string,
+  input: UpdateService
+){
+
+  const supabase = createUserSupabase(accessToken);
+
+
+  const {data, error} = await supabase
+  .from("services")
+  .update(input)
+  .eq("id", id)
+  .select(`
+    id,
+    name,
+    unit,
+    unit_price,
+    description,
+    is_active,
+    created_at,
+    updated_at`)
+    .single()
+
+
+    if(error){
+      throw error
     }
 
     return data;

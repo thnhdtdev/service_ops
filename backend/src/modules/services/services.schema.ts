@@ -1,4 +1,4 @@
-import {z} from "zod"
+import { z } from "zod"
 
 export const createSchemaService = z.object({
     name: z
@@ -20,5 +20,18 @@ export const createSchemaService = z.object({
     .trim()
     .nullable()
     .optional(),
-
 })
+
+
+export const updateServiceSchema = z.object({
+  name: z.string().trim().min(1).optional(),
+  unit: z.string().trim().min(1).optional(),
+  unit_price: z.number().positive().optional(),
+  description: z.string().trim().nullable().optional(),
+  is_active: z.boolean().optional(),
+}).refine(
+  (data) => Object.keys(data).length > 0,
+  {
+     message: "Phải có ít nhất một trường cần cập nhật",
+  },
+);
