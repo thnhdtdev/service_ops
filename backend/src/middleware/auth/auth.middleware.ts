@@ -1,5 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import {supabase} from "../../lib/supabase";
+
+import type {UserRole} from "../../types/auth.ts"
+import {createUserSupabase, supabase} from "../../lib/supabase";
 
 export async function requireAuth(
         request: FastifyRequest,
@@ -17,12 +19,29 @@ export async function requireAuth(
     const token = authrization?.slice(7);
 
     const {data: {user}, error} = await supabase.auth.getUser(token);
-
     //check if there is an error or if the user is not found
     if(error || !user){
         return reply.status(401).send({
             message: "Invalid or expired token",
         })
     }
+
+    const userSupabase = createUserSupabase(token)
+
+
+    const {data: profile, error: profileError} = await userSupabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if(profileError || !profile){
+        return reply.status(401).send({
+            message: "User profile not found"
+        })
+    }
+
         request.user = user;
+        request.accessToken = token;
+        request.role = profile.role as UserRole;
 }

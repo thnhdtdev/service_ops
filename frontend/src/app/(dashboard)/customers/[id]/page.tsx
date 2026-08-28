@@ -300,7 +300,7 @@ export default async function CustomerDetailPage({
 
 										{order.items.length > 0 ? (
 											<div className="border-border mt-3 overflow-x-auto rounded-xl border">
-												<table className="w-full min-w-[620px] text-sm">
+												<table className="w-full min-w-155 text-sm">
 													<thead className="bg-muted/60 text-muted-foreground text-left text-xs">
 														<tr>
 															<th className="px-4 py-3 font-medium">
