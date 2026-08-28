@@ -136,7 +136,7 @@ export function ServicesDirectory() {
 					Không thể tải bảng giá dịch vụ
 				</h2>
 				<p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm leading-6">
-					{error} Kiểm tra kết nối backend rồi thử lại.
+					Đã xảy ra sự cố khi tải dữ liệu. Vui lòng thử lại sau.
 				</p>
 				<Button
 					type="button"

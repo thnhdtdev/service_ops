@@ -15,7 +15,7 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from "@/components/ui/dialog";
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -24,6 +24,7 @@ import {
 	SelectTrigger,
 	SelectValue
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast-provider";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
@@ -192,31 +193,27 @@ export function EditServiceDialog({ service, onUpdated }: EditServiceDialogProps
 									name="is_active"
 									control={control}
 									render={({ field }) => (
-										<Select
-											value={field.value ? "active" : "inactive"}
-											onValueChange={(value) =>
-												field.onChange(value === "active")
-											}
-											disabled={isSubmitting}
-										>
-											<SelectTrigger
+										<div className="border-input flex h-9 items-center justify-between gap-4 rounded-md border px-3">
+											<span className="text-sm font-medium">
+												{field.value ? "Đang cung cấp" : "Tạm ngừng"}
+											</span>
+											<Switch
 												id={`${fieldId}-status`}
-												className="h-11 w-full"
-											>
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="active">
-													Đang cung cấp
-												</SelectItem>
-												<SelectItem value="inactive">Tạm ngừng</SelectItem>
-											</SelectContent>
-										</Select>
+												checked={field.value}
+												onCheckedChange={field.onChange}
+												onBlur={field.onBlur}
+												name={field.name}
+												ref={field.ref}
+												disabled={isSubmitting}
+												aria-label={
+													field.value
+														? "Tạm ngừng dịch vụ"
+														: "Bật cung cấp dịch vụ"
+												}
+											/>
+										</div>
 									)}
 								/>
-								<FieldDescription>
-									Dịch vụ tạm ngừng sẽ không dùng cho đơn mới.
-								</FieldDescription>
 							</Field>
 						</div>
 
