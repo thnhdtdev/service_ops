@@ -98,7 +98,7 @@ export async function servicesRoutes(app: FastifyInstance) {
             if (!service) {
                 return reply.status(404).send({
                     message: "Service not found",
-                });
+                });``
             }
 
             return reply.status(200).send({
