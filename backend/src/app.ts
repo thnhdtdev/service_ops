@@ -11,8 +11,9 @@ export function buildApp() {
   });
 
   app.register(cors, {
-    origin: env.FRONTEND_URL,
-  });
+  origin: env.FRONTEND_URL,
+  methods: ["GET", "HEAD", "POST", "PATCH", "OPTIONS"],
+});
 
   app.get("/health", async () => {
     return {

@@ -1,3 +1,5 @@
-export default function Service() {
-	return <div>Dịch vụ</div>;
+import { ServicesDirectory } from "@/features/services/components/services-directory";
+
+export default function ServicesPage() {
+	return <ServicesDirectory />;
 }

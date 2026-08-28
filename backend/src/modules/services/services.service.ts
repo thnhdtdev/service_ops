@@ -6,10 +6,10 @@ export type CreateServiceInput = {
   description?: string | null
 }
 
-export type UpdateService = {
-  name: string,
-  unit: string,
-  unit_price: number,
+export type UpdateServiceInput = {
+  name?: string,
+  unit?: string,
+  unit_price?: number,
   description?: string | null,
   is_active?: boolean
 
@@ -86,7 +86,7 @@ export async function createService(
 export async function updateService(
   accessToken: string,
   id: string,
-  input: UpdateService
+  input: UpdateServiceInput
 ){
 
   const supabase = createUserSupabase(accessToken);
