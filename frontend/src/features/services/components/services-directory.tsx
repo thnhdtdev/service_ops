@@ -14,6 +14,8 @@ import {
 	SelectValue
 } from "@/components/ui/select";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
+import { CreateServiceDialog } from "@/features/services/components/create-service-dialog";
+import { useCanManageServices } from "@/features/services/hooks/use-can-manage-services";
 import { useServices } from "@/features/services/hooks/use-services";
 import type { Service } from "@/features/services/types";
 import { formatCurrency } from "@/lib/format";
@@ -85,6 +87,7 @@ function ServicesDirectorySkeleton() {
 
 export function ServicesDirectory() {
 	const { services, isLoading, error, refetch } = useServices();
+	const canManageServices = useCanManageServices();
 	const [query, setQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState<ServiceStatusFilter>("all");
 
@@ -208,9 +211,14 @@ export function ServicesDirectory() {
 							Tra cứu giá, đơn vị tính và trạng thái cung cấp.
 						</p>
 					</div>
-					<Badge variant="secondary" className="h-7 px-2.5 font-mono tabular-nums">
-						{filteredServices.length} dịch vụ
-					</Badge>
+					<div className="flex flex-wrap items-center gap-2">
+						<Badge variant="secondary" className="h-7 px-2.5 font-mono tabular-nums">
+							{filteredServices.length} dịch vụ
+						</Badge>
+						{canManageServices ? (
+							<CreateServiceDialog onCreated={() => refetch()} />
+						) : null}
+					</div>
 				</header>
 
 				<div className="border-border grid gap-3 border-b p-5 sm:grid-cols-[minmax(0,1fr)_12rem]">
