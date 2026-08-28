@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
 import { CreateServiceDialog } from "@/features/services/components/create-service-dialog";
+import { EditServiceDialog } from "@/features/services/components/edit-service-dialog";
 import { useCanManageServices } from "@/features/services/hooks/use-can-manage-services";
 import { useServices } from "@/features/services/hooks/use-services";
 import type { Service } from "@/features/services/types";
@@ -307,25 +308,33 @@ export function ServicesDirectory() {
 										</p>
 									</div>
 
-									<div className="lg:flex lg:justify-end">
+									<div>
 										<p className="text-muted-foreground mb-1 text-xs lg:hidden">
 											Trạng thái
 										</p>
-										<Badge
-											variant="outline"
-											className={
-												service.is_active
-													? "border-success/30 bg-success/10 text-success"
-													: "border-destructive/30 bg-destructive/10 text-destructive"
-											}
-										>
-											{service.is_active ? (
-												<CircleCheck aria-hidden="true" />
-											) : (
-												<CircleOff aria-hidden="true" />
-											)}
-											{service.is_active ? "Đang cung cấp" : "Tạm ngừng"}
-										</Badge>
+										<div className="flex items-center gap-2 lg:justify-end">
+											<Badge
+												variant="outline"
+												className={
+													service.is_active
+														? "border-success/30 bg-success/10 text-success"
+														: "border-destructive/30 bg-destructive/10 text-destructive"
+												}
+											>
+												{service.is_active ? (
+													<CircleCheck aria-hidden="true" />
+												) : (
+													<CircleOff aria-hidden="true" />
+												)}
+												{service.is_active ? "Đang cung cấp" : "Tạm ngừng"}
+											</Badge>
+											{canManageServices ? (
+												<EditServiceDialog
+													service={service}
+													onUpdated={() => refetch()}
+												/>
+											) : null}
+										</div>
 									</div>
 								</article>
 							))}
