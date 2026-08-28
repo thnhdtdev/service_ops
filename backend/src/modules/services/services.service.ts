@@ -105,7 +105,7 @@ export async function updateService(
     is_active,
     created_at,
     updated_at`)
-    .single()
+    .maybeSingle()
 
 
     if(error){

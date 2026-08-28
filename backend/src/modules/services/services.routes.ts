@@ -92,11 +92,18 @@ export async function servicesRoutes(app: FastifyInstance) {
             const service = await updateService(
                 request.accessToken,
                 request.params.id,
-                result.data
-            )
+                result.data,
+                );
 
-            return reply.status(200).send(service)
+            if (!service) {
+                return reply.status(404).send({
+                    message: "Service not found",
+                });
+            }
 
+            return reply.status(200).send({
+                service,
+            });
         }
     )
 }
