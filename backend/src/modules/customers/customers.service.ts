@@ -29,7 +29,7 @@ export async function findOrCreateCustomer(
       normalized_phone,
       created_at, 
       updated_at`)
-      .eq("normalized", normalizePhone)
+      .eq("normalized_phone", normalizedPhone)
       .maybeSingle();
 
        if (findError) {
