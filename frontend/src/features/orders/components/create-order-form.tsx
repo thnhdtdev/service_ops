@@ -5,8 +5,7 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/client";
-import { findCustomerByPhone } from "@/features/customers/api/find-customer-by-phone";
+import { createOrder } from "@/features/orders/api/create-order";
 import type { CustomerSummary } from "@/features/customers/types";
 import { useCustomerLookup } from "@/features/customers/hooks/use-customer-lookup";
 import { normalizeCustomerPhone } from "@/features/customers/utils/normalize-customer-phone";
@@ -19,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { PAYMENT_METHOD_LABEL } from "@/constants/payment-method";
 import { PAYMENT_STATUS_LABEL } from "@/constants/payment-status";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
-import { generateOrderCode } from "@/features/orders/utils/generate-order-code";
 import { calculateOrderLineTotal } from "@/features/orders/utils/calculate-order-total";
 
 type CreateOrderFormProps = {
@@ -43,7 +41,6 @@ const defaultValues: CreateOrderFormValues = {
 
 export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 	const router = useRouter();
-	const supabase = createClient();
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [formError, setFormError] = useState("");
@@ -147,9 +144,9 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 		const validItems = values.items
 			.map((item) => {
-				const service = services.find((serviceItem) => {
-					return serviceItem.id === item.serviceId;
-				});
+				const service = services.find(
+					(serviceItem) => serviceItem.id === item.serviceId
+				);
 
 				const quantity = Number(item.quantity || 0);
 
@@ -157,127 +154,75 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					return null;
 				}
 
-				const unitPrice = Number(service.unit_price);
-				const lineTotal = calculateOrderLineTotal({
-					quantity,
-					unitPrice
-				});
-
 				return {
-					service,
-					quantity,
-					unitPrice,
-					lineTotal
+					serviceId: service.id,
+					quantity
 				};
 			})
-			.filter(Boolean);
+			.filter(
+				(
+					item
+				): item is {
+					serviceId: string;
+					quantity: number;
+				} => item !== null
+			);
 
 		if (validItems.length === 0) {
-			setFormError("Vui lòng chọn dịch vụ và nhập số lượng hợp lệ.");
+			setFormError(
+				"Vui lòng chọn dịch vụ và nhập số lượng hợp lệ."
+			);
 			return;
 		}
 
-		if (totalAmount <= 0) {
-			setFormError("Tổng tiền đơn hàng phải lớn hơn 0.");
+		const customerName = values.customerName.trim();
+		const normalizedCustomerPhone =
+			normalizeCustomerPhone(values.customerPhone);
+
+		if (!normalizedCustomerPhone) {
+			setFormError("Số điện thoại khách hàng không hợp lệ.");
 			return;
 		}
 
 		setIsSubmitting(true);
 
-		const customerName = values.customerName.trim();
-		const normalizedCustomerPhone = normalizeCustomerPhone(values.customerPhone);
-
-		if (!normalizedCustomerPhone) {
-			setFormError("Số điện thoại khách hàng không hợp lệ.");
-			setIsSubmitting(false);
-			return;
-		}
-
 		try {
-			let customer = await findCustomerByPhone(normalizedCustomerPhone);
+			await createOrder({
+				customer: {
+					name: customerName,
+					phone: normalizedCustomerPhone
+				},
 
-			if (!customer) {
-				const { data: createdCustomer, error: customerError } = await supabase
-					.from("customers")
-					.insert({
-						name: customerName,
-						phone: normalizedCustomerPhone
-					})
-					.select("id, name, phone")
-					.single();
+				items: validItems.map((item) => ({
+					service_id: item.serviceId,
+					quantity: item.quantity
+				})),
 
-				if (customerError || !createdCustomer) {
-					// Một request khác có thể vừa tạo cùng số điện thoại.
-					// Tìm lại trước khi kết luận thao tác thất bại.
-					customer = await findCustomerByPhone(normalizedCustomerPhone);
+				payment_status: values.paymentStatus,
 
-					if (!customer) {
-						throw customerError ?? new Error("Không thể tạo hồ sơ khách hàng.");
-					}
-				} else {
-					customer = createdCustomer as CustomerSummary;
-				}
-			}
+				payment_method:
+					values.paymentStatus === "paid"
+						? values.paymentMethod
+						: undefined,
 
-			const orderCustomerName = customer.name;
+				due_at: values.dueAt
+					? new Date(values.dueAt).toISOString()
+					: null,
 
-			const { data: order, error: orderError } = await supabase
-				.from("orders")
-				.insert({
-					order_code: generateOrderCode(),
-					customer_id: customer.id,
-					customer_name: orderCustomerName,
-					customer_phone: normalizedCustomerPhone,
-					status: "received",
-					payment_status: values.paymentStatus,
-					total_amount: totalAmount,
-					due_at: values.dueAt ? new Date(values.dueAt).toISOString() : null,
-					note: values.note.trim() || null
-				})
-				.select("id")
-				.single();
-
-			if (orderError) {
-				throw orderError;
-			}
-
-			const orderItemsPayload = validItems.map((item) => ({
-				order_id: order.id,
-				service_id: item!.service.id,
-				service_name: item!.service.name,
-				unit: item!.service.unit,
-				quantity: item!.quantity,
-				unit_price: item!.unitPrice,
-				line_total: item!.lineTotal
-			}));
-
-			const { error: orderItemsError } = await supabase
-				.from("order_items")
-				.insert(orderItemsPayload);
-
-			if (orderItemsError) {
-				throw orderItemsError;
-			}
-
-			if (values.paymentStatus === "paid") {
-				const { error: paymentError } = await supabase.from("payments").insert({
-					order_id: order.id,
-					amount: totalAmount,
-					method: values.paymentMethod,
-					paid_at: new Date().toISOString()
-				});
-
-				if (paymentError) {
-					throw paymentError;
-				}
-			}
+				note: values.note.trim() || null
+			});
 
 			reset(defaultValues);
 			router.refresh();
 			onSuccess?.();
 		} catch (error) {
 			console.error(error);
-			setFormError("Tạo đơn hàng thất bại. Vui lòng thử lại.");
+
+			setFormError(
+				error instanceof Error
+					? error.message
+					: "Tạo đơn hàng thất bại. Vui lòng thử lại."
+			);
 		} finally {
 			setIsSubmitting(false);
 		}

@@ -51,7 +51,7 @@ export async function findOrCreateCustomer(
       .insert({
         name: input.name,
         phone: input.phone,
-        normalized_phone: normalizePhone,
+        normalized_phone: normalizedPhone,
         address: input.address ?? null,
         note: input.note ?? null
       })

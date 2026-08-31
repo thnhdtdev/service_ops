@@ -1,9 +1,6 @@
 import { createUserSupabase } from "../../lib/supabase.js";
-
-import { findOrCreateCustomer } from "../customers/customers.service.js";
-
 import type { CreateOrderInput } from "./orders.schema.js";
-import { generateOrderCode } from "./orders.utils.js";
+import { findOrCreateCustomer } from "../customers/customers.service.js";
 
 export async function createOrder(
   accessToken: string,
@@ -92,27 +89,39 @@ export async function createOrder(
     0,
   );
 
+    const {
+      data: orderCode,
+      error: orderCodeError
+    } = await supabase.rpc("next_order_code");
+
+    if (orderCodeError) {
+      throw orderCodeError;
+    }
+
+    if (!orderCode) {
+      throw new Error("Không thể tạo mã đơn hàng.");
+    }
+
   // 4. Tạo order
   const { data: order, error: orderError } =
     await supabase
       .from("orders")
       .insert({
-        order_code: generateOrderCode(),
+        order_code: orderCode,
 
         customer_id: customer.id,
         customer_name: customer.name,
         customer_phone: customer.phone,
 
         status: "received",
-        payment_status:
-          input.payment_status,
+        payment_status: input.payment_status,
 
         total_amount: totalAmount,
 
         due_at: input.due_at ?? null,
         note: input.note ?? null,
 
-        created_by: userId,
+        created_by: userId
       })
       .select(`
         id,
