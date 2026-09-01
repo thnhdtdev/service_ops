@@ -15,7 +15,7 @@ export async function ordersRoutes(
     },
     async (request, reply) => {
       const result =
-        createOrderSchema.safeParse(
+          createOrderSchema.safeParse(
           request.body,
         );
 
@@ -30,8 +30,7 @@ export async function ordersRoutes(
 
       const data = await createOrder(
         request.accessToken,
-        request.user.id,
-        result.data,
+        result.data
       );
 
       return reply
