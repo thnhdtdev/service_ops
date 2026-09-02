@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-export const createOrderSchema = z
-  .object({
+export const createOrderSchema = z.object({
     customer: z.object({
       name: z.string().trim().min(1),
       phone: z.string().trim().min(1),
@@ -47,9 +46,17 @@ export const createOrderSchema = z
     payment_status: z.enum(["unpaid", "paid"]).optional(),
   });
 
+  export const getOrderParamsSchema = z.object({
+	    id: z.string().uuid()
+  });
+
 export type CreateOrderInput = z.infer<
   typeof createOrderSchema
 >;
 export type GetOrdersInput = z.infer<
   typeof getOrdersQuerySchema 
+>;
+
+export type GetOrderParams = z.infer<
+  typeof getOrderParamsSchema
 >;

@@ -2,8 +2,8 @@ import type { FastifyInstance } from "fastify";
 
 import { requireAuth } from "../../middleware/auth/auth.middleware.js";
 
-import { createOrderSchema, getOrdersQuerySchema } from "./orders.schema.js";
-import { createOrder, getOrders } from "./orders.service.js";
+import { createOrderSchema, getOrderParamsSchema, getOrdersQuerySchema } from "./orders.schema.js";
+import { createOrder, getOrderDetail, getOrders } from "./orders.service.js";
 
 export async function ordersRoutes(
   app: FastifyInstance,
@@ -69,4 +69,37 @@ export async function ordersRoutes(
       return reply.send(data);
     }
   );
+
+  app.get(
+	"/:id",
+	{
+		preHandler: requireAuth
+	},
+	async (request, reply) => {
+		const result = getOrderParamsSchema.safeParse(
+	request.params
+);
+
+          if (!result.success) {
+        return reply.status(400).send({
+          message: "Invalid order ID",
+          errors: result.error.flatten()
+        });
+      }
+
+      const data = await getOrderDetail(
+        request.accessToken,
+        result.data.id
+      );
+
+		if (!data) {
+			return reply.status(404).send({
+				message:
+					"Order not found"
+			});
+		}
+
+		return reply.send(data);
+	}
+);
 }

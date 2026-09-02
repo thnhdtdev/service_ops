@@ -122,3 +122,117 @@ export async function getOrders(
 		}
 	}
 }
+
+export async function getOrderDetail(
+	accessToken: string,
+	orderId: string
+) {
+	const supabase = createUserSupabase(accessToken);
+
+	//fetch order
+	const {data: order, error: orderError} = await supabase
+	.from("orders")
+	.select(`
+			id,
+			order_code,
+			customer_id,
+			customer_name,
+			customer_phone,
+			status,
+			payment_status,
+			total_amount,
+			due_at,
+			note,
+			created_by,
+			created_at,
+			updated_at
+		`)
+		.eq("id", orderId)
+		.maybeSingle();
+
+		if (orderError) {
+			throw orderError;
+		}
+
+		if (!order) {
+			return null;
+		}
+
+	//fetch order items
+	const {data: items, error: itemsError} = await supabase
+	.from("order_items")
+	.select(`
+			id,
+			order_id,
+			service_id,
+			service_name,
+			unit,
+			quantity,
+			unit_price,
+			line_total,
+			note,
+			created_at
+		`)
+		.eq("order_id", orderId)
+		.order("created_at", {ascending: true});
+
+		if( itemsError) {
+			throw itemsError;
+		}
+
+		//fetch order payments
+		const {data: payments, error: paymentsError} = await supabase
+		.from("payments")
+		.select(`
+				id,
+				order_id,
+				amount,
+				method,
+				paid_at,
+				created_by,
+				created_at
+			`).eq("order_id", orderId)
+			.order("paid_at", {ascending: true});
+
+		if (paymentsError) {
+			throw paymentsError;
+		}
+
+		//fetch customer
+		let customer = null;
+		if (order.customer_id) {
+			const {
+				data: customerData,
+				error: customerError
+			} = await supabase
+				.from("customers")
+				.select(`
+					id,
+					name,
+					phone,
+					normalized_phone,
+					address,
+					note,
+					created_at,
+					updated_at
+				`)
+				.eq(
+					"id",
+					order.customer_id
+				)
+				.maybeSingle();
+
+			if (customerError) {
+				throw customerError;
+			}
+
+			customer = customerData;
+		}
+
+		return{
+			order,
+			items: items ?? [],
+			payments: payments ?? [],
+			customer
+		}	
+}
