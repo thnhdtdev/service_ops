@@ -74,11 +74,13 @@ export async function getOrders(
 	
 	let query = supabase
 	.from("orders")
-	.select(`
+	.select(
+	`
 		id,
 		order_code,
 		customer_id,
 		customer_name,
+		customer_phone,
 		status,
 		payment_status,
 		total_amount,
@@ -87,11 +89,11 @@ export async function getOrders(
 		created_by,
 		created_at,
 		updated_at
-		`,
-		{
-			count: "exact"
-		}
-	)
+	`,
+	{
+		count: "exact"
+	}
+)
 	.order("created_at", { ascending: false }).range(from, to);
 
 	if (input.status) {

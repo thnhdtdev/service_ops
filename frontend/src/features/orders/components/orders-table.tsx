@@ -1,0 +1,205 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+import {
+	ORDER_STATUS_LABEL,
+	type OrderStatus
+} from "@/constants/order-status";
+
+import {
+	PAYMENT_STATUS_LABEL,
+	type PaymentStatus
+} from "@/constants/payment-status";
+
+import { formatCurrency, formatTime } from "@/lib/format";
+import { cn } from "@/lib/utils";
+
+import type { OrderListItem } from "@/features/orders/type";
+
+type OrdersTableProps = {
+	orders: OrderListItem[];
+};
+
+function getPaymentStatusClassName(
+	status: PaymentStatus
+) {
+	switch (status) {
+		case "unpaid":
+			return "border-warning/30 bg-warning/10 text-warning";
+
+		case "paid":
+			return "border-success/30 bg-success/10 text-success";
+
+		default:
+			return "";
+	}
+}
+
+function getOrderStatusClassName(
+	status: OrderStatus
+) {
+	switch (status) {
+		case "received":
+			return "border-primary/30 bg-primary/10 text-primary";
+
+		case "processing":
+			return "border-warning/30 bg-warning/10 text-warning";
+
+		case "completed":
+			return "border-success/30 bg-success/10 text-success";
+
+		case "delivered":
+			return "border-muted-foreground/30 bg-muted text-muted-foreground";
+
+		case "cancelled":
+			return "border-destructive/30 bg-destructive/10 text-destructive";
+
+		default:
+			return "";
+	}
+}
+
+export function OrdersTable({
+	orders
+}: OrdersTableProps) {
+	return (
+		<section className="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
+			<div className="overflow-x-auto">
+				<table className="w-full min-w-250 text-sm">
+					<thead>
+						<tr className="border-border text-muted-foreground border-b text-left">
+							<th className="px-5 py-3 font-medium">
+								Mã đơn
+							</th>
+
+							<th className="px-5 py-3 font-medium">
+								Khách hàng
+							</th>
+
+							<th className="px-5 py-3 font-medium">
+								Số điện thoại
+							</th>
+
+							<th className="px-5 py-3 font-medium">
+								Trạng thái
+							</th>
+
+							<th className="px-5 py-3 font-medium">
+								Thanh toán
+							</th>
+
+							<th className="px-5 py-3 font-medium">
+								Tổng tiền
+							</th>
+
+							<th className="px-5 py-3 font-medium">
+								Hẹn lấy
+							</th>
+
+							<th className="px-5 py-3 font-medium">
+								Ngày tạo
+							</th>
+
+							<th className="px-5 py-3 text-right font-medium">
+								Thao tác
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{orders.length > 0 ? (
+							orders.map((order) => (
+								<tr
+									key={order.id}
+									className="border-border hover:bg-muted/50 border-b last:border-0"
+								>
+									<td className="px-5 py-4 font-semibold whitespace-nowrap">
+										{order.order_code}
+									</td>
+
+									<td className="px-5 py-4">
+										{order.customer_name}
+									</td>
+
+									<td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
+										{order.customer_phone ?? "-"}
+									</td>
+
+									<td className="px-5 py-4">
+										<Badge
+											variant="outline"
+											className={cn(
+												getOrderStatusClassName(
+													order.status as OrderStatus
+												)
+											)}
+										>
+											{ORDER_STATUS_LABEL[
+												order.status as OrderStatus
+											] ?? order.status}
+										</Badge>
+									</td>
+
+									<td className="px-5 py-4">
+										<Badge
+											variant="outline"
+											className={cn(
+												getPaymentStatusClassName(
+													order.payment_status
+												)
+											)}
+										>
+											{
+												PAYMENT_STATUS_LABEL[
+													order.payment_status
+												]
+											}
+										</Badge>
+									</td>
+
+									<td className="px-5 py-4 font-medium whitespace-nowrap tabular-nums">
+										{formatCurrency(
+											Number(order.total_amount)
+										)}
+									</td>
+
+									<td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
+										{order.due_at
+											? formatTime(order.due_at)
+											: "-"}
+									</td>
+
+									<td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
+										{formatTime(order.created_at)}
+									</td>
+
+									<td className="px-5 py-4 text-right">
+										<Button
+											type="button"
+											variant="ghost"
+											size="sm"
+											disabled
+										>
+											Xem
+										</Button>
+									</td>
+								</tr>
+							))
+						) : (
+							<tr>
+								<td
+									colSpan={9}
+									className="text-muted-foreground px-5 py-12 text-center"
+								>
+									Chưa có đơn hàng.
+								</td>
+							</tr>
+						)}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	);
+}
