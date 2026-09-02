@@ -40,6 +40,16 @@ export const createOrderSchema = z
     }
   });
 
+  export const getOrdersQuerySchema  = z.object({
+    page: z.coerce.number().int().positive().default(1),
+    page_size: z.coerce.number().int().min(1).max(100).default(20),
+    status: z.string().trim().min(1). optional(),
+    payment_status: z.enum(["unpaid", "paid"]).optional(),
+  });
+
 export type CreateOrderInput = z.infer<
   typeof createOrderSchema
+>;
+export type GetOrdersInput = z.infer<
+  typeof getOrdersQuerySchema 
 >;
