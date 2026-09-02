@@ -58,3 +58,44 @@ export type GetOrdersParams = {
 	status?: OrderStatus;
 	paymentStatus?: PaymentStatus;
 };
+
+export type OrderItemDetail = {
+	id: string;
+	order_id: string;
+	service_id: string | null;
+	service_name: string;
+	unit: string;
+	quantity: number;
+	unit_price: number;
+	line_total: number;
+	note: string | null;
+	created_at: string;
+};
+
+export type OrderPayment = {
+	id: string;
+	order_id: string;
+	amount: number;
+	method: string;
+	paid_at: string;
+	created_by: string | null;
+	created_at: string;
+};
+
+export type OrderCustomer = {
+	id: string;
+	name: string;
+	phone: string | null;
+	normalized_phone: string | null;
+	address: string | null;
+	note: string | null;
+	created_at: string;
+	updated_at: string;
+};
+
+export type GetOrderResponse = {
+	order: OrderListItem;
+	items: OrderItemDetail[];
+	payments: OrderPayment[];
+	customer: OrderCustomer | null;
+};

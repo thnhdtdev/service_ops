@@ -17,6 +17,7 @@ import { formatCurrency, formatTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 import type { OrderListItem } from "@/features/orders/type";
+import Link from "next/dist/client/link";
 
 type OrdersTableProps = {
 	orders: OrderListItem[];
@@ -177,13 +178,14 @@ export function OrdersTable({
 
 									<td className="px-5 py-4 text-right">
 										<Button
-											type="button"
-											variant="ghost"
-											size="sm"
-											disabled
-										>
-											Xem
-										</Button>
+                                            asChild
+                                            variant="ghost"
+                                            size="sm"
+                                        >
+                                            <Link href={`/orders/${order.id}`}>
+                                                Xem
+                                            </Link>
+                                        </Button>
 									</td>
 								</tr>
 							))
