@@ -2,6 +2,7 @@ import { error } from "node:console";
 import { createUserSupabase, supabase } from "../../lib/supabase.js";
 import { normalizePhone } from "./customers.utils.js";
 import { create } from "node:domain";
+import { GetCustomersQuery } from "./customers.schema.js";
 
 type FindOrCreateCustomerInput  = {
   name: string,
@@ -76,7 +77,6 @@ export async function findOrCreateCustomer(
         }
 }
 
-
 export async function findCustomerByPhone(
   accessToken: string,
   phone: string,
@@ -105,4 +105,62 @@ export async function findCustomerByPhone(
   }
 
   return data;
+}
+
+export async function getCustomers(
+  accessToken: string, 
+  input: GetCustomersQuery
+) {
+    const supabase = createUserSupabase(accessToken);
+
+    const from =
+		(input.page - 1) * input.page_size;
+
+	const to =
+		from + input.page_size - 1;
+
+    let query = supabase
+    .from("customers")
+    .select(`
+      id,
+				name,
+				phone,
+				normalized_phone,
+				address,
+				note,
+				created_at,
+				updated_at
+        `, 
+      {
+        count: "exact"
+      })
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+      if(input.search){
+        const search = input.search.trim();
+
+      query = query.or(
+            `name.ilike.%${search}%,phone.ilike.%${search}%,normalized_phone.ilike.%${search}%`
+          );
+        }
+
+        const { data, count, error } = await query;
+
+        if(error){
+          throw error;
+        }
+
+        const total = count ?? 0;
+
+        return{
+          customers: data,
+
+          pagination:{
+            page: input.page,
+            page_size: input.page_size,
+            total,
+            total_pages: Math.ceil(total / input.page_size)
+          }
+        }
 }
