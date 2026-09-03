@@ -77,7 +77,9 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 
 							<th className="px-5 py-3 font-medium">Ngày tạo</th>
 
-							<th className="px-5 py-3 text-right font-medium">Thao tác</th>
+							<th className="border-border bg-card sticky right-0 z-10 border-l px-5 py-3 text-right font-medium">
+								Thao tác
+							</th>
 						</tr>
 					</thead>
 
@@ -86,7 +88,7 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 							orders.map((order) => (
 								<tr
 									key={order.id}
-									className="border-border hover:bg-muted/50 border-b last:border-0"
+									className="border-border group hover:bg-muted/50 border-b last:border-0"
 								>
 									<td className="px-5 py-4 font-semibold whitespace-nowrap">
 										{order.order_code}
@@ -133,11 +135,13 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 										{formatTime(order.created_at)}
 									</td>
 
-									<td className="px-5 py-4 text-right">
+									<td className="border-border bg-card group-hover:bg-muted/50 sticky right-0 z-10 border-l px-5 py-4 text-right transition-colors">
 										<div className="flex justify-end gap-2">
 											{order.payment_status === "unpaid" ? (
 												<MarkOrderPaidButton
 													orderId={order.id}
+													orderCode={order.order_code}
+													customerName={order.customer_name}
 													amount={Number(order.total_amount)}
 													onSuccess={onPaymentUpdated}
 												/>

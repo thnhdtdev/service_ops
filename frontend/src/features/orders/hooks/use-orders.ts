@@ -13,13 +13,16 @@ export function useOrders({
 	paymentStatus
 }: GetOrdersParams = {}) {
 	const [reloadToken, setReloadToken] = useState(0);
-	const requestKey = [page, pageSize, status ?? "", paymentStatus ?? "", reloadToken].join(":");
+	const queryKey = [page, pageSize, status ?? "", paymentStatus ?? ""].join(":");
+	const requestKey = [queryKey, reloadToken].join(":");
 	const [state, setState] = useState<{
+		queryKey: string;
 		requestKey: string;
 		orders: OrderListItem[];
 		pagination: OrdersPagination | null;
 		error: string;
 	}>({
+		queryKey: "",
 		requestKey: "",
 		orders: [],
 		pagination: null,
@@ -41,6 +44,7 @@ export function useOrders({
 				if (!isActive) return;
 
 				setState({
+					queryKey,
 					requestKey,
 					orders: data.orders,
 					pagination: data.pagination,
@@ -50,6 +54,7 @@ export function useOrders({
 				if (!isActive) return;
 
 				setState({
+					queryKey,
 					requestKey,
 					orders: [],
 					pagination: null,
@@ -64,7 +69,7 @@ export function useOrders({
 		return () => {
 			isActive = false;
 		};
-	}, [page, pageSize, paymentStatus, requestKey, status]);
+	}, [page, pageSize, paymentStatus, queryKey, requestKey, status]);
 
 	const refetch = useCallback(() => {
 		setReloadToken((currentToken) => currentToken + 1);
@@ -73,7 +78,7 @@ export function useOrders({
 	return {
 		orders: state.orders,
 		pagination: state.pagination,
-		isLoading: state.requestKey !== requestKey,
+		isLoading: state.queryKey !== queryKey,
 		error: state.error,
 		refetch
 	};
