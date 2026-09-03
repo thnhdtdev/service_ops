@@ -1,7 +1,5 @@
-import { error } from "node:console";
-import { createUserSupabase, supabase } from "../../lib/supabase.js";
+import { createUserSupabase } from "../../lib/supabase.js";
 import { normalizePhone } from "./customers.utils.js";
-import { create } from "node:domain";
 import { GetCustomersQuery } from "./customers.schema.js";
 
 type FindOrCreateCustomerInput  = {
