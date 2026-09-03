@@ -29,13 +29,3 @@ export type ServiceMixData = Record<
 	RevenueChartPeriod,
 	Record<ServiceMixMetric, ServiceMixDataPoint[]>
 >;
-
-export type AttentionOrder = {
-	id: string;
-	orderCode: string;
-	customerName: string;
-	serviceSummary: string;
-	paymentStatus: PaymentStatus;
-	totalAmount: number;
-	dueAt: string | null;
-};

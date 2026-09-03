@@ -10,7 +10,7 @@ import { useOrders } from "@/features/orders/hooks/use-orders";
 export function OrdersList() {
 	const [page, setPage] = useState(1);
 
-	const { orders, pagination, isLoading, error } = useOrders({
+	const { orders, pagination, isLoading, error, refetch } = useOrders({
 		page,
 		pageSize: 10
 	});
@@ -33,7 +33,7 @@ export function OrdersList() {
 
 	return (
 		<div className="space-y-4">
-			<OrdersTable orders={orders} />
+			<OrdersTable orders={orders} onPaymentUpdated={refetch} />
 
 			{pagination ? (
 				<div className="flex items-center justify-between gap-4">

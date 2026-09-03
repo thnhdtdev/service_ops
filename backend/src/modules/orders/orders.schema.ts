@@ -50,13 +50,22 @@ export const createOrderSchema = z.object({
 	    id: z.string().uuid()
   });
 
+  export const markOrderPaidSchema = z.object({
+    payment_method: z.enum(["cash", "bank_transfer", "other"])
+  });
+
 export type CreateOrderInput = z.infer<
   typeof createOrderSchema
 >;
+
 export type GetOrdersInput = z.infer<
   typeof getOrdersQuerySchema 
 >;
 
 export type GetOrderParams = z.infer<
   typeof getOrderParamsSchema
+>;
+
+export type MarkOrderPaidInput = z.infer<
+  typeof markOrderPaidSchema
 >;

@@ -2,7 +2,7 @@ import { createUserSupabase } from "../../lib/supabase.js";
 
 import { normalizePhone } from "../customers/customers.utils.js";
 
-import type { CreateOrderInput, GetOrdersInput } from "./orders.schema.js";
+import type { CreateOrderInput, GetOrdersInput, MarkOrderPaidInput } from "./orders.schema.js";
 
 export async function createOrder(
 	accessToken: string,
@@ -235,4 +235,26 @@ export async function getOrderDetail(
 			payments: payments ?? [],
 			customer
 		}	
+}
+
+export async function markOrderPaid(
+	accessToken: string,
+	orderId: string,
+	input: MarkOrderPaidInput
+){
+	const supabase = createUserSupabase(accessToken);
+
+	const {data, error} = await supabase.rpc("mark_order_paid_transaction", {
+		p_order_id: orderId,
+		p_payment_method: input.payment_method
+	});
+
+	if(error){
+		throw error;
+	}
+
+	if(!data){
+		throw new Error("Payment operation returned no data");
+	}
+	return data;
 }

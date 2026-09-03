@@ -2,8 +2,8 @@ import type { FastifyInstance } from "fastify";
 
 import { requireAuth } from "../../middleware/auth/auth.middleware.js";
 
-import { createOrderSchema, getOrderParamsSchema, getOrdersQuerySchema } from "./orders.schema.js";
-import { createOrder, getOrderDetail, getOrders } from "./orders.service.js";
+import { createOrderSchema, getOrderParamsSchema, getOrdersQuerySchema, markOrderPaidSchema } from "./orders.schema.js";
+import { createOrder, getOrderDetail, getOrders, markOrderPaid } from "./orders.service.js";
 
 export async function ordersRoutes(
   app: FastifyInstance,
@@ -96,6 +96,55 @@ export async function ordersRoutes(
 			return reply.status(404).send({
 				message:
 					"Order not found"
+			});
+		}
+
+		return reply.send(data);
+	}
+);
+
+  app.post(
+	"/:id/mark-paid",
+	{
+		preHandler: requireAuth
+	},
+	async (request, reply) => {
+		const paramsResult =
+			getOrderParamsSchema.safeParse(
+				request.params
+			);
+
+		if (!paramsResult.success) {
+			return reply.status(400).send({
+				message: "Invalid order ID",
+				errors:
+					paramsResult.error.flatten()
+			});
+		}
+
+		const bodyResult =
+			markOrderPaidSchema.safeParse(
+				request.body
+			);
+
+		if (!bodyResult.success) {
+			return reply.status(400).send({
+				message:
+					"Invalid payment data",
+				errors:
+					bodyResult.error.flatten()
+			});
+		}
+
+		const data = await markOrderPaid(
+			request.accessToken,
+			paramsResult.data.id,
+			bodyResult.data
+		);
+
+		if (data.status === "not_found") {
+			return reply.status(404).send({
+				message: "Order not found"
 			});
 		}
 
