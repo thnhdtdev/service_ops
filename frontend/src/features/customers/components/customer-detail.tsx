@@ -18,7 +18,6 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ORDER_STATUS_LABEL, type OrderStatus } from "@/constants/order-status";
 import { PAYMENT_METHOD_LABEL } from "@/constants/payment-method";
 import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
