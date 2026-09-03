@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { ORDER_STATUS_LABEL, type OrderStatus } from "@/constants/order-status";
+import { type OrderStatus } from "@/constants/order-status";
 
 import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
 
@@ -32,33 +32,11 @@ function getPaymentStatusClassName(status: PaymentStatus) {
 	}
 }
 
-function getOrderStatusClassName(status: OrderStatus) {
-	switch (status) {
-		case "received":
-			return "border-primary/30 bg-primary/10 text-primary";
-
-		case "processing":
-			return "border-warning/30 bg-warning/10 text-warning";
-
-		case "completed":
-			return "border-success/30 bg-success/10 text-success";
-
-		case "delivered":
-			return "border-muted-foreground/30 bg-muted text-muted-foreground";
-
-		case "cancelled":
-			return "border-destructive/30 bg-destructive/10 text-destructive";
-
-		default:
-			return "";
-	}
-}
-
 export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 	return (
 		<section className="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
 			<div className="overflow-x-auto">
-				<table className="w-full min-w-250 text-sm">
+				<table className="w-full min-w-200 text-sm">
 					<thead>
 						<tr className="border-border text-muted-foreground border-b text-left">
 							<th className="px-5 py-3 font-medium">Mã đơn</th>
@@ -67,13 +45,13 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 
 							<th className="px-5 py-3 font-medium">Số điện thoại</th>
 
-							<th className="px-5 py-3 font-medium">Trạng thái</th>
+							{/* <th className="px-5 py-3 font-medium">Trạng thái</th> */}
 
 							<th className="px-5 py-3 font-medium">Thanh toán</th>
 
 							<th className="px-5 py-3 font-medium">Tổng tiền</th>
 
-							<th className="px-5 py-3 font-medium">Hẹn lấy</th>
+							{/* <th className="px-5 py-3 font-medium">Hẹn lấy</th> */}
 
 							<th className="px-5 py-3 font-medium">Ngày tạo</th>
 
@@ -100,7 +78,7 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 										{order.customer_phone ?? "-"}
 									</td>
 
-									<td className="px-5 py-4">
+									{/* <td className="px-5 py-4">
 										<Badge
 											variant="outline"
 											className={cn(
@@ -110,7 +88,7 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 											{ORDER_STATUS_LABEL[order.status as OrderStatus] ??
 												order.status}
 										</Badge>
-									</td>
+									</td> */}
 
 									<td className="px-5 py-4">
 										<Badge
@@ -127,9 +105,9 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 										{formatCurrency(Number(order.total_amount))}
 									</td>
 
-									<td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
+									{/* <td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
 										{order.due_at ? formatTime(order.due_at) : "-"}
-									</td>
+									</td> */}
 
 									<td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
 										{formatTime(order.created_at)}
@@ -157,7 +135,7 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 						) : (
 							<tr>
 								<td
-									colSpan={9}
+									colSpan={7}
 									className="text-muted-foreground px-5 py-12 text-center"
 								>
 									Chưa có đơn hàng.
