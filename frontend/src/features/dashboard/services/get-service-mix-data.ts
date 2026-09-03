@@ -1,6 +1,7 @@
-import type { ServiceMixData } from "@/features/dashboard/types";
+import { connection } from "next/server";
 
 import { serverApiFetch } from "@/lib/api/server";
+import type { ServiceMixData } from "@/features/dashboard/types";
 
 export type ServiceMixResult = {
 	data: ServiceMixData;
@@ -21,6 +22,8 @@ function createEmptyData(): ServiceMixData {
 }
 
 export async function getServiceMixData(): Promise<ServiceMixResult> {
+	await connection();
+
 	try {
 		const response = await serverApiFetch("/api/dashboard/service-mix");
 
