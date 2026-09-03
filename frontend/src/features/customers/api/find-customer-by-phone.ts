@@ -1,25 +1,56 @@
-import { createClient } from "@/lib/supabase/client";
+import { apiFetch } from "@/lib/api/client";
+
 import type { CustomerSummary } from "@/features/customers/types";
-import { getCustomerPhoneLookupValues } from "@/features/customers/utils/normalize-customer-phone";
 
-export async function findCustomerByPhone(phone: string): Promise<CustomerSummary | null> {
-	const lookupValues = getCustomerPhoneLookupValues(phone);
+type CustomerLookupResponse = {
+	customer: CustomerSummary | null;
+};
 
-	if (lookupValues.length === 0) {
+export async function findCustomerByPhone(
+	phone: string
+): Promise<CustomerSummary | null> {
+	const trimmedPhone = phone.trim();
+
+	if (!trimmedPhone) {
 		return null;
 	}
 
-	const supabase = createClient();
-	const { data, error } = await supabase
-		.from("customers")
-		.select("id, name, phone")
-		.in("phone", lookupValues)
-		.limit(1)
-		.maybeSingle();
+	const searchParams = new URLSearchParams({
+		phone: trimmedPhone
+	});
 
-	if (error) {
-		throw new Error("Không thể kiểm tra thông tin khách hàng.");
+	let response: Response;
+
+	try {
+		response = await apiFetch(
+			`/api/customers/lookup?${searchParams.toString()}`
+		);
+	} catch {
+		throw new Error(
+			"Không thể kiểm tra thông tin khách hàng."
+		);
 	}
 
-	return data as CustomerSummary | null;
+	if (!response.ok) {
+		if (response.status === 401) {
+			throw new Error(
+				"Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+			);
+		}
+
+		throw new Error(
+			"Không thể kiểm tra thông tin khách hàng."
+		);
+	}
+
+	try {
+		const data =
+			(await response.json()) as CustomerLookupResponse;
+
+		return data.customer;
+	} catch {
+		throw new Error(
+			"Không thể đọc thông tin khách hàng."
+		);
+	}
 }
