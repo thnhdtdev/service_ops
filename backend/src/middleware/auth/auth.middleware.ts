@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 
 import type {UserRole} from "../../types/auth.ts"
 import {createUserSupabase, supabase} from "../../lib/supabase";
+import { isUserRole, userRoleSchema } from "../../types/auth.js";
 
 export async function requireAuth(
         request: FastifyRequest,
@@ -43,5 +44,24 @@ export async function requireAuth(
 
         request.user = user;
         request.accessToken = token;
-        request.role = profile.role as UserRole;
+        const roleResult = userRoleSchema.safeParse( profile.role);
+
+        if (!roleResult.success) {
+            request.log.error(
+                {
+                    userId: user.id,
+                    role: profile.role
+                },
+                "Invalid user role"
+            );
+
+            return reply
+                .status(403)
+                .send({
+                    message:
+                        "Tài khoản không có quyền hợp lệ."
+                });
+        }
+
+        request.role = roleResult.data;
 }

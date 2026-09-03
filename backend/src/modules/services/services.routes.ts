@@ -1,12 +1,11 @@
 import type { FastifyInstance } from 'fastify';
 
-import { getServices, createService, updateService } from "./services.service.js";
 import { requireAuth } from '../../middleware/auth/auth.middleware.js';
 import { requireRole } from "../../middleware/auth/require-role.middleware.js";
+import { getServices, createService, updateService } from "./services.service.js";
 import {createSchemaService, updateServiceSchema} from "../services/services.schema.js"
-import { request } from 'node:http';
-import { log } from 'node:console';
-import id from 'zod/v4/locales/id.js';
+
+
 export async function servicesRoutes(app: FastifyInstance) {
 
     //GET /api/services

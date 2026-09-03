@@ -1,18 +1,14 @@
 "use client";
 
+import Link from "next/dist/client/link";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { type OrderStatus } from "@/constants/order-status";
-
-import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
-
 import { formatCurrency, formatTime } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
-
 import type { OrderListItem } from "@/features/orders/type";
-import Link from "next/dist/client/link";
+import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
+import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
 
 type OrdersTableProps = {
 	orders: OrderListItem[];
