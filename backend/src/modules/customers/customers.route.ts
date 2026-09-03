@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
 import { requireAuth } from "../../middleware/auth/auth.middleware.js";
-import { customerLookupSchema, getCustomersQuerySchema } from "./customers.schema.js";
-import { findCustomerByPhone, getCustomers } from "./customers.service.js";
+import { customerLookupSchema, getCustomerParamsSchema, getCustomersQuerySchema } from "./customers.schema.js";
+import { findCustomerByPhone, getCustomerById, getCustomers } from "./customers.service.js";
 
 export async function customersRoutes(app: FastifyInstance) {
   app.get(
@@ -54,4 +54,41 @@ export async function customersRoutes(app: FastifyInstance) {
     return reply.send(data)
   }
   )
+
+  app.get(
+	"/:id",
+	{
+		preHandler: requireAuth
+	},
+	async (request, reply) => {
+		const result =
+			getCustomerParamsSchema.safeParse(
+				request.params
+			);
+
+		if (!result.success) {
+			return reply.status(400).send({
+				message:
+					"Invalid customer ID",
+				errors:
+					result.error.flatten()
+			});
+		}
+
+		const data =
+			await getCustomerById(
+				request.accessToken,
+				result.data.id
+			);
+
+		if (!data) {
+			return reply.status(404).send({
+				message:
+					"Customer not found"
+			});
+		}
+
+		return reply.send(data);
+	}
+);
 }

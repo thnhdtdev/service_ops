@@ -20,6 +20,14 @@ export const getCustomersQuerySchema = z.object({
     search: z.string().trim().optional()
 })
 
+export const getCustomerParamsSchema = z.object({
+	id: z.string().uuid()
+});
+
 export type GetCustomersQuery = z.infer<
 	typeof getCustomersQuerySchema
+>;
+
+export type GetCustomerParams = z.infer<
+	typeof getCustomerParamsSchema
 >;

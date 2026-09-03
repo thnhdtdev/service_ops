@@ -301,3 +301,181 @@ export async function getCustomers(
 		}
 	};
 }
+
+export async function getCustomerById(
+  accessToken: string,
+  customerId: string
+) {
+  const supabase = createUserSupabase(accessToken);
+  
+  //fetch customer by id
+  const {data: customer, error: customerError} = await supabase
+  .from("customers")
+  .select(`
+      id,
+			name,
+			phone,
+			normalized_phone,
+			address,
+			note,
+			created_at,
+			updated_at 
+      `)
+      .eq("id", customerId)
+      .maybeSingle();
+
+      if(customerError) {
+        throw customerError;
+      }
+
+      if(!customer){
+        return null;
+      }
+
+      const { data: orders, error: ordersError} = await supabase
+          .from("orders")
+          .select(`
+            id,
+            order_code,
+            customer_id,
+            customer_name,
+            customer_phone,
+            status,
+            payment_status,
+            total_amount,
+            due_at,
+            note,
+            created_by,
+            created_at,
+            updated_at
+          `)
+          .eq("customer_id", customerId)
+          .order("created_at", {
+            ascending: false
+          });
+
+        if (ordersError) {
+          throw ordersError;
+        }
+
+          const customerOrders = orders ?? [];
+
+          if (customerOrders.length === 0) {
+            return {
+              customer,
+              orders: [],
+              stats: {
+                order_count: 0,
+                unpaid_order_count: 0,
+                total_order_value: 0
+              }
+            };
+          }
+
+          const orderIds =
+          customerOrders.map(
+            (order) => order.id
+          );
+
+          // Fetch order items for the customer's orders
+          const {data: items, error: itemError} = await supabase
+          .from("order_items")
+          .select(`
+              id,
+              order_id,
+              service_id,
+              service_name,
+              unit,
+              quantity,
+              unit_price,
+              line_total,
+              note,
+              created_at
+            `)
+            .in("order_id", orderIds)
+            .order("created_at", {
+              ascending: true
+            });
+
+            if(itemError){
+              throw itemError;
+            }
+
+            //fetch payment transactions for the customer's orders
+          const { data: payments, error: paymentsError} = await supabase
+          .from("payments")
+          .select(`
+            id,
+            order_id,
+            amount,
+            method,
+            paid_at,
+            created_by,
+            created_at
+          `)
+          .in("order_id", orderIds)
+          .order("paid_at", {
+            ascending: false
+          });
+
+        if (paymentsError) {
+          throw paymentsError;
+        }
+
+        // Group items and payments by order_id
+          const ordersWithDetails = customerOrders.map((order) => ({
+            ...order,
+
+            items:
+              (items ?? []).filter(
+                (item) =>
+                  item.order_id ===
+                  order.id
+              ),
+
+            payments:
+              (payments ?? []).filter(
+                (payment) =>
+                  payment.order_id ===
+                  order.id
+              )
+          }));
+
+        const activeOrders =
+          customerOrders.filter(
+            (order) =>
+              order.status !== "cancelled"
+          );
+
+        const totalOrderValue =
+          activeOrders.reduce(
+            (total, order) =>
+              total +
+              Number(order.total_amount),
+            0
+          );
+
+        const unpaidOrderCount =
+          activeOrders.filter(
+            (order) =>
+              order.payment_status ===
+              "unpaid"
+          ).length;
+
+        return {
+          customer,
+
+          orders: ordersWithDetails,
+
+          stats: {
+            order_count:
+              activeOrders.length,
+
+            unpaid_order_count:
+              unpaidOrderCount,
+
+            total_order_value:
+              totalOrderValue
+          }
+        };
+}
