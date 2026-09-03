@@ -1,38 +1,49 @@
-import type { PaymentMethod } from "@/constants/payment-method";
-import { createClient } from "@/lib/supabase/client";
+import { apiFetch } from "@/lib/api/client";
 
-type MarkOrderAsPaidParams = {
-	orderId: string;
-	amount: number;
-	method: PaymentMethod;
-};
+import type {
+	PaymentMethod
+} from "@/constants/payment-method";
 
-export async function markOrderAsPaid({ orderId, amount, method }: MarkOrderAsPaidParams) {
-	const supabase = createClient();
+export async function markOrderAsPaid(
+	orderId: string,
+	paymentMethod: PaymentMethod
+) {
+	let response: Response;
 
-	const paidAt = new Date().toISOString();
-
-	const { error: orderError } = await supabase
-		.from("orders")
-		.update({
-			payment_status: "paid",
-			updated_at: paidAt
-		})
-		.eq("id", orderId)
-		.eq("payment_status", "unpaid");
-
-	if (orderError) {
-		throw new Error("Không thể cập nhật trạng thái thanh toán.");
+	try {
+		response = await apiFetch(
+			`/api/orders/${orderId}/mark-paid`,
+			{
+				method: "POST",
+				body: JSON.stringify({
+					payment_method:
+						paymentMethod
+				})
+			}
+		);
+	} catch {
+		throw new Error(
+			"Không thể ghi nhận thanh toán."
+		);
 	}
 
-	const { error: paymentError } = await supabase.from("payments").insert({
-		order_id: orderId,
-		amount,
-		method,
-		paid_at: paidAt
-	});
+	if (!response.ok) {
+		if (response.status === 401) {
+			throw new Error(
+				"Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+			);
+		}
 
-	if (paymentError) {
-		throw new Error("Không thể ghi nhận thanh toán.");
+		if (response.status === 404) {
+			throw new Error(
+				"Không tìm thấy đơn hàng."
+			);
+		}
+
+		throw new Error(
+			"Không thể ghi nhận thanh toán."
+		);
 	}
+
+	return response.json();
 }
