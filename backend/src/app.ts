@@ -13,10 +13,45 @@ export function buildApp() {
     logger: true,
   });
 
+  app.setErrorHandler((error, request, reply) => {
+    request.log.error(
+      { err: error },
+      "Unhandled request error"
+    );
+
+    const statusCode =
+      typeof error === "object" &&
+      error !== null &&
+      "statusCode" in error &&
+      typeof error.statusCode === "number"
+        ? error.statusCode
+        : 500;
+
+    if (statusCode >= 500) {
+      return reply
+        .status(500)
+        .send({
+          message:
+            "Đã xảy ra lỗi hệ thống. Vui lòng thử lại."
+        });
+    }
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Yêu cầu không hợp lệ.";
+
+    return reply
+      .status(statusCode)
+      .send({
+        message
+      });
+  });
+
   app.register(cors, {
   origin: env.FRONTEND_URL,
   methods: ["GET", "HEAD", "POST", "PATCH", "OPTIONS"],
-});
+  });
 
   app.get("/health", async () => {
     return {
