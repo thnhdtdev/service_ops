@@ -60,3 +60,43 @@ export type CustomerDetail = {
 	page: number;
 	totalPages: number;
 };
+
+export type CustomerListItem = {
+	id: string;
+	name: string;
+	phone: string | null;
+	normalized_phone: string | null;
+	address: string | null;
+	note: string | null;
+	created_at: string;
+	updated_at: string;
+
+	order_count: number;
+	unpaid_order_count: number;
+	last_order_at: string | null;
+	total_order_value: number;
+};
+
+export type CustomersPagination = {
+	page: number;
+	page_size: number;
+	total: number;
+	total_pages: number;
+};
+
+export type GetCustomersResponse = {
+	customers: CustomerListItem[];
+
+	stats: {
+		total_customer_count: number;
+		new_customer_count_this_month: number;
+	};
+
+	pagination: CustomersPagination;
+};
+
+export type GetCustomersParams = {
+	page?: number;
+	pageSize?: number;
+	search?: string;
+};

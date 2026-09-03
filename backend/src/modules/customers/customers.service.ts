@@ -108,59 +108,196 @@ export async function findCustomerByPhone(
 }
 
 export async function getCustomers(
-  accessToken: string, 
-  input: GetCustomersQuery
+	accessToken: string,
+	input: GetCustomersQuery
 ) {
-    const supabase = createUserSupabase(accessToken);
+	const supabase =
+		createUserSupabase(accessToken);
 
-    const from =
+	const from =
 		(input.page - 1) * input.page_size;
 
 	const to =
 		from + input.page_size - 1;
 
-    let query = supabase
-    .from("customers")
-    .select(`
-      id,
+	let query = supabase
+		.from("customers")
+		.select(
+			`
+				id,
 				name,
 				phone,
 				normalized_phone,
 				address,
 				note,
 				created_at,
-				updated_at
-        `, 
-      {
-        count: "exact"
-      })
-      .order("created_at", { ascending: false })
-      .range(from, to);
+				updated_at,
+				orders (
+					id,
+					created_at,
+					total_amount,
+					payment_status,
+					status
+				)
+			`,
+			{
+				count: "exact"
+			}
+		)
+		.order("created_at", {
+			ascending: false
+		})
+		.range(from, to);
 
-      if(input.search){
-        const search = input.search.trim();
+	if (input.search) {
+		const search =
+			input.search.trim();
 
-      query = query.or(
-            `name.ilike.%${search}%,phone.ilike.%${search}%,normalized_phone.ilike.%${search}%`
-          );
-        }
+		const normalizedPhone =
+			normalizePhone(search);
 
-        const { data, count, error } = await query;
+		query = query.or(
+			[
+				`name.ilike.%${search}%`,
+				`phone.ilike.%${search}%`,
+				normalizedPhone
+					? `normalized_phone.ilike.%${normalizedPhone}%`
+					: null
+			]
+				.filter(Boolean)
+				.join(",")
+		);
+	}
 
-        if(error){
-          throw error;
-        }
+	const monthStart = new Date();
 
-        const total = count ?? 0;
+	monthStart.setDate(1);
+	monthStart.setHours(0, 0, 0, 0);
 
-        return{
-          customers: data,
+	const [
+		customersResult,
+		totalCustomersResult,
+		newCustomersResult
+	] = await Promise.all([
+		query,
 
-          pagination:{
-            page: input.page,
-            page_size: input.page_size,
-            total,
-            total_pages: Math.ceil(total / input.page_size)
-          }
-        }
+		supabase
+			.from("customers")
+			.select("id", {
+				count: "exact",
+				head: true
+			}),
+
+		supabase
+			.from("customers")
+			.select("id", {
+				count: "exact",
+				head: true
+			})
+			.gte(
+				"created_at",
+				monthStart.toISOString()
+			)
+	]);
+
+	if (customersResult.error) {
+		throw customersResult.error;
+	}
+
+	if (totalCustomersResult.error) {
+		throw totalCustomersResult.error;
+	}
+
+	if (newCustomersResult.error) {
+		throw newCustomersResult.error;
+	}
+
+	const customers =
+		(customersResult.data ?? []).map(
+			(customer) => {
+				const activeOrders =
+					(customer.orders ?? []).filter(
+						(order) =>
+							order.status !== "cancelled"
+					);
+
+				const lastOrderAt =
+					activeOrders.reduce<
+						string | null
+					>((latest, order) => {
+						if (
+							!latest ||
+							order.created_at > latest
+						) {
+							return order.created_at;
+						}
+
+						return latest;
+					}, null);
+
+				const totalOrderValue =
+					activeOrders.reduce(
+						(total, order) =>
+							total +
+							Number(
+								order.total_amount
+							),
+						0
+					);
+
+				return {
+					id: customer.id,
+					name: customer.name,
+					phone: customer.phone,
+					normalized_phone:
+						customer.normalized_phone,
+					address: customer.address,
+					note: customer.note,
+					created_at:
+						customer.created_at,
+					updated_at:
+						customer.updated_at,
+
+					order_count:
+						activeOrders.length,
+
+					unpaid_order_count:
+						activeOrders.filter(
+							(order) =>
+								order.payment_status ===
+								"unpaid"
+						).length,
+
+					last_order_at:
+						lastOrderAt,
+
+					total_order_value:
+						totalOrderValue
+				};
+			}
+		);
+
+	const total =
+		customersResult.count ?? 0;
+
+	return {
+		customers,
+
+		stats: {
+			total_customer_count:
+				totalCustomersResult.count ?? 0,
+
+			new_customer_count_this_month:
+				newCustomersResult.count ?? 0
+		},
+
+		pagination: {
+			page: input.page,
+			page_size: input.page_size,
+			total,
+			total_pages: Math.ceil(
+				total / input.page_size
+			)
+		}
+	};
 }
