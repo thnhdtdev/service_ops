@@ -1,8 +1,17 @@
 import {z} from "zod"
 
+
+export const customerPhoneSchema = z
+    .string()
+    .trim()
+    .regex(
+        /^0\d{9}$/,
+        "Số điện thoại phải gồm đúng 10 chữ số và bắt đầu bằng 0"
+);
+
 export const customerLookupSchema = z.object({
-    phone: z.string().trim().min(1,"Số điện thoại không được để trống")
-}) 
+    phone: customerPhoneSchema
+});
 
 export const getCustomersQuerySchema = z.object({
     page: z.coerce

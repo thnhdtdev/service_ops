@@ -1,8 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import type {UserRole} from "../../types/auth.ts"
+import {userRoleSchema } from "../../types/auth.js";
 import {createUserSupabase, supabase} from "../../lib/supabase";
-import { isUserRole, userRoleSchema } from "../../types/auth.js";
 
 export async function requireAuth(
         request: FastifyRequest,
@@ -44,7 +43,9 @@ export async function requireAuth(
 
         request.user = user;
         request.accessToken = token;
-        const roleResult = userRoleSchema.safeParse( profile.role);
+
+
+        const roleResult = userRoleSchema.safeParse(profile.role);
 
         if (!roleResult.success) {
             request.log.error(

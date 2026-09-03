@@ -7,6 +7,12 @@ export const serviceUnitSchema = z.enum([
 	"set"
 ]);
 
+export const serviceParamsSchema = z.object({
+	id: z
+		.string()
+		.uuid("Service ID không hợp lệ")
+});
+
 export const createSchemaService = z.object({
 	name: z
 		.string()
