@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 import {
 	ArrowLeft,
 	CalendarDays,
@@ -12,7 +14,8 @@ import {
 	ReceiptText,
 	RotateCcw,
 	UserRound,
-	WalletCards
+	WalletCards,
+	Printer
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +27,8 @@ import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
 import { useOrder } from "@/features/orders/hooks/use-order";
 import type { OrderItemDetail, OrderPayment } from "@/features/orders/type";
 import { formatCurrency } from "@/lib/format";
+import { OrderReceipt } from "@/features/orders/components/order-receipt";
+import { RECEIPT_PAGE_STYLE } from "@/features/orders/components/receipt-print-style";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("vi-VN", {
 	hour: "2-digit",
@@ -233,7 +238,14 @@ function PaymentRow({ payment }: { payment: OrderPayment }) {
 }
 
 export function OrderDetail({ orderId }: OrderDetailProps) {
+	const receiptRef = useRef<HTMLDivElement>(null);
 	const { data, isLoading, error, refetch } = useOrder(orderId);
+	const handlePrint = useReactToPrint({
+		contentRef: receiptRef,
+		documentTitle: data?.order.order_code ? `Hoa-don-${data.order.order_code}` : "Hoa-don",
+
+		pageStyle: RECEIPT_PAGE_STYLE
+	});
 
 	if (isLoading) {
 		return <OrderDetailSkeleton />;
@@ -294,9 +306,22 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 
 					<div className="lg:text-right">
 						<p className="text-muted-foreground text-sm">Tổng tiền</p>
+
 						<p className="mt-1 font-mono text-2xl font-semibold tracking-tight tabular-nums">
 							{formatCurrency(Number(order.total_amount))}
 						</p>
+
+						<Button
+							type="button"
+							variant="outline"
+							className="mt-3"
+							onClick={() => {
+								handlePrint();
+							}}
+						>
+							<Printer aria-hidden="true" data-icon="inline-start" />
+							In hóa đơn
+						</Button>
 					</div>
 				</div>
 
@@ -539,6 +564,11 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 					</div>
 				)}
 			</section>
+			<div className="hidden" aria-hidden="true">
+				<div ref={receiptRef}>
+					<OrderReceipt data={data} />
+				</div>
+			</div>
 		</div>
 	);
 }
