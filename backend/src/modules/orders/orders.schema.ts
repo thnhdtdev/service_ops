@@ -1,9 +1,18 @@
 import { z } from "zod";
+import { customerPhoneSchema } from "../customers/customers.schema.js";
+
+  export const orderStatusSchema = z.enum([
+    "received",
+    "processing",
+    "completed",
+    "delivered",
+    "cancelled"
+  ]);
 
 export const createOrderSchema = z.object({
     customer: z.object({
       name: z.string().trim().min(1),
-      phone: z.string().trim().min(1),
+      phone: customerPhoneSchema,
     }),
 
     items: z
@@ -42,7 +51,7 @@ export const createOrderSchema = z.object({
   export const getOrdersQuerySchema  = z.object({
     page: z.coerce.number().int().positive().default(1),
     page_size: z.coerce.number().int().min(1).max(100).default(20),
-    status: z.string().trim().min(1). optional(),
+    status: orderStatusSchema.optional(),
     payment_status: z.enum(["unpaid", "paid"]).optional(),
   });
 
@@ -53,6 +62,8 @@ export const createOrderSchema = z.object({
   export const markOrderPaidSchema = z.object({
     payment_method: z.enum(["cash", "bank_transfer", "other"])
   });
+
+
 
 export type CreateOrderInput = z.infer<
   typeof createOrderSchema

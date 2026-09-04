@@ -1,109 +1,160 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from "fastify";
 
-import { getServices, createService, updateService } from "./services.service.js";
-import { requireAuth } from '../../middleware/auth/auth.middleware.js';
+import { requireAuth } from "../../middleware/auth/auth.middleware.js";
 import { requireRole } from "../../middleware/auth/require-role.middleware.js";
-import {createSchemaService, updateServiceSchema} from "../services/services.schema.js"
-import { request } from 'node:http';
-import { log } from 'node:console';
-import id from 'zod/v4/locales/id.js';
-export async function servicesRoutes(app: FastifyInstance) {
 
-    //GET /api/services
-    app.get<{
-    Querystring: {
-        active?: string;
-    };
-    }>(
-    "/",
-    {
-        preHandler: requireAuth,
-    },
-    async (request) => {
-        const activeOnly = request.query.active === "true";
+import {
+	getServices,
+	createService,
+	updateService
+} from "./services.service.js";
 
-        const services = await getServices(
-        request.accessToken,
-        activeOnly,
-        );
+import {
+	createSchemaService,
+	serviceParamsSchema,
+	updateServiceSchema
+} from "./services.schema.js";
 
-        return {
-        services,
-        };
-    },
-    );
+export async function servicesRoutes(
+	app: FastifyInstance
+) {
+	// GET /api/services
+	app.get<{
+		Querystring: {
+			active?: string;
+		};
+	}>(
+		"/",
+		{
+			preHandler: requireAuth
+		},
+		async (request) => {
+			const activeOnly =
+				request.query.active === "true";
 
-    //POST /api/service
-    app.post(
-        "/",
-        {
-            preHandler:[
-                requireAuth,
-                requireRole("admin"),
-            ]
-        },
-        async (request, reply) =>{
-            const result = createSchemaService.safeParse(
-                request.body,
-            )
-            if (!result.success) {
-        return reply.status(400).send({
-          message: "Invalid request body",
-          errors: result.error.flatten(),
-        });
-      }
+			const services =
+				await getServices(
+					request.accessToken,
+					activeOnly
+				);
 
-      const service = await createService(
-        request.accessToken,
-        result.data,
-      );
+			return {
+				services
+			};
+		}
+	);
 
-      return reply.status(201).send({
-        service,
-      });
-        }
-    )
+	// POST /api/services
+	app.post(
+		"/",
+		{
+			preHandler: [
+				requireAuth,
+				requireRole("admin")
+			]
+		},
+		async (request, reply) => {
+			const result =
+				createSchemaService.safeParse(
+					request.body
+				);
 
-    //PATCH /api/:id
-    app.patch<{
-        Params:{
-            id: string
-        };
-    }>(
-        "/:id",
-        {
-            preHandler:[
-                requireAuth,
-                requireRole("admin"),
-            ]
-        },
-        async (request, reply)=>{
-            const result = updateServiceSchema.safeParse(
-                request.body,        
-            )         
+			if (!result.success) {
+				return reply
+					.status(400)
+					.send({
+						message:
+							"Invalid request body",
+						errors:
+							result.error.flatten()
+					});
+			}
 
-            if(!result.success){
-                return reply.status(400).send({
-                    message: "Invalid request body",
-                    errors: result.error.flatten(),
-                })
-            }
+			const service =
+				await createService(
+					request.accessToken,
+					result.data
+				);
 
-            const service = await updateService(
-                request.accessToken,
-                request.params.id,
-                result.data,
-                );
+			return reply
+				.status(201)
+				.send({
+					service
+				});
+		}
+	);
 
-            if (!service) {
-                return reply.status(404).send({
-                    message: "Service not found",
-                });``
-            }
+	// PATCH /api/services/:id
+	app.patch<{
+		Params: {
+			id: string;
+		};
+	}>(
+		"/:id",
+		{
+			preHandler: [
+				requireAuth,
+				requireRole("admin")
+			]
+		},
+		async (request, reply) => {
+			// 1. Validate UUID trên URL
+			const paramsResult =
+				serviceParamsSchema.safeParse(
+					request.params
+				);
 
-            return reply.status(200).send({
-                service,
-            });
-        }
-    )
+			if (!paramsResult.success) {
+				return reply
+					.status(400)
+					.send({
+						message:
+							"Invalid service ID",
+						errors:
+							paramsResult.error.flatten()
+					});
+			}
+
+			// 2. Validate body
+			const bodyResult =
+				updateServiceSchema.safeParse(
+					request.body
+				);
+
+			if (!bodyResult.success) {
+				return reply
+					.status(400)
+					.send({
+						message:
+							"Invalid request body",
+						errors:
+							bodyResult.error.flatten()
+					});
+			}
+
+			// 3. Chỉ gọi database sau khi
+			// params + body đều hợp lệ
+			const service =
+				await updateService(
+					request.accessToken,
+					paramsResult.data.id,
+					bodyResult.data
+				);
+
+			if (!service) {
+				return reply
+					.status(404)
+					.send({
+						message:
+							"Service not found"
+					});
+			}
+
+			return reply
+				.status(200)
+				.send({
+					service
+				});
+		}
+	);
 }
