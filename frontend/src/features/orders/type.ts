@@ -17,6 +17,8 @@ export type CreateOrderFormValues = {
 	dueAt: string;
 	note: string;
 	paymentStatus: "unpaid" | "paid";
+	discountType: "percent" | "fixed";
+	discountValue: number;
 	paymentMethod: "cash" | "bank_transfer" | "other";
 	items: {
 		serviceId: string;
@@ -32,7 +34,13 @@ export type OrderListItem = {
 	customer_phone: string | null;
 	status: OrderStatus;
 	payment_status: PaymentStatus;
+
+	subtotal: number;
+	discount_type: "percent" | "fixed" | null;
+	discount_value: number;
+	discount_amount: number;
 	total_amount: number;
+
 	due_at: string | null;
 	note: string | null;
 	created_by: string | null;

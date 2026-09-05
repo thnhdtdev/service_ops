@@ -33,6 +33,8 @@ const defaultValues: CreateOrderFormValues = {
 	customerPhone: "",
 	dueAt: "",
 	note: "",
+	discountType: "percent",
+	discountValue: 0,
 	paymentStatus: "unpaid",
 	paymentMethod: "cash",
 	items: [
@@ -97,6 +99,16 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 		name: "paymentStatus"
 	});
 
+	const discountType = useWatch({
+		control,
+		name: "discountType"
+	});
+
+	const discountValue = useWatch({
+		control,
+		name: "discountValue"
+	});
+
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "items"
@@ -120,7 +132,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 		previousMatchedCustomer.current = matchedCustomer;
 	}, [clearErrors, getValues, matchedCustomer, setValue]);
 
-	const totalAmount = useMemo(() => {
+	const subtotal = useMemo(() => {
 		return watchedItems.reduce((total, item) => {
 			const selectedService = services.find((service) => {
 				return service.id === item.serviceId;
@@ -146,6 +158,24 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 			);
 		}, 0);
 	}, [watchedItems, services]);
+
+	const discountAmount = useMemo(() => {
+		const value = Number(discountValue || 0);
+
+		if (value <= 0) {
+			return 0;
+		}
+
+		if (discountType === "percent") {
+			const percent = Math.min(value, 100);
+
+			return Math.round((subtotal * percent) / 100);
+		}
+
+		return Math.min(value, subtotal);
+	}, [discountType, discountValue, subtotal]);
+
+	const totalAmount = subtotal - discountAmount;
 
 	const handlePrint = useReactToPrint({
 		contentRef: receiptRef,
@@ -263,6 +293,10 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					service_id: item.serviceId,
 					quantity: item.quantity
 				})),
+
+				discount_type: values.discountValue > 0 ? values.discountType : null,
+
+				discount_value: values.discountValue || 0,
 
 				payment_status: values.paymentStatus,
 
@@ -615,11 +649,88 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 				</section>
 
 				<section className="border-border bg-card rounded-2xl border p-4">
-					<div className="flex items-center justify-between">
-						<span className="text-muted-foreground text-sm">Tổng tiền</span>
-						<span className="text-foreground text-2xl font-bold tabular-nums">
-							{formatCurrency(totalAmount)}
-						</span>
+					<h3 className="text-card-foreground text-base font-semibold">
+						Tổng kết thanh toán
+					</h3>
+					<div className="mt-4 grid gap-4 md:grid-cols-2">
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Loại chiết khấu</label>
+
+							<select
+								className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+								{...register("discountType")}
+							>
+								<option value="percent">Theo phần trăm (%)</option>
+
+								<option value="fixed">Theo số tiền (VNĐ)</option>
+							</select>
+						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Giá trị chiết khấu</label>
+
+							<Input
+								type="number"
+								min="0"
+								max={discountType === "percent" ? 100 : undefined}
+								step={discountType === "percent" ? "1" : "1000"}
+								placeholder={
+									discountType === "percent" ? "Ví dụ: 10" : "Ví dụ: 20000"
+								}
+								{...register("discountValue", {
+									valueAsNumber: true,
+									min: 0,
+									validate: (value) => {
+										if (discountType === "percent" && value > 100) {
+											return "Chiết khấu không được vượt quá 100%";
+										}
+
+										if (discountType === "fixed" && value > subtotal) {
+											return "Chiết khấu không được lớn hơn tạm tính";
+										}
+
+										return true;
+									}
+								})}
+							/>
+
+							{errors.discountValue ? (
+								<p className="text-destructive text-sm">
+									{errors.discountValue.message}
+								</p>
+							) : null}
+						</div>
+					</div>
+				</section>
+
+				<section className="border-border bg-card rounded-2xl border p-4">
+					<div className="space-y-3">
+						<div className="flex items-center justify-between">
+							<span className="text-muted-foreground text-sm">Tạm tính</span>
+
+							<span className="tabular-nums">{formatCurrency(subtotal)}</span>
+						</div>
+
+						{discountAmount > 0 ? (
+							<div className="flex items-center justify-between">
+								<span className="text-muted-foreground text-sm">
+									Chiết khấu
+									{discountType === "percent" ? ` (${discountValue}%)` : ""}
+								</span>
+
+								<span className="tabular-nums">
+									-{formatCurrency(discountAmount)}
+								</span>
+							</div>
+						) : null}
+
+						<div className="border-border flex items-center justify-between border-t pt-3">
+							<span className="font-semibold">Tổng thanh toán</span>
+
+							<span className="text-foreground text-2xl font-bold tabular-nums">
+								{formatCurrency(totalAmount)}
+							</span>
+						</div>
 					</div>
 				</section>
 

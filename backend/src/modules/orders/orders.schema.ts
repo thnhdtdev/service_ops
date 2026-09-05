@@ -24,6 +24,17 @@ export const createOrderSchema = z.object({
       )
       .min(1),
 
+    discount_type: z
+      .enum(["percent", "fixed"])
+      .nullable()
+      .optional(),
+
+    discount_value: z
+      .number()
+      .min(0)
+      .optional()
+      .default(0),
+
     payment_status: z.enum(["unpaid", "paid"]),
 
     payment_method: z
@@ -45,6 +56,17 @@ export const createOrderSchema = z.object({
         message:
           "Phải chọn phương thức thanh toán khi đơn đã thanh toán",
       });
+    }
+
+      if (
+        data.discount_type === "percent" &&
+        data.discount_value > 100
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["discount_value"],
+          message: "Chiết khấu phần trăm không được lớn hơn 100%",
+        });
     }
   });
 
