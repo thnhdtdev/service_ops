@@ -58,15 +58,40 @@ export const createOrderSchema = z.object({
       });
     }
 
-      if (
-        data.discount_type === "percent" &&
-        data.discount_value > 100
-      ) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["discount_value"],
-          message: "Chiết khấu phần trăm không được lớn hơn 100%",
-        });
+    if (
+      data.discount_value === 0 &&
+      data.discount_type != null
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["discount_type"],
+        message:
+          "Không được chọn loại chiết khấu khi giá trị chiết khấu bằng 0",
+      });
+    }
+
+    if (
+      data.discount_value > 0 &&
+      data.discount_type == null
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["discount_type"],
+        message:
+          "Phải chọn loại chiết khấu khi giá trị chiết khấu lớn hơn 0",
+      });
+    }
+
+    if (
+      data.discount_type === "percent" &&
+      data.discount_value > 100
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["discount_value"],
+        message:
+          "Chiết khấu phần trăm không được lớn hơn 100%",
+      });
     }
   });
 
