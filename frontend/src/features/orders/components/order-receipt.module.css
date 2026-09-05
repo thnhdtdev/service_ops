@@ -1,0 +1,130 @@
+.receipt {
+	box-sizing: border-box;
+	width: 72mm;
+	padding: 3mm;
+	background: #fff;
+	color: #000;
+	font-family: Arial, sans-serif;
+	font-size: 11px;
+	line-height: 1.35;
+}
+
+.header {
+	text-align: center;
+}
+
+.storeName {
+	margin: 0 0 3px;
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.storeInformation,
+.createdAt,
+.optionalInformation {
+	margin: 0;
+}
+
+.divider {
+	margin: 8px 0;
+	border-top: 1px dashed #000;
+}
+
+.receiptTitle {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+}
+
+.orderCode {
+	margin: 3px 0;
+	font-weight: 700;
+}
+
+.customerInformation p {
+	margin: 2px 0;
+}
+
+.itemsTable {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.serviceHeader {
+	padding-bottom: 4px;
+	text-align: left;
+}
+
+.itemCell {
+	padding: 4px 0;
+	vertical-align: top;
+}
+
+.quantityColumn {
+	width: 14mm;
+	text-align: center;
+}
+
+.amountColumn {
+	width: 21mm;
+	text-align: right;
+}
+
+.unitPrice {
+	font-size: 9px;
+}
+
+.totalRow {
+	display: flex;
+	justify-content: space-between;
+}
+
+.paymentMethods {
+	margin: 5px 0 0;
+}
+
+.footerMessage {
+	margin: 0;
+	font-weight: 700;
+}
+
+.policy {
+	margin-top: 10px;
+	padding-top: 8px;
+	border-top: 1px dashed #000;
+	font-size: 10px;
+	line-height: 1.4;
+	text-align: left;
+	break-inside: avoid;
+}
+
+.policy p {
+	margin: 0;
+}
+
+.policy p + p {
+	margin-top: 7px;
+}
+
+.policyImportant {
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1.45;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.policyNote {
+	display: block;
+	margin-top: 2px;
+	font-size: 9px;
+	text-align: center;
+}
+
+.policyFooter {
+	margin-top: 10px;
+	padding-top: 8px;
+	border-top: 1px dashed #000;
+	text-align: center;
+	break-inside: avoid;
+}
