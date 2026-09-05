@@ -62,6 +62,8 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 	const { services, isLoadingServices, error: servicesError } = useActiveServices();
 
 	const form = useForm<CreateOrderFormValues>({
+		mode: "onChange",
+		reValidateMode: "onChange",
 		defaultValues
 	});
 
@@ -167,12 +169,18 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 		}
 
 		if (discountType === "percent") {
-			const percent = Math.min(value, 100);
+			if (value >= 100) {
+				return 0;
+			}
 
-			return Math.round((subtotal * percent) / 100);
+			return Math.round((subtotal * value) / 100);
 		}
 
-		return Math.min(value, subtotal);
+		if (value >= subtotal) {
+			return 0;
+		}
+
+		return value;
 	}, [discountType, discountValue, subtotal]);
 
 	const totalAmount = subtotal - discountAmount;
@@ -679,7 +687,10 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 								}
 								{...register("discountValue", {
 									valueAsNumber: true,
-									min: 0,
+									min: {
+										value: 0,
+										message: "Chiết khấu không được nhỏ hơn 0"
+									},
 									validate: (value) => {
 										if (discountType === "percent" && value >= 100) {
 											return "Chiết khấu phải nhỏ hơn 100%";
