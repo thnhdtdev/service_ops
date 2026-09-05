@@ -55,7 +55,9 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 			<header className={styles.header}>
 				<p className={styles.storeName}>GIẶT SẤY - VỆ SINH GIÀY SKY BLUE</p>
 
-				<p className={styles.storeInformation}>ĐC: 116 Đường 15, Tân Kiểng, Quận 7, TP. HCM</p>
+				<p className={styles.storeInformation}>
+					ĐC: 116 Đường 15, Tân Kiểng, Quận 7, TP. HCM
+				</p>
 
 				<p className={styles.storeInformation}>SĐT: 0901321045 - 0765758139</p>
 
@@ -126,7 +128,29 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 
 			<section>
 				<div className={styles.totalRow}>
-					<span>Tổng tiền:</span>
+					<span>Tạm tính:</span>
+
+					<span>{formatCurrency(Number(order.subtotal))}</span>
+				</div>
+
+				{Number(order.discount_amount) > 0 ? (
+					<div className={styles.totalRow}>
+						<span>
+							Chiết khấu
+							{order.discount_type === "percent"
+								? ` (${Number(order.discount_value)}%)`
+								: ""}
+							:
+						</span>
+
+						<span>-{formatCurrency(Number(order.discount_amount))}</span>
+					</div>
+				) : null}
+
+				<div className={styles.divider} />
+
+				<div className={styles.totalRow}>
+					<span>Tổng thanh toán:</span>
 
 					<strong>{formatCurrency(Number(order.total_amount))}</strong>
 				</div>
