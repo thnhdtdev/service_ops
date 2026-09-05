@@ -672,7 +672,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 							<Input
 								type="number"
 								min="0"
-								max={discountType === "percent" ? 100 : undefined}
+								max={discountType === "percent" ? 99 : undefined}
 								step={discountType === "percent" ? "1" : "1000"}
 								placeholder={
 									discountType === "percent" ? "Ví dụ: 10" : "Ví dụ: 20000"
@@ -681,12 +681,12 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 									valueAsNumber: true,
 									min: 0,
 									validate: (value) => {
-										if (discountType === "percent" && value > 100) {
-											return "Chiết khấu không được vượt quá 100%";
+										if (discountType === "percent" && value >= 100) {
+											return "Chiết khấu phải nhỏ hơn 100%";
 										}
 
-										if (discountType === "fixed" && value > subtotal) {
-											return "Chiết khấu không được lớn hơn tạm tính";
+										if (discountType === "fixed" && value >= subtotal) {
+											return "Chiết khấu phải nhỏ hơn tạm tính";
 										}
 
 										return true;

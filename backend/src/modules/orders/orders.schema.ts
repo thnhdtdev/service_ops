@@ -82,15 +82,15 @@ export const createOrderSchema = z.object({
       });
     }
 
-    if (
+   if (
       data.discount_type === "percent" &&
-      data.discount_value > 100
+      data.discount_value >= 100
     ) {
       ctx.addIssue({
         code: "custom",
         path: ["discount_value"],
         message:
-          "Chiết khấu phần trăm không được lớn hơn 100%",
+          "Chiết khấu phần trăm phải nhỏ hơn 100%",
       });
     }
   });
