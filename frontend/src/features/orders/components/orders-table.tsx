@@ -111,12 +111,12 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 
 									<td className="border-border bg-card group-hover:bg-muted/50 sticky right-0 z-10 border-l px-5 py-4 text-right transition-colors">
 										<div className="flex justify-end gap-2">
-											{order.payment_status === "unpaid" ? (
+											{order.payment_status !== "paid" ? (
 												<MarkOrderPaidButton
 													orderId={order.id}
 													orderCode={order.order_code}
 													customerName={order.customer_name}
-													amount={Number(order.total_amount)}
+													remainingAmount={Number(order.remaining_amount)}
 													onSuccess={onPaymentUpdated}
 												/>
 											) : null}

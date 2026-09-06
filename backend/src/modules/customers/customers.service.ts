@@ -421,24 +421,59 @@ export async function getCustomerById(
         }
 
         // Group items and payments by order_id
-          const ordersWithDetails = customerOrders.map((order) => ({
+        const ordersWithDetails = customerOrders.map((order) => {
+          const orderItems =
+            (items ?? []).filter(
+              (item) =>
+                item.order_id ===
+                order.id
+            );
+
+          const orderPayments =
+            (payments ?? []).filter(
+              (payment) =>
+                payment.order_id ===
+                order.id
+            );
+
+          const paidAmount =
+            orderPayments.reduce(
+              (total, payment) =>
+                total +
+                Number(
+                  payment.amount
+                ),
+              0
+            );
+
+          const totalAmount =
+            Number(
+              order.total_amount
+            );
+
+          const remainingAmount =
+            Math.max(
+              totalAmount -
+                paidAmount,
+              0
+            );
+
+          return {
             ...order,
 
             items:
-              (items ?? []).filter(
-                (item) =>
-                  item.order_id ===
-                  order.id
-              ),
+              orderItems,
 
             payments:
-              (payments ?? []).filter(
-                (payment) =>
-                  payment.order_id ===
-                  order.id
-              )
-          }));
+              orderPayments,
 
+            paid_amount:
+              paidAmount,
+
+            remaining_amount:
+              remainingAmount
+          };
+        });
         const activeOrders =
           customerOrders.filter(
             (order) =>
@@ -456,8 +491,8 @@ export async function getCustomerById(
         const unpaidOrderCount =
           activeOrders.filter(
             (order) =>
-              order.payment_status ===
-              "unpaid"
+              order.payment_status !==
+              "paid"
           ).length;
 
         return {

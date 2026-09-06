@@ -78,7 +78,6 @@ function getInitials(name: string) {
 	return initials || "KH";
 }
 
-
 function getPaymentStatusClassName(status: PaymentStatus) {
 	return status === "paid"
 		? "border-success/30 bg-success/10 text-success"
@@ -403,12 +402,14 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
 													</p>
 												</div>
 												<div className="flex flex-wrap gap-2 xl:justify-end">
-													{order.payment_status === "unpaid" ? (
+													{order.payment_status !== "paid" ? (
 														<MarkOrderPaidButton
 															orderId={order.id}
 															orderCode={order.order_code}
 															customerName={customer.name}
-															amount={Number(order.total_amount)}
+															remainingAmount={Number(
+																order.remaining_amount
+															)}
 															onSuccess={refetch}
 														/>
 													) : null}
