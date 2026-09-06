@@ -47,9 +47,13 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 
 							<th className="px-5 py-3 font-medium">Tổng tiền</th>
 
+							<th className="px-5 py-3 text-right font-medium">Đã trả</th>
+
+							<th className="px-5 py-3 text-right font-medium">Còn nợ</th>
+
 							{/* <th className="px-5 py-3 font-medium">Hẹn lấy</th> */}
 
-							<th className="px-5 py-3 font-medium">Ngày tạo</th>
+							{/* <th className="px-5 py-3 font-medium">Ngày tạo</th> */}
 
 							<th className="border-border bg-card sticky right-0 z-10 border-l px-5 py-3 text-right font-medium">
 								Thao tác
@@ -101,13 +105,28 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 										{formatCurrency(Number(order.total_amount))}
 									</td>
 
+									<td className="text-success px-5 py-4 text-right font-mono font-medium whitespace-nowrap tabular-nums">
+										{formatCurrency(Number(order.paid_amount))}
+									</td>
+
+									<td
+										className={cn(
+											"px-5 py-4 text-right font-mono whitespace-nowrap tabular-nums",
+											Number(order.remaining_amount) > 0
+												? "text-warning font-semibold"
+												: "text-muted-foreground"
+										)}
+									>
+										{formatCurrency(Number(order.remaining_amount))}
+									</td>
+
 									{/* <td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
 										{order.due_at ? formatTime(order.due_at) : "-"}
 									</td> */}
 
-									<td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
+									{/* <td className="text-muted-foreground px-5 py-4 whitespace-nowrap">
 										{formatTime(order.created_at)}
-									</td>
+									</td> */}
 
 									<td className="border-border bg-card group-hover:bg-muted/50 sticky right-0 z-10 border-l px-5 py-4 text-right transition-colors">
 										<div className="flex justify-end gap-2">
@@ -131,7 +150,7 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 						) : (
 							<tr>
 								<td
-									colSpan={7}
+									colSpan={9}
 									className="text-muted-foreground px-5 py-12 text-center"
 								>
 									Chưa có đơn hàng.

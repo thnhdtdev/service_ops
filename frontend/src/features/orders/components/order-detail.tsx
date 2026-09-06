@@ -29,6 +29,7 @@ import type { OrderItemDetail, OrderPayment } from "@/features/orders/type";
 import { formatCurrency } from "@/lib/format";
 import { OrderReceipt } from "@/features/orders/components/order-receipt";
 import { RECEIPT_PAGE_STYLE } from "@/features/orders/components/receipt-print-style";
+import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("vi-VN", {
 	hour: "2-digit",
@@ -560,7 +561,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 				aria-labelledby="order-payments-title"
 				className="border-border bg-card overflow-hidden rounded-2xl border shadow-sm"
 			>
-				<header className="border-border flex items-center justify-between gap-4 border-b px-5 py-4">
+				<header className="border-border flex flex-col gap-4 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
 					<div>
 						<h2 id="order-payments-title" className="font-semibold">
 							Lịch sử thanh toán
@@ -569,7 +570,21 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 							Các giao dịch đã được ghi nhận cho đơn hàng.
 						</p>
 					</div>
-					<PaymentStatusBadge status={order.payment_status} />
+					<div className="flex flex-wrap items-center gap-2 sm:justify-end">
+						<PaymentStatusBadge status={order.payment_status} />
+
+						{order.payment_status !== "paid" && order.status !== "cancelled" ? (
+							<MarkOrderPaidButton
+								orderId={order.id}
+								orderCode={order.order_code}
+								customerName={order.customer_name}
+								remainingAmount={Number(order.remaining_amount)}
+								onSuccess={() => {
+									void refetch();
+								}}
+							/>
+						) : null}
+					</div>
 				</header>
 
 				{payments.length > 0 ? (
