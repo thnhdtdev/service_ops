@@ -87,8 +87,8 @@ export function MarkOrderPaidButton({
 	async function handleAddPayment() {
 		setError("");
 
-		if (!Number.isFinite(amount) || amount <= 0) {
-			setError("Số tiền thanh toán phải lớn hơn 0.");
+		if (!Number.isFinite(amount) || !Number.isInteger(amount) || amount <= 0) {
+			setError("Số tiền thanh toán phải là số nguyên lớn hơn 0.");
 			return;
 		}
 
@@ -139,7 +139,10 @@ export function MarkOrderPaidButton({
 	}
 
 	const isAmountInvalid =
-		!Number.isFinite(amount) || amount <= 0 || amount > normalizedRemainingAmount;
+		!Number.isFinite(amount) ||
+		!Number.isInteger(amount) ||
+		amount <= 0 ||
+		amount > normalizedRemainingAmount;
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>

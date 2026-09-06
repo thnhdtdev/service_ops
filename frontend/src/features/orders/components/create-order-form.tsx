@@ -673,7 +673,7 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 							<Input
 								type="number"
 								min="0"
-								step="1000"
+								step="1"
 								placeholder="Ví dụ: 50000"
 								{...register("paidAmount", {
 									valueAsNumber: true,
@@ -682,6 +682,10 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 										message: "Số tiền thanh toán không được nhỏ hơn 0"
 									},
 									validate: (value) => {
+										if (!Number.isInteger(value)) {
+											return "Số tiền thanh toán phải là số nguyên";
+										}
+
 										if (value > totalAmount) {
 											return "Số tiền thanh toán không được lớn hơn tổng thanh toán";
 										}
