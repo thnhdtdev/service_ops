@@ -37,9 +37,13 @@ export async function getDashboardStats(
 				count: "exact",
 				head: true
 			})
-			.eq(
+			.in(
 				"payment_status",
-				"unpaid"
+				["unpaid", "partial"]
+			)
+			.neq(
+				"status",
+				"cancelled"
 			),
 
 		supabase

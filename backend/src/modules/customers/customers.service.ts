@@ -262,8 +262,8 @@ export async function getCustomers(
 					unpaid_order_count:
 						activeOrders.filter(
 							(order) =>
-								order.payment_status ===
-								"unpaid"
+								order.payment_status !==
+								"paid"
 						).length,
 
 					last_order_at:
