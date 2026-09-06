@@ -14,6 +14,9 @@ export type CreateOrderInput = {
 	payment_status: "unpaid" | "paid";
 	payment_method?: "cash" | "bank_transfer" | "other";
 
+	discount_type?: "percent" | "fixed" | null;
+	discount_value?: number;
+
 	due_at?: string | null;
 	note?: string | null;
 };

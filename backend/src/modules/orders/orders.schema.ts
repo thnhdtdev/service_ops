@@ -24,6 +24,17 @@ export const createOrderSchema = z.object({
       )
       .min(1),
 
+    discount_type: z
+      .enum(["percent", "fixed"])
+      .nullable()
+      .optional(),
+
+    discount_value: z
+      .number()
+      .min(0)
+      .optional()
+      .default(0),
+
     payment_status: z.enum(["unpaid", "paid"]),
 
     payment_method: z
@@ -44,6 +55,42 @@ export const createOrderSchema = z.object({
         path: ["payment_method"],
         message:
           "Phải chọn phương thức thanh toán khi đơn đã thanh toán",
+      });
+    }
+
+    if (
+      data.discount_value === 0 &&
+      data.discount_type != null
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["discount_type"],
+        message:
+          "Không được chọn loại chiết khấu khi giá trị chiết khấu bằng 0",
+      });
+    }
+
+    if (
+      data.discount_value > 0 &&
+      data.discount_type == null
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["discount_type"],
+        message:
+          "Phải chọn loại chiết khấu khi giá trị chiết khấu lớn hơn 0",
+      });
+    }
+
+   if (
+      data.discount_type === "percent" &&
+      data.discount_value >= 100
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["discount_value"],
+        message:
+          "Chiết khấu phần trăm phải nhỏ hơn 100%",
       });
     }
   });

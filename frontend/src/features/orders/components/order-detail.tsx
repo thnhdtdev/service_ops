@@ -305,7 +305,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 					</div>
 
 					<div className="lg:text-right">
-						<p className="text-muted-foreground text-sm">Tổng tiền</p>
+						<p className="text-muted-foreground text-sm"> Tổng thanh toán</p>
 
 						<p className="mt-1 font-mono text-2xl font-semibold tracking-tight tabular-nums">
 							{formatCurrency(Number(order.total_amount))}
@@ -450,11 +450,37 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 						</div>
 					)}
 
-					<div className="border-border bg-muted/20 flex items-center justify-between gap-4 border-t px-5 py-4">
-						<p className="text-sm font-medium">Tổng cộng</p>
-						<p className="font-mono text-lg font-semibold whitespace-nowrap tabular-nums">
-							{formatCurrency(Number(order.total_amount))}
-						</p>
+					<div className="border-border bg-muted/20 space-y-2 border-t px-5 py-4">
+						<div className="flex items-center justify-between gap-4">
+							<p className="text-muted-foreground text-sm">Tạm tính</p>
+
+							<p className="font-mono text-sm whitespace-nowrap tabular-nums">
+								{formatCurrency(Number(order.subtotal))}
+							</p>
+						</div>
+
+						{Number(order.discount_amount) > 0 ? (
+							<div className="flex items-center justify-between gap-4">
+								<p className="text-muted-foreground text-sm">
+									Chiết khấu
+									{order.discount_type === "percent"
+										? ` (${Number(order.discount_value)}%)`
+										: ""}
+								</p>
+
+								<p className="font-mono text-sm whitespace-nowrap tabular-nums">
+									-{formatCurrency(Number(order.discount_amount))}
+								</p>
+							</div>
+						) : null}
+
+						<div className="border-border flex items-center justify-between gap-4 border-t pt-2">
+							<p className="text-sm font-semibold">Tổng thanh toán</p>
+
+							<p className="font-mono text-lg font-semibold whitespace-nowrap tabular-nums">
+								{formatCurrency(Number(order.total_amount))}
+							</p>
+						</div>
 					</div>
 				</section>
 

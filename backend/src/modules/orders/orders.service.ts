@@ -42,6 +42,12 @@ export async function createOrder(
 				p_payment_status:
 					input.payment_status,
 
+				p_discount_type:
+					input.discount_type ?? null,
+
+				p_discount_value:
+					input.discount_value ?? 0,
+
 				p_payment_method:
 					input.payment_method ?? null,
 
@@ -75,21 +81,24 @@ export async function getOrders(
 	let query = supabase
 	.from("orders")
 	.select(
-	`
-		id,
+		`id,
 		order_code,
 		customer_id,
 		customer_name,
 		customer_phone,
 		status,
 		payment_status,
+		subtotal,
+		discount_type,
+		discount_value,
+		discount_amount,
 		total_amount,
 		due_at,
 		note,
 		created_by,
 		created_at,
 		updated_at
-	`,
+		`,
 	{
 		count: "exact"
 	}
@@ -140,6 +149,10 @@ export async function getOrderDetail(
 			customer_phone,
 			status,
 			payment_status,
+			subtotal,
+			discount_type,
+			discount_value,
+			discount_amount,
 			total_amount,
 			due_at,
 			note,
