@@ -4,18 +4,20 @@ import type {
 	PaymentMethod
 } from "@/constants/payment-method";
 
-export async function markOrderAsPaid(
+export async function addOrderPayment(
 	orderId: string,
+	amount: number,
 	paymentMethod: PaymentMethod
 ) {
 	let response: Response;
 
 	try {
 		response = await apiFetch(
-			`/api/orders/${orderId}/mark-paid`,
+			`/api/orders/${orderId}/payments`,
 			{
 				method: "POST",
 				body: JSON.stringify({
+					amount,
 					payment_method:
 						paymentMethod
 				})
@@ -37,6 +39,12 @@ export async function markOrderAsPaid(
 		if (response.status === 404) {
 			throw new Error(
 				"Không tìm thấy đơn hàng."
+			);
+		}
+
+		if (response.status === 400) {
+			throw new Error(
+				"Khoản thanh toán không hợp lệ."
 			);
 		}
 

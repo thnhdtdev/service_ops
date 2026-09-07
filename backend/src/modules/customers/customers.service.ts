@@ -259,11 +259,11 @@ export async function getCustomers(
 					order_count:
 						activeOrders.length,
 
-					unpaid_order_count:
+					outstanding_order_count:
 						activeOrders.filter(
 							(order) =>
-								order.payment_status ===
-								"unpaid"
+								order.payment_status !==
+								"paid"
 						).length,
 
 					last_order_at:
@@ -364,7 +364,7 @@ export async function getCustomerById(
               orders: [],
               stats: {
                 order_count: 0,
-                unpaid_order_count: 0,
+                outstanding_order_count: 0,
                 total_order_value: 0
               }
             };
@@ -421,24 +421,59 @@ export async function getCustomerById(
         }
 
         // Group items and payments by order_id
-          const ordersWithDetails = customerOrders.map((order) => ({
+        const ordersWithDetails = customerOrders.map((order) => {
+          const orderItems =
+            (items ?? []).filter(
+              (item) =>
+                item.order_id ===
+                order.id
+            );
+
+          const orderPayments =
+            (payments ?? []).filter(
+              (payment) =>
+                payment.order_id ===
+                order.id
+            );
+
+          const paidAmount =
+            orderPayments.reduce(
+              (total, payment) =>
+                total +
+                Number(
+                  payment.amount
+                ),
+              0
+            );
+
+          const totalAmount =
+            Number(
+              order.total_amount
+            );
+
+          const remainingAmount =
+            Math.max(
+              totalAmount -
+                paidAmount,
+              0
+            );
+
+          return {
             ...order,
 
             items:
-              (items ?? []).filter(
-                (item) =>
-                  item.order_id ===
-                  order.id
-              ),
+              orderItems,
 
             payments:
-              (payments ?? []).filter(
-                (payment) =>
-                  payment.order_id ===
-                  order.id
-              )
-          }));
+              orderPayments,
 
+            paid_amount:
+              paidAmount,
+
+            remaining_amount:
+              remainingAmount
+          };
+        });
         const activeOrders =
           customerOrders.filter(
             (order) =>
@@ -453,11 +488,10 @@ export async function getCustomerById(
             0
           );
 
-        const unpaidOrderCount =
+        const outstandingOrderCount =
           activeOrders.filter(
             (order) =>
-              order.payment_status ===
-              "unpaid"
+              order.payment_status !== "paid"
           ).length;
 
         return {
@@ -469,8 +503,8 @@ export async function getCustomerById(
             order_count:
               activeOrders.length,
 
-            unpaid_order_count:
-              unpaidOrderCount,
+            outstanding_order_count:
+              outstandingOrderCount,
 
             total_order_value:
               totalOrderValue

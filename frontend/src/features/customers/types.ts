@@ -1,8 +1,4 @@
-import type {
-	OrderItemDetail,
-	OrderListItem,
-	OrderPayment
-} from "@/features/orders/type";
+import type { OrderItemDetail, OrderListItem, OrderPayment } from "@/features/orders/type";
 
 export type CustomerSummary = {
 	id: string;
@@ -21,7 +17,7 @@ export type CustomerListItem = {
 	updated_at: string;
 
 	order_count: number;
-	unpaid_order_count: number;
+	outstanding_order_count: number;
 	last_order_at: string | null;
 	total_order_value: number;
 };
@@ -61,15 +57,14 @@ export type CustomerDetailInfo = {
 	updated_at: string;
 };
 
-export type CustomerOrderHistoryItem =
-	OrderListItem & {
-		items: OrderItemDetail[];
-		payments: OrderPayment[];
-	};
+export type CustomerOrderHistoryItem = OrderListItem & {
+	items: OrderItemDetail[];
+	payments: OrderPayment[];
+};
 
 export type CustomerDetailStats = {
 	order_count: number;
-	unpaid_order_count: number;
+	outstanding_order_count: number;
 	total_order_value: number;
 };
 

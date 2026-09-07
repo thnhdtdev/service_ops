@@ -20,7 +20,6 @@ import { formatCurrency } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PAYMENT_METHOD_LABEL } from "@/constants/payment-method";
-import { PAYMENT_STATUS_LABEL } from "@/constants/payment-status";
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
 import { calculateOrderLineTotal } from "@/features/orders/utils/calculate-order-total";
 
@@ -35,7 +34,7 @@ const defaultValues: CreateOrderFormValues = {
 	note: "",
 	discountType: "percent",
 	discountValue: 0,
-	paymentStatus: "unpaid",
+	paidAmount: 0,
 	paymentMethod: "cash",
 	items: [
 		{
@@ -96,9 +95,9 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 	} = useCustomerLookup(customerPhone);
 	const previousMatchedCustomer = useRef<CustomerSummary | null>(null);
 
-	const paymentStatus = useWatch({
+	const paidAmount = useWatch({
 		control,
-		name: "paymentStatus"
+		name: "paidAmount"
 	});
 
 	const discountType = useWatch({
@@ -184,6 +183,10 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 	}, [discountType, discountValue, subtotal]);
 
 	const totalAmount = subtotal - discountAmount;
+
+	const normalizedPaidAmount = Number(paidAmount || 0);
+
+	const remainingAmount = Math.max(totalAmount - normalizedPaidAmount, 0);
 
 	const handlePrint = useReactToPrint({
 		contentRef: receiptRef,
@@ -306,9 +309,9 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 				discount_value: values.discountValue || 0,
 
-				payment_status: values.paymentStatus,
+				paid_amount: values.paidAmount || 0,
 
-				payment_method: values.paymentStatus === "paid" ? values.paymentMethod : undefined,
+				payment_method: values.paidAmount > 0 ? values.paymentMethod : undefined,
 
 				due_at: values.dueAt ? new Date(values.dueAt).toISOString() : null,
 
@@ -605,61 +608,13 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						})}
 					</div>
 				</section>
-
 				<section className="border-border bg-card rounded-2xl border p-4">
-					<h3 className="text-card-foreground text-base font-semibold">
-						Thanh toán và ghi chú
-					</h3>
+					<h3 className="text-card-foreground text-base font-semibold">Thanh toán</h3>
 
-					<div className="mt-4 grid gap-4 md:grid-cols-2">
-						<div className="space-y-2">
-							<label className="text-sm font-medium">Trạng thái thanh toán</label>
-							<select
-								className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
-								{...register("paymentStatus")}
-							>
-								<option value="unpaid">{PAYMENT_STATUS_LABEL.unpaid}</option>
-								<option value="paid">{PAYMENT_STATUS_LABEL.paid}</option>
-							</select>
-						</div>
+					<p className="text-muted-foreground mt-1 text-sm">
+						Nhập chiết khấu, số tiền khách thanh toán và thông tin hẹn lấy.
+					</p>
 
-						{paymentStatus === "paid" ? (
-							<div className="space-y-2">
-								<label className="text-sm font-medium">
-									Phương thức thanh toán
-								</label>
-								<select
-									className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
-									{...register("paymentMethod")}
-								>
-									<option value="cash">{PAYMENT_METHOD_LABEL.cash}</option>
-									<option value="bank_transfer">
-										{PAYMENT_METHOD_LABEL.bank_transfer}
-									</option>
-									<option value="other">{PAYMENT_METHOD_LABEL.other}</option>
-								</select>
-							</div>
-						) : null}
-
-						<div className="space-y-2">
-							<label className="text-sm font-medium">Hẹn lấy</label>
-							<Input type="datetime-local" {...register("dueAt")} />
-						</div>
-
-						<div className="space-y-2">
-							<label className="text-sm font-medium">Ghi chú</label>
-							<Input
-								placeholder="Ví dụ: Khách cần lấy trước 18h"
-								{...register("note")}
-							/>
-						</div>
-					</div>
-				</section>
-
-				<section className="border-border bg-card rounded-2xl border p-4">
-					<h3 className="text-card-foreground text-base font-semibold">
-						Tổng kết thanh toán
-					</h3>
 					<div className="mt-4 grid gap-4 md:grid-cols-2">
 						<div className="space-y-2">
 							<label className="text-sm font-medium">Loại chiết khấu</label>
@@ -711,6 +666,79 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 								</p>
 							) : null}
 						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Số tiền khách thanh toán</label>
+
+							<Input
+								type="number"
+								min="0"
+								step="1"
+								placeholder="Ví dụ: 50000"
+								{...register("paidAmount", {
+									valueAsNumber: true,
+									min: {
+										value: 0,
+										message: "Số tiền thanh toán không được nhỏ hơn 0"
+									},
+									validate: (value) => {
+										if (!Number.isInteger(value)) {
+											return "Số tiền thanh toán phải là số nguyên";
+										}
+
+										if (value > totalAmount) {
+											return "Số tiền thanh toán không được lớn hơn tổng thanh toán";
+										}
+
+										return true;
+									}
+								})}
+							/>
+
+							{errors.paidAmount ? (
+								<p className="text-destructive text-sm">
+									{errors.paidAmount.message}
+								</p>
+							) : null}
+						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Phương thức thanh toán</label>
+
+							{normalizedPaidAmount > 0 ? (
+								<select
+									className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
+									{...register("paymentMethod")}
+								>
+									<option value="cash">{PAYMENT_METHOD_LABEL.cash}</option>
+
+									<option value="bank_transfer">
+										{PAYMENT_METHOD_LABEL.bank_transfer}
+									</option>
+
+									<option value="other">{PAYMENT_METHOD_LABEL.other}</option>
+								</select>
+							) : (
+								<div className="border-border bg-muted text-muted-foreground flex h-9 items-center rounded-md border px-3 text-sm">
+									Chưa thanh toán
+								</div>
+							)}
+						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Hẹn lấy</label>
+
+							<Input type="datetime-local" {...register("dueAt")} />
+						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Ghi chú</label>
+
+							<Input
+								placeholder="Ví dụ: Khách cần lấy trước 18h"
+								{...register("note")}
+							/>
+						</div>
 					</div>
 				</section>
 
@@ -740,6 +768,22 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 							<span className="text-foreground text-2xl font-bold tabular-nums">
 								{formatCurrency(totalAmount)}
+							</span>
+						</div>
+
+						<div className="flex items-center justify-between">
+							<span className="text-muted-foreground text-sm">Đã thanh toán</span>
+
+							<span className="tabular-nums">
+								{formatCurrency(normalizedPaidAmount)}
+							</span>
+						</div>
+
+						<div className="flex items-center justify-between">
+							<span className="font-semibold">Còn nợ</span>
+
+							<span className="text-lg font-bold tabular-nums">
+								{formatCurrency(remainingAmount)}
 							</span>
 						</div>
 					</div>

@@ -73,7 +73,7 @@ function CustomerAvatar({ name }: { name: string }) {
 	);
 }
 
-function UnpaidCount({ count }: { count: number }) {
+function OutstandingCount({ count }: { count: number }) {
 	if (count === 0) {
 		return <span className="text-muted-foreground font-mono tabular-nums">0</span>;
 	}
@@ -206,7 +206,7 @@ function DesktopCustomerTable({ customers }: { customers: CustomerListItem[] }) 
 							Số đơn
 						</th>
 						<th scope="col" className="w-[16%] px-4 py-3 font-medium">
-							Chưa thanh toán
+							Còn công nợ
 						</th>
 						<th scope="col" className="w-[15%] px-4 py-3 font-medium">
 							Đơn gần nhất
@@ -249,7 +249,7 @@ function DesktopCustomerTable({ customers }: { customers: CustomerListItem[] }) 
 								{customer.order_count}
 							</td>
 							<td className="px-4 py-4">
-								<UnpaidCount count={customer.unpaid_order_count} />
+								<OutstandingCount count={customer.outstanding_order_count} />
 							</td>
 							<td className="text-muted-foreground px-4 py-4 whitespace-nowrap">
 								{formatDate(customer.last_order_at)}
@@ -314,7 +314,7 @@ function MobileCustomerList({ customers }: { customers: CustomerListItem[] }) {
 								Chưa thanh toán
 							</dt>
 							<dd className="mt-1">
-								<UnpaidCount count={customer.unpaid_order_count} />
+								<OutstandingCount count={customer.outstanding_order_count} />
 							</dd>
 						</div>
 						<div>

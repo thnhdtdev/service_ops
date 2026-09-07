@@ -18,7 +18,7 @@ export async function getDashboardStats(
 	const [
 		ordersTodayResult,
 		unpaidOrdersResult,
-		paidOrdersTodayResult,
+		paidOrderPaymentsTodayResult,
 		todayPaymentsResult,
 		todayOrdersValueResult
 	] = await Promise.all([
@@ -37,17 +37,18 @@ export async function getDashboardStats(
 				count: "exact",
 				head: true
 			})
-			.eq(
+			.in(
 				"payment_status",
-				"unpaid"
+				["unpaid", "partial"]
+			)
+			.neq(
+				"status",
+				"cancelled"
 			),
 
 		supabase
 			.from("payments")
-			.select("id", {
-				count: "exact",
-				head: true
-			})
+			.select("order_id")
 			.gte("paid_at", start)
 			.lt("paid_at", end),
 
@@ -72,8 +73,8 @@ export async function getDashboardStats(
 		throw unpaidOrdersResult.error;
 	}
 
-	if (paidOrdersTodayResult.error) {
-		throw paidOrdersTodayResult.error;
+	if (paidOrderPaymentsTodayResult.error) {
+		throw paidOrderPaymentsTodayResult.error;
 	}
 
 	if (todayPaymentsResult.error) {
@@ -99,6 +100,15 @@ export async function getDashboardStats(
 			0
 		);
 
+	const ordersWithPaymentToday  =
+		new Set(
+			(paidOrderPaymentsTodayResult.data ?? [])
+				.map(
+					(payment) =>
+						payment.order_id
+				)
+		).size;
+
 	return {
 		ordersToday:
 			ordersTodayResult.count ?? 0,
@@ -106,11 +116,9 @@ export async function getDashboardStats(
 		unpaidOrders:
 			unpaidOrdersResult.count ?? 0,
 
-		paidOrdersToday:
-			paidOrdersTodayResult.count ?? 0,
+		ordersWithPaymentToday,
 
 		todayRevenue,
-
 		todayOrderValue
 	};
 }

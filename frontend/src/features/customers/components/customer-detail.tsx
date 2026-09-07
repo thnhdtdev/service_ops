@@ -23,7 +23,7 @@ import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-st
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
 import { useCustomer } from "@/features/customers/hooks/use-customer";
 import type { CustomerOrderHistoryItem } from "@/features/customers/types";
-import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
+import { AddOrderPaymentButton } from "@/features/orders/components/add-order-payment-button";
 import type { OrderPayment } from "@/features/orders/type";
 import { formatCurrency } from "@/lib/format";
 
@@ -77,7 +77,6 @@ function getInitials(name: string) {
 
 	return initials || "KH";
 }
-
 
 function getPaymentStatusClassName(status: PaymentStatus) {
 	return status === "paid"
@@ -297,10 +296,10 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
 					</div>
 					<div className="flex flex-col px-5 py-4 sm:px-6">
 						<dt className="text-muted-foreground order-2 mt-1 text-xs font-medium">
-							Đơn chưa thanh toán
+							Đơn còn công nợ
 						</dt>
 						<dd className="text-warning order-1 font-mono text-xl font-semibold tabular-nums">
-							{stats.unpaid_order_count}
+							{stats.outstanding_order_count}
 						</dd>
 					</div>
 					<div className="flex flex-col px-5 py-4 sm:px-6">
@@ -403,12 +402,14 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
 													</p>
 												</div>
 												<div className="flex flex-wrap gap-2 xl:justify-end">
-													{order.payment_status === "unpaid" ? (
-														<MarkOrderPaidButton
+													{order.payment_status !== "paid" ? (
+														<AddOrderPaymentButton
 															orderId={order.id}
 															orderCode={order.order_code}
 															customerName={customer.name}
-															amount={Number(order.total_amount)}
+															remainingAmount={Number(
+																order.remaining_amount
+															)}
 															onSuccess={refetch}
 														/>
 													) : null}
