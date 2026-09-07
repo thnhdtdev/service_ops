@@ -29,8 +29,7 @@ import type { OrderItemDetail, OrderPayment } from "@/features/orders/type";
 import { formatCurrency } from "@/lib/format";
 import { OrderReceipt } from "@/features/orders/components/order-receipt";
 import { RECEIPT_PAGE_STYLE } from "@/features/orders/components/receipt-print-style";
-import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
-
+import { AddOrderPaymentButton } from "@/features/orders/components/add-order-payment-button";
 const dateTimeFormatter = new Intl.DateTimeFormat("vi-VN", {
 	hour: "2-digit",
 	minute: "2-digit",
@@ -574,7 +573,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 						<PaymentStatusBadge status={order.payment_status} />
 
 						{order.payment_status !== "paid" && order.status !== "cancelled" ? (
-							<MarkOrderPaidButton
+							<AddOrderPaymentButton
 								orderId={order.id}
 								orderCode={order.order_code}
 								customerName={order.customer_name}

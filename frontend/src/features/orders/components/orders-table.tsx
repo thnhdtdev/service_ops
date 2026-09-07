@@ -5,11 +5,10 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { formatCurrency, formatTime } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import type { OrderListItem } from "@/features/orders/type";
 import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-status";
-import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
-
+import { AddOrderPaymentButton } from "@/features/orders/components/add-order-payment-button";
 type OrdersTableProps = {
 	orders: OrderListItem[];
 	onPaymentUpdated?: () => void;
@@ -131,7 +130,7 @@ export function OrdersTable({ orders, onPaymentUpdated }: OrdersTableProps) {
 									<td className="border-border bg-card group-hover:bg-muted/50 sticky right-0 z-10 border-l px-5 py-4 text-right transition-colors">
 										<div className="flex justify-end gap-2">
 											{order.payment_status !== "paid" ? (
-												<MarkOrderPaidButton
+												<AddOrderPaymentButton
 													orderId={order.id}
 													orderCode={order.order_code}
 													customerName={order.customer_name}

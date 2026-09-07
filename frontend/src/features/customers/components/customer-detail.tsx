@@ -23,7 +23,7 @@ import { PAYMENT_STATUS_LABEL, type PaymentStatus } from "@/constants/payment-st
 import { SERVICE_UNIT_LABEL } from "@/constants/service-unit";
 import { useCustomer } from "@/features/customers/hooks/use-customer";
 import type { CustomerOrderHistoryItem } from "@/features/customers/types";
-import { MarkOrderPaidButton } from "@/features/orders/components/mark-order-paid-button";
+import { AddOrderPaymentButton } from "@/features/orders/components/add-order-payment-button";
 import type { OrderPayment } from "@/features/orders/type";
 import { formatCurrency } from "@/lib/format";
 
@@ -403,7 +403,7 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
 												</div>
 												<div className="flex flex-wrap gap-2 xl:justify-end">
 													{order.payment_status !== "paid" ? (
-														<MarkOrderPaidButton
+														<AddOrderPaymentButton
 															orderId={order.id}
 															orderCode={order.order_code}
 															customerName={customer.name}

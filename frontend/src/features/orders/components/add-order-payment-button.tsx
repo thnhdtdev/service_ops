@@ -24,11 +24,11 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast-provider";
 import { PAYMENT_METHOD_LABEL, type PaymentMethod } from "@/constants/payment-method";
-import { addOrderPayment } from "@/features/orders/services/mark-order-as-paid";
+import { addOrderPayment } from "@/features/orders/services/add-order-payment";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-type MarkOrderPaidButtonProps = {
+type AddOrderPaymentButtonProps = {
 	orderId: string;
 	orderCode: string;
 	customerName: string;
@@ -61,13 +61,13 @@ const PAYMENT_METHOD_OPTIONS = [
 	icon: typeof Banknote;
 }>;
 
-export function MarkOrderPaidButton({
+export function AddOrderPaymentButton({
 	orderId,
 	orderCode,
 	customerName,
 	remainingAmount,
 	onSuccess
-}: MarkOrderPaidButtonProps) {
+}: AddOrderPaymentButtonProps) {
 	const router = useRouter();
 	const { showSuccessToast } = useToast();
 	const normalizedRemainingAmount = Number.isFinite(remainingAmount)
