@@ -296,10 +296,10 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
 					</div>
 					<div className="flex flex-col px-5 py-4 sm:px-6">
 						<dt className="text-muted-foreground order-2 mt-1 text-xs font-medium">
-							Đơn chưa thanh toán
+							Đơn còn công nợ
 						</dt>
 						<dd className="text-warning order-1 font-mono text-xl font-semibold tabular-nums">
-							{stats.unpaid_order_count}
+							{stats.outstanding_order_count}
 						</dd>
 					</div>
 					<div className="flex flex-col px-5 py-4 sm:px-6">
