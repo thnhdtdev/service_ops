@@ -31,8 +31,8 @@ export const DASHBOARD_STATS_CONFIG: DashboardStatItem[] = [
 		icon: WalletCards
 	},
 	{
-		key: "paidOrdersToday",
-		title: "Đã thanh toán hôm nay",
+		key: "ordersWithPaymentToday",
+		title: "Có thanh toán hôm nay",
 		description: "Số đơn đã được ghi nhận thanh toán hôm nay",
 		icon: CheckCircle2
 	},

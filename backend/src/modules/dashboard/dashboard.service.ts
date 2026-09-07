@@ -100,7 +100,7 @@ export async function getDashboardStats(
 			0
 		);
 
-	const paidOrdersToday =
+	const ordersWithPaymentToday  =
 		new Set(
 			(paidOrderPaymentsTodayResult.data ?? [])
 				.map(
@@ -116,11 +116,9 @@ export async function getDashboardStats(
 		unpaidOrders:
 			unpaidOrdersResult.count ?? 0,
 
-		paidOrdersToday:
-			paidOrdersToday,
+		ordersWithPaymentToday,
 
 		todayRevenue,
-
 		todayOrderValue
 	};
 }
