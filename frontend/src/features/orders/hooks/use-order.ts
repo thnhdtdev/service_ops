@@ -7,36 +7,72 @@ import type { GetOrderResponse } from "@/features/orders/type";
 
 export function useOrder(orderId: string) {
 	const [data, setData] = useState<GetOrderResponse | null>(null);
-
-	const [isLoading, setIsLoading] = useState(true);
-
 	const [error, setError] = useState("");
+	const [loadedOrderId, setLoadedOrderId] = useState<string | null>(null);
+	const [isRefetching, setIsRefetching] = useState(false);
 
-	const loadOrder = useCallback(async () => {
-		setIsLoading(true);
+	useEffect(() => {
+		let ignore = false;
+
+		getOrder(orderId)
+			.then((result) => {
+				if (ignore) {
+					return;
+				}
+
+				setData(result);
+				setError("");
+				setLoadedOrderId(orderId);
+			})
+			.catch((error) => {
+				if (ignore) {
+					return;
+				}
+
+				console.error(error);
+
+				setData(null);
+				setError(
+					error instanceof Error
+						? error.message
+						: "Không thể tải thông tin đơn hàng.",
+				);
+				setLoadedOrderId(orderId);
+			});
+
+		return () => {
+			ignore = true;
+		};
+	}, [orderId]);
+
+	const refetch = useCallback(async () => {
+		setIsRefetching(true);
 		setError("");
 
 		try {
 			const result = await getOrder(orderId);
 
 			setData(result);
+			setLoadedOrderId(orderId);
 		} catch (error) {
 			console.error(error);
 
-			setError(error instanceof Error ? error.message : "Không thể tải thông tin đơn hàng.");
+			setError(
+				error instanceof Error
+					? error.message
+					: "Không thể tải thông tin đơn hàng.",
+			);
 		} finally {
-			setIsLoading(false);
+			setIsRefetching(false);
 		}
 	}, [orderId]);
 
-	useEffect(() => {
-		void loadOrder();
-	}, [loadOrder]);
+	const isLoading = loadedOrderId !== orderId || isRefetching;
 
 	return {
 		data,
 		isLoading,
 		error,
-		refetch: loadOrder
+		refetch,
 	};
 }
