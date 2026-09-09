@@ -351,15 +351,18 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 		}
 	}
 
+	const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		void handleSubmit(onSubmit)(event);
+	};
+
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+			<form onSubmit={handleFormSubmit} className="space-y-6">
 				{formError ? (
 					<div className="border-destructive/30 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
 						{formError}
 					</div>
 				) : null}
-
 				<section className="border-border bg-card rounded-2xl border p-4">
 					<h3 className="text-card-foreground text-base font-semibold">
 						Thông tin khách hàng
@@ -466,7 +469,6 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						</div>
 					</div>
 				</section>
-
 				<section className="border-border bg-card rounded-2xl border p-4">
 					<div className="flex items-center justify-between gap-4">
 						<div>
@@ -741,7 +743,6 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						</div>
 					</div>
 				</section>
-
 				<section className="border-border bg-card rounded-2xl border p-4">
 					<div className="space-y-3">
 						<div className="flex items-center justify-between">
@@ -788,7 +789,6 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 						</div>
 					</div>
 				</section>
-
 				<div className="flex justify-end gap-3">
 					<Button type="button" variant="outline" onClick={() => reset(defaultValues)}>
 						Xóa form

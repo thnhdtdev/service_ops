@@ -1,6 +1,7 @@
 import { createUserSupabase } from "../../lib/supabase.js";
 
 import { normalizePhone } from "../customers/customers.utils.js";
+import { calculateOrderPaymentSummary, calculateRemainingAmount } from "./order-payment.utils.js";
 
 import type {
   CreateOrderInput,
@@ -129,11 +130,9 @@ export async function getOrders(accessToken: string, input: GetOrdersInput) {
   }
 
   const orders = (data ?? []).map((order) => {
-    const paidAmount = paidAmountByOrderId.get(order.id) ?? 0;
+	const paidAmount = paidAmountByOrderId.get(order.id) ?? 0;
 
-    const totalAmount = Number(order.total_amount);
-
-    const remainingAmount = Math.max(totalAmount - paidAmount, 0);
+	const remainingAmount = calculateRemainingAmount(order.total_amount, paidAmount);
 
     return {
       ...order,
@@ -271,16 +270,15 @@ export async function getOrderDetail(accessToken: string, orderId: string) {
     customer = customerData;
   }
 
-  const orderPayments = payments ?? [];
+	const orderPayments = payments ?? [];
 
-  const paidAmount = orderPayments.reduce(
-    (sum, payment) => sum + Number(payment.amount),
-    0,
-  );
-
-  const totalAmount = Number(order.total_amount);
-
-  const remainingAmount = Math.max(totalAmount - paidAmount, 0);
+	const {
+		paidAmount,
+		remainingAmount,
+		} = calculateOrderPaymentSummary(
+		order.total_amount,
+		orderPayments,
+	);
 
   return {
     order: {

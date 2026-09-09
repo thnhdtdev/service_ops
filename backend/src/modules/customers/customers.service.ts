@@ -1,6 +1,7 @@
-import { createUserSupabase } from "../../lib/supabase.js";
 import { normalizePhone } from "./customers.utils.js";
 import { GetCustomersQuery } from "./customers.schema.js";
+import { createUserSupabase } from "../../lib/supabase.js";
+import { calculateOrderPaymentSummary } from "../orders/order-payment.utils.js";
 
 type FindOrCreateCustomerInput  = {
   name: string,
@@ -421,59 +422,49 @@ export async function getCustomerById(
         }
 
         // Group items and payments by order_id
-        const ordersWithDetails = customerOrders.map((order) => {
-          const orderItems =
-            (items ?? []).filter(
-              (item) =>
-                item.order_id ===
-                order.id
-            );
+        const ordersWithDetails =
+          customerOrders.map(
+            (order) => {
+              const orderItems =
+                (items ?? []).filter(
+                  (item) =>
+                    item.order_id ===
+                    order.id
+                );
 
-          const orderPayments =
-            (payments ?? []).filter(
-              (payment) =>
-                payment.order_id ===
-                order.id
-            );
+              const orderPayments =
+                (payments ?? []).filter(
+                  (payment) =>
+                    payment.order_id ===
+                    order.id
+                );
 
-          const paidAmount =
-            orderPayments.reduce(
-              (total, payment) =>
-                total +
-                Number(
-                  payment.amount
-                ),
-              0
-            );
-
-          const totalAmount =
-            Number(
-              order.total_amount
-            );
-
-          const remainingAmount =
-            Math.max(
-              totalAmount -
+              const {
                 paidAmount,
-              0
-            );
+                remainingAmount,
+              } =
+                calculateOrderPaymentSummary(
+                  order.total_amount,
+                  orderPayments,
+                );
 
-          return {
-            ...order,
+              return {
+                ...order,
 
-            items:
-              orderItems,
+                items:
+                  orderItems,
 
-            payments:
-              orderPayments,
+                payments:
+                  orderPayments,
 
-            paid_amount:
-              paidAmount,
+                paid_amount:
+                  paidAmount,
 
-            remaining_amount:
-              remainingAmount
-          };
-        });
+                remaining_amount:
+                  remainingAmount,
+              };
+            }
+          );
         const activeOrders =
           customerOrders.filter(
             (order) =>

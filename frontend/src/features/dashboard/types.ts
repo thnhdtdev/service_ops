@@ -1,5 +1,3 @@
-import type { PaymentStatus } from "@/constants/payment-status";
-
 export type DashboardStats = {
 	ordersToday: number;
 	unpaidOrders: number;

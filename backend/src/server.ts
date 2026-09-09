@@ -7,7 +7,7 @@ async function start() {
   try {
     await app.listen({
       port: env.PORT,
-      host: "0.0.0.0",
+      host: "::",
     });
   } catch (error) {
     app.log.error(error);
