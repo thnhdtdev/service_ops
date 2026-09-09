@@ -2,6 +2,9 @@
   "name": "service-ops",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+   "node": ">=22"
+  },
   "scripts": {
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "tsx watch backend/src/server.ts",
