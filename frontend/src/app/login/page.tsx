@@ -25,8 +25,8 @@ export default async function LoginPage() {
 	}
 
 	return (
-		<main className="bg-muted/40 min-h-[100dvh] lg:p-6">
-			<div className="bg-background mx-auto grid min-h-[100dvh] overflow-hidden lg:min-h-[calc(100dvh-3rem)] lg:max-w-[1440px] lg:grid-cols-2 lg:rounded-3xl lg:border lg:shadow-sm">
+		<main className="bg-muted/40 min-h-dvh lg:p-6">
+			<div className="bg-background mx-auto grid min-h-dvh overflow-hidden lg:min-h-[calc(100dvh-3rem)] lg:max-w-[1440px] lg:grid-cols-2 lg:rounded-3xl lg:border lg:shadow-sm">
 				<aside
 					aria-label="Giới thiệu ServiceOps"
 					className="bg-primary text-primary-foreground dark:bg-card dark:text-card-foreground hidden items-center justify-center px-12 py-10 lg:flex"
@@ -59,7 +59,7 @@ export default async function LoginPage() {
 						<ModeToggle />
 					</div>
 
-					<div className="mx-auto w-full max-w-[420px]">
+					<div className="mx-auto w-full max-w-150">
 						<div className="mb-8 flex items-center gap-3 border-b border-dashed pb-5 lg:hidden">
 							<Image
 								src="/favicons.png"
