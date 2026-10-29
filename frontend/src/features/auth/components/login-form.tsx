@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CircleAlert, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { CircleAlert, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ export function LoginForm() {
 			<header>
 				<h1 className="text-foreground text-4xl font-bold tracking-[-0.03em]">Đăng nhập</h1>
 				<p className="text-muted-foreground mt-4 text-base leading-7">
-					Tiếp tục vào không gian vận hành ServiceOps.
+					Dùng tài khoản nhân viên do cửa hàng cấp.
 				</p>
 			</header>
 
@@ -145,9 +145,6 @@ export function LoginForm() {
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
-						{!isSubmitting ? (
-							<ArrowRight aria-hidden="true" data-icon="inline-end" />
-						) : null}
 					</Button>
 				</FieldGroup>
 			</form>
