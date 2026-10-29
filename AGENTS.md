@@ -8,20 +8,20 @@ The project is currently under development and contains unfinished features.
 
 Main technologies:
 
-- Monorepo
-- Go backend
-- Web frontend
+- Monorepo (root `package.json` scripts, no extra monorepo framework)
+- Backend: Node.js, TypeScript, Fastify, Zod (`backend/`)
+- Frontend: Next.js, React, TypeScript (`frontend/`)
 - Supabase database
 - Supabase authentication
 
 ## Working style
 
-The project owner is currently learning Go.
+The project owner is currently learning backend development with Node.js and TypeScript.
 
 When working on this project:
 
 - Explain changes step by step.
-- Explain new Go syntax before using it.
+- Explain new TypeScript syntax before using it.
 - Prefer simple and understandable code.
 - Avoid unnecessary abstractions.
 - Do not introduce advanced architecture unless it is clearly needed.
@@ -37,15 +37,22 @@ Before making any code changes:
 4. Propose a small implementation plan.
 5. Do not make large architectural changes without approval.
 
-## Go backend rules
+## Backend rules (Node.js + TypeScript)
 
-- Use `gofmt`.
-- Handle errors explicitly.
-- Do not ignore returned errors.
-- Keep HTTP handlers simple.
-- Do not put complex business logic directly in HTTP handlers.
-- Use descriptive package and function names.
-- Run `go test ./...` after backend changes when possible.
+- Follow the existing module layout in `backend/src/modules/<name>/`:
+  - `*.routes.ts` for Fastify route handlers
+  - `*.service.ts` for business logic and Supabase queries
+  - `*.schema.ts` for Zod request validation
+- Keep route handlers simple. Do not put complex business logic directly in them.
+- Validate request input with Zod.
+- Read environment variables only through `backend/src/config/env.ts`.
+- Handle errors explicitly. Check the `error` returned by Supabase calls and do not ignore it.
+- Always `await` promises or handle them explicitly.
+- Avoid `any`. Prefer explicit types.
+- Use descriptive file and function names.
+- After backend changes, run when possible:
+  - `npm run typecheck:backend`
+  - `npm run test:backend`
 
 ## Authentication and security
 
