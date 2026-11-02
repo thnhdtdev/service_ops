@@ -127,8 +127,9 @@ export function ServiceMixChart({ data, error }: ServiceMixChartProps) {
 					<h2 id="service-mix-title" className="text-foreground text-base font-semibold">
 						Cơ cấu dịch vụ
 					</h2>
+					{/* Changes with the Doanh thu / Lượt chọn switch below. */}
 					<p id="service-mix-description" className="text-muted-foreground mt-1 text-sm">
-						Nhận diện dịch vụ đóng góp lớn nhất.
+						{metricDescription}
 					</p>
 				</div>
 
@@ -190,7 +191,7 @@ export function ServiceMixChart({ data, error }: ServiceMixChartProps) {
 				) : (
 					<figure
 						aria-labelledby="service-mix-title"
-						aria-describedby="service-mix-description service-mix-metric-description"
+						aria-describedby="service-mix-description"
 					>
 						<div
 							role="group"
@@ -222,13 +223,6 @@ export function ServiceMixChart({ data, error }: ServiceMixChartProps) {
 								);
 							})}
 						</div>
-
-						<p
-							id="service-mix-metric-description"
-							className="text-muted-foreground mt-3 text-xs leading-5"
-						>
-							{metricDescription}
-						</p>
 
 						{isEmpty ? (
 							<div

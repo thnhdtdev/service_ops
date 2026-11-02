@@ -7,21 +7,39 @@
 	font-family: Arial, sans-serif;
 	font-size: 11px;
 	line-height: 1.35;
+	/* A very long word (e.g. in a note) wraps instead of overflowing the paper. */
+	overflow-wrap: break-word;
+}
+
+.receipt p {
+	/* Avoids a single word left alone on the last line of a paragraph. */
+	text-wrap: pretty;
 }
 
 .header {
 	text-align: center;
 }
 
+.header p {
+	/* Splits centered lines into lines of similar length. */
+	text-wrap: balance;
+}
+
 .storeName {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: 1px;
+}
+
+.storeTagline {
 	margin: 0 0 3px;
-	font-size: 15px;
+	font-size: 11px;
 	font-weight: 700;
 }
 
 .storeInformation,
-.createdAt,
-.optionalInformation {
+.createdAt {
 	margin: 0;
 }
 
@@ -41,13 +59,28 @@
 	font-weight: 700;
 }
 
-.customerInformation p {
-	margin: 2px 0;
+/* Label | value rows. A value that wraps stays aligned with its first line. */
+.infoList {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 2px 4px;
+	margin: 0;
+}
+
+.infoList dt {
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.infoList dd {
+	margin: 0;
 }
 
 .itemsTable {
 	width: 100%;
 	border-collapse: collapse;
+	/* Column widths below are applied exactly, the service column gets the rest. */
+	table-layout: fixed;
 }
 
 .serviceHeader {
@@ -61,13 +94,14 @@
 }
 
 .quantityColumn {
-	width: 14mm;
+	width: 10mm;
 	text-align: center;
 }
 
 .amountColumn {
-	width: 21mm;
+	width: 20mm;
 	text-align: right;
+	white-space: nowrap;
 }
 
 .unitPrice {
@@ -77,6 +111,16 @@
 .totalRow {
 	display: flex;
 	justify-content: space-between;
+	gap: 8px;
+}
+
+.totalRow > :last-child {
+	white-space: nowrap;
+}
+
+.grandTotal {
+	font-size: 13px;
+	font-weight: 700;
 }
 
 .paymentMethods {
@@ -102,23 +146,33 @@
 	margin: 0;
 }
 
-.policy p + p {
+/* Space between the policy blocks. Written with element names so it is more
+   specific than ".policy p { margin: 0 }" above and is not overridden. */
+.policy > p + p,
+.policy > p + div,
+.policy > div + p {
 	margin-top: 7px;
 }
 
 .policyImportant {
-	font-size: 10px;
 	font-weight: 700;
 	line-height: 1.45;
 	text-align: center;
 	text-transform: uppercase;
 }
 
+.policy .policyImportant {
+	text-wrap: balance;
+}
+
+.policyList {
+	margin: 2px 0 0;
+	padding-left: 12px;
+}
+
 .policyNote {
-	display: block;
-	margin-top: 2px;
 	font-size: 9px;
-	text-align: center;
+	font-style: italic;
 }
 
 .policyFooter {
