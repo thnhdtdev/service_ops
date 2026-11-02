@@ -8,6 +8,8 @@ import { customersRoutes } from "./modules/customers/customers.route.js";
 import { ordersRoutes } from "./modules/orders/orders.routes.js";
 import { dashboardRoutes } from "./modules/dashboard/dashboard.routes.js";
 import { staffMembersRoutes } from "./modules/staff-members/staff-members.routes.js";
+import { shiftTemplatesRoutes } from "./modules/shift-templates/shift-templates.routes.js";
+import { schedulesRoutes } from "./modules/schedules/schedules.routes.js";
 
 export function buildApp() {
   const app = Fastify({
@@ -67,5 +69,7 @@ export function buildApp() {
   app.register(dashboardRoutes, {prefix: "/api/dashboard" });
   app.register(ordersRoutes, {prefix: "/api/orders",});
   app.register(staffMembersRoutes, { prefix: "/api/staff-members" });
+  app.register(shiftTemplatesRoutes, { prefix: "/api/shift-templates" });
+  app.register(schedulesRoutes, { prefix: "/api" });
   return app;
 }
