@@ -16,6 +16,7 @@ import {
 } from "./modules/schedules/schedules.utils.js";
 import { createScheduleWeekSchema } from "./modules/schedules/schedules.schema.js";
 import { updateShiftTemplateSchema } from "./modules/shift-templates/shift-templates.schema.js";
+import { saveBusyTimesSchema } from "./modules/staff-portal/staff-portal.schema.js";
 
 test("GET /health returns the API status", async (context) => {
   const app = buildApp();
@@ -169,4 +170,55 @@ test("schedule routes require a login", async (context) => {
   ]);
 
   assert.deepEqual(responses.map((response) => response.statusCode), [401, 401, 401]);
+});
+
+test("staff portal rejects a missing or malformed token without caching", async (context) => {
+  const app = buildApp();
+
+  context.after(async () => {
+    await app.close();
+  });
+
+  const missing = await app.inject({ method: "GET", url: "/api/staff-portal" });
+  const malformed = await app.inject({
+    method: "PUT",
+    url: "/api/staff-portal/busy-times",
+    headers: { "x-staff-token": "not-a-real-token" },
+    payload: { busy_times: [] },
+  });
+
+  for (const response of [missing, malformed]) {
+    assert.equal(response.statusCode, 404);
+    assert.equal(response.headers["cache-control"], "no-store");
+    assert.equal(response.headers["referrer-policy"], "no-referrer");
+  }
+});
+
+test("staff portal GET is limited to 30 requests per minute per IP", async (context) => {
+  const app = buildApp();
+
+  context.after(async () => {
+    await app.close();
+  });
+
+  const statusCodes: number[] = [];
+
+  for (let i = 0; i < 31; i++) {
+    const response = await app.inject({ method: "GET", url: "/api/staff-portal" });
+    statusCodes.push(response.statusCode);
+  }
+
+  assert.equal(statusCodes[29], 404);
+  assert.equal(statusCodes[30], 429);
+});
+
+test("busy times accept weekly and one-day items only when valid", () => {
+  const weekly = { repeat_weekly: true, weekday: 2, start_time: "07:00", end_time: "12:00", note: "Đi học" };
+  const oneDay = { repeat_weekly: false, busy_date: "2026-11-12", start_time: "00:00", end_time: "24:00" };
+
+  assert.equal(saveBusyTimesSchema.safeParse({ busy_times: [weekly, oneDay] }).success, true);
+  assert.equal(saveBusyTimesSchema.safeParse({ busy_times: [{ ...weekly, end_time: "06:00" }] }).success, false);
+  // A weekly item needs a weekday, a one-day item needs a date.
+  assert.equal(saveBusyTimesSchema.safeParse({ busy_times: [{ ...oneDay, repeat_weekly: true }] }).success, false);
+  assert.equal(saveBusyTimesSchema.safeParse({ busy_times: Array(51).fill(oneDay) }).success, false);
 });
