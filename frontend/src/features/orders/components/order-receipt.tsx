@@ -1,5 +1,7 @@
 "use client";
 
+import { PAYMENT_METHOD_LABEL, type PaymentMethod } from "@/constants/payment-method";
+import { SERVICE_UNIT_LABEL, type ServiceUnit } from "@/constants/service-unit";
 import type { GetOrderResponse } from "@/features/orders/type";
 
 import { formatCurrency } from "@/lib/format";
@@ -39,6 +41,16 @@ function formatQuantity(value: number | string) {
 	}).format(Number(value));
 }
 
+// "pair" -> "đôi". Falls back to the raw value for an unknown unit.
+function getUnitLabel(unit: string) {
+	return SERVICE_UNIT_LABEL[unit as ServiceUnit] ?? unit;
+}
+
+// "bank_transfer" -> "Chuyển khoản"
+function getPaymentMethodLabel(method: string) {
+	return PAYMENT_METHOD_LABEL[method as PaymentMethod] ?? method;
+}
+
 export function OrderReceipt({ data }: OrderReceiptProps) {
 	const { order, items, payments, customer } = data;
 
@@ -46,17 +58,21 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 
 	const remainingAmount = Math.max(Number(order.total_amount) - paidAmount, 0);
 
-	const paymentMethods = Array.from(new Set(payments.map((payment) => payment.method))).join(
-		", "
-	);
+	const paymentMethods = Array.from(new Set(payments.map((payment) => payment.method)))
+		.map(getPaymentMethodLabel)
+		.join(", ");
 
 	return (
 		<div className={styles.receipt}>
 			<header className={styles.header}>
-				<p className={styles.storeName}>GIẶT SẤY - VỆ SINH GIÀY SKY BLUE</p>
+				{/* Brand on its own line so "SKY BLUE" is never split across lines. */}
+				<p className={styles.storeName}>SKY BLUE</p>
 
+				<p className={styles.storeTagline}>GIẶT SẤY - VỆ SINH GIÀY</p>
+
+				{/*   = non-breaking space: keeps "TP. HCM" on one line. */}
 				<p className={styles.storeInformation}>
-					ĐC: 116 Đường 15, Tân Kiểng, Quận 7, TP. HCM
+					ĐC: 116 Đường 15, Tân Kiểng, Quận 7, TP.{" "}HCM
 				</p>
 
 				<p className={styles.storeInformation}>SĐT: 0901321045 - 0765758139</p>
@@ -72,21 +88,20 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 
 			<div className={styles.divider} />
 
-			<section className={styles.customerInformation}>
-				<p>
-					<strong>Khách hàng:</strong> {order.customer_name}
-				</p>
+			<dl className={styles.infoList}>
+				<dt>Khách hàng:</dt>
+				<dd>{order.customer_name}</dd>
 
-				<p>
-					<strong>SĐT:</strong> {order.customer_phone ?? "-"}
-				</p>
+				<dt>SĐT:</dt>
+				<dd>{order.customer_phone ?? "-"}</dd>
 
 				{customer?.address ? (
-					<p>
-						<strong>Địa chỉ:</strong> {customer.address}
-					</p>
+					<>
+						<dt>Địa chỉ:</dt>
+						<dd>{customer.address}</dd>
+					</>
 				) : null}
-			</section>
+			</dl>
 
 			<div className={styles.divider} />
 
@@ -108,7 +123,8 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 								<div>{item.service_name}</div>
 
 								<div className={styles.unitPrice}>
-									{formatCurrency(Number(item.unit_price))}/{item.unit}
+									{formatCurrency(Number(item.unit_price))}/
+									{getUnitLabel(item.unit)}
 								</div>
 							</td>
 
@@ -149,10 +165,10 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 
 				<div className={styles.divider} />
 
-				<div className={styles.totalRow}>
+				<div className={`${styles.totalRow} ${styles.grandTotal}`}>
 					<span>Tổng thanh toán:</span>
 
-					<strong>{formatCurrency(Number(order.total_amount))}</strong>
+					<span>{formatCurrency(Number(order.total_amount))}</span>
 				</div>
 
 				<div className={styles.totalRow}>
@@ -172,23 +188,25 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 				) : null}
 			</section>
 
-			{order.due_at ? (
+			{order.due_at || order.note ? (
 				<>
 					<div className={styles.divider} />
 
-					<p className={styles.optionalInformation}>
-						<strong>Hẹn lấy:</strong> {formatDateTime(order.due_at)}
-					</p>
-				</>
-			) : null}
+					<dl className={styles.infoList}>
+						{order.due_at ? (
+							<>
+								<dt>Hẹn lấy:</dt>
+								<dd>{formatDateTime(order.due_at)}</dd>
+							</>
+						) : null}
 
-			{order.note ? (
-				<>
-					<div className={styles.divider} />
-
-					<p className={styles.optionalInformation}>
-						<strong>Ghi chú:</strong> {order.note}
-					</p>
+						{order.note ? (
+							<>
+								<dt>Ghi chú:</dt>
+								<dd>{order.note}</dd>
+							</>
+						) : null}
+					</dl>
 				</>
 			) : null}
 
@@ -198,14 +216,18 @@ export function OrderReceipt({ data }: OrderReceiptProps) {
 					GIẶT.
 				</p>
 
-				<p>
-					Đơn hàng có vấn đề vui lòng báo tiệm trong vòng:
-					<br />
-					<strong>3 ngày</strong> đối với quần áo /<strong> 7 ngày</strong> đối với giày
-					dép
-					<br />
-					<span className={styles.policyNote}>(Kể từ ngày nhận giày và quần áo)</span>
-				</p>
+				<div>
+					<p>Đơn hàng có vấn đề vui lòng báo tiệm trong vòng:</p>
+					<ul className={styles.policyList}>
+						<li>
+							<strong>3 ngày</strong> đối với quần áo
+						</li>
+						<li>
+							<strong>7 ngày</strong> đối với giày dép
+						</li>
+					</ul>
+					<p className={styles.policyNote}>(Kể từ ngày nhận giày và quần áo)</p>
+				</div>
 
 				<p>
 					<strong>* Lưu ý:</strong> Chỉ hỗ trợ đối với đơn hàng được lưu tại tiệm không
