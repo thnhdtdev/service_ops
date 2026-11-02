@@ -1,4 +1,4 @@
-import { ClipboardList, Gauge, Package, UserCog, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, Gauge, Package, UserCog, Users } from "lucide-react";
 
 export const PATHS = {
 	HOME: "/",
@@ -9,6 +9,7 @@ export const PATHS = {
 	CUSTOMERS: "/customers",
 	SERVICES: "/services",
 	STAFF: "/staff",
+	SCHEDULES: "/schedules",
 	// Public staff link page: /s/<token> (no login, excluded from proxy.ts)
 	STAFF_PORTAL: "/s",
 	REPORTS: "/reports",
@@ -43,6 +44,11 @@ export const APP_ROUTES = [
 		title: "Nhân viên",
 		href: PATHS.STAFF,
 		icon: UserCog
+	},
+	{
+		title: "Lịch làm",
+		href: PATHS.SCHEDULES,
+		icon: CalendarDays
 	}
 	// {
 	//   title: "Reports",

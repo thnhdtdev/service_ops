@@ -48,6 +48,10 @@ function getPageTitle(pathname: string) {
 		return "Hồ sơ khách hàng";
 	}
 
+	if (pathname.startsWith(`${PATHS.SCHEDULES}/`)) {
+		return "Lịch làm trong tuần";
+	}
+
 	const route = APP_ROUTES.find((item) => item.href === pathname);
 
 	return route?.title ?? "Tổng quan";
@@ -80,6 +84,14 @@ function getPageDescription(pathname: string) {
 
 	if (pathname === PATHS.STAFF) {
 		return "Quản lý nhân viên và link riêng để báo lịch bận, xem lịch làm.";
+	}
+
+	if (pathname === PATHS.SCHEDULES) {
+		return "Tạo lịch theo tuần, quản lý ca mẫu và theo dõi lịch bận của nhân viên.";
+	}
+
+	if (pathname.startsWith(`${PATHS.SCHEDULES}/`)) {
+		return "Xếp nhân viên vào ca, xem ai rảnh hoặc bận, rồi công bố lịch.";
 	}
 
 	if (pathname === PATHS.REPORTS) {
