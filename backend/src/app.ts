@@ -7,6 +7,7 @@ import {servicesRoutes} from "./modules/services/services.routes.js";
 import { customersRoutes } from "./modules/customers/customers.route.js";
 import { ordersRoutes } from "./modules/orders/orders.routes.js";
 import { dashboardRoutes } from "./modules/dashboard/dashboard.routes.js";
+import { staffMembersRoutes } from "./modules/staff-members/staff-members.routes.js";
 
 export function buildApp() {
   const app = Fastify({
@@ -50,7 +51,7 @@ export function buildApp() {
 
   app.register(cors, {
   origin: env.FRONTEND_URL,
-  methods: ["GET", "HEAD", "POST", "PATCH", "OPTIONS"],
+  methods: ["GET", "HEAD", "POST", "PATCH", "DELETE", "OPTIONS"],
   });
 
   app.get("/health", async () => {
@@ -65,5 +66,6 @@ export function buildApp() {
   app.register(customersRoutes,{prefix:"/api/customers"})
   app.register(dashboardRoutes, {prefix: "/api/dashboard" });
   app.register(ordersRoutes, {prefix: "/api/orders",});
+  app.register(staffMembersRoutes, { prefix: "/api/staff-members" });
   return app;
 }
