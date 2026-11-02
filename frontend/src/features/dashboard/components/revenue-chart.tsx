@@ -99,6 +99,19 @@ function formatRangeLabel(data: RevenueDataPoint[]) {
 	return `Từ ${formatShortDate(firstPoint.date)} đến ${formatShortDate(lastPoint.date)}`;
 }
 
+// The day with the most revenue, or null when there is no data.
+function findBestDay(data: RevenueDataPoint[]) {
+	let bestDay: RevenueDataPoint | null = null;
+
+	for (const point of data) {
+		if (!bestDay || point.amount > bestDay.amount) {
+			bestDay = point;
+		}
+	}
+
+	return bestDay;
+}
+
 function RevenueTooltip({ active, payload }: TooltipContentProps) {
 	const point = payload?.[0]?.payload as RevenueDataPoint | undefined;
 
@@ -121,11 +134,17 @@ export function RevenueChart({ data, error }: RevenueChartProps) {
 	const totalRevenue = useMemo(() => {
 		return selectedData.reduce((total, point) => total + point.amount, 0);
 	}, [selectedData]);
+	// Both series end today, so this is the average over the days so far.
+	const averageRevenue =
+		selectedData.length > 0 ? Math.round(totalRevenue / selectedData.length) : 0;
+	const bestDay = findBestDay(selectedData);
 	const isEmpty = selectedData.every((point) => point.amount === 0);
 	const needsHorizontalScroll = period === "month" && selectedData.length > 14;
 
 	return (
-		<Card className="gap-0 rounded-2xl py-0 shadow-sm">
+		// h-full + flex-1 below: the card stretches to the height of the
+		// service mix card next to it, and the chart fills the extra space.
+		<Card className="h-full gap-0 rounded-2xl py-0 shadow-sm">
 			<CardHeader className="border-border gap-4 border-b p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-6">
 				<div className="min-w-0">
 					<h2
@@ -171,11 +190,11 @@ export function RevenueChart({ data, error }: RevenueChartProps) {
 				</div>
 			</CardHeader>
 
-			<CardContent className="p-5 sm:p-6">
+			<CardContent className="flex flex-1 flex-col p-5 sm:p-6">
 				{error ? (
 					<div
 						role="alert"
-						className="flex min-h-72 flex-col items-center justify-center text-center"
+						className="flex min-h-72 flex-1 flex-col items-center justify-center text-center"
 					>
 						<div className="bg-destructive/10 text-destructive flex size-11 items-center justify-center rounded-xl">
 							<CircleAlert aria-hidden="true" className="size-5" />
@@ -197,7 +216,7 @@ export function RevenueChart({ data, error }: RevenueChartProps) {
 				) : isEmpty ? (
 					<div
 						role="status"
-						className="flex min-h-72 flex-col items-center justify-center text-center"
+						className="flex min-h-72 flex-1 flex-col items-center justify-center text-center"
 					>
 						<div className="bg-muted text-muted-foreground flex size-11 items-center justify-center rounded-xl">
 							<BarChart3 aria-hidden="true" className="size-5" />
@@ -211,26 +230,49 @@ export function RevenueChart({ data, error }: RevenueChartProps) {
 					<figure
 						aria-labelledby="revenue-chart-title"
 						aria-describedby="revenue-chart-description revenue-chart-range"
+						className="flex flex-1 flex-col"
 					>
-						<div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-							<div aria-live="polite" aria-atomic="true">
-								<p className="text-muted-foreground text-xs font-medium">
+						<dl
+							aria-live="polite"
+							aria-atomic="true"
+							className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-3"
+						>
+							<div className="col-span-2 sm:col-span-1">
+								<dt className="text-muted-foreground text-xs font-medium">
 									Tổng tiền đã thu
-								</p>
-								<p className="text-foreground mt-1 text-2xl font-bold tracking-tight tabular-nums">
+								</dt>
+								<dd className="text-foreground mt-1 text-2xl font-bold tracking-tight tabular-nums">
 									{formatCurrency(totalRevenue)}
-								</p>
+								</dd>
 							</div>
-							<p id="revenue-chart-range" className="text-muted-foreground text-xs">
-								{formatRangeLabel(selectedData)}
-							</p>
-						</div>
+							<div>
+								<dt className="text-muted-foreground text-xs font-medium">
+									Trung bình mỗi ngày
+								</dt>
+								<dd className="text-foreground mt-1 text-base font-semibold tabular-nums">
+									{formatCurrency(averageRevenue)}
+								</dd>
+							</div>
+							{bestDay ? (
+								<div>
+									<dt className="text-muted-foreground text-xs font-medium">
+										Ngày thu cao nhất
+									</dt>
+									<dd className="text-foreground mt-1 text-base font-semibold tabular-nums">
+										{formatCurrency(bestDay.amount)}
+									</dd>
+									<dd className="text-muted-foreground text-xs tabular-nums">
+										{formatShortDate(bestDay.date)}
+									</dd>
+								</div>
+							) : null}
+						</dl>
 
-						<div className="-mx-2 overflow-x-auto px-2 pb-1">
+						<div className="-mx-2 flex flex-1 flex-col overflow-x-auto px-2 pb-1">
 							<div
 								className={cn(
-									"h-72 w-full",
-									needsHorizontalScroll && "min-w-[680px] md:min-w-0"
+									"min-h-72 w-full flex-1",
+									needsHorizontalScroll && "min-w-170 md:min-w-0"
 								)}
 							>
 								<ResponsiveContainer width="100%" height="100%">
@@ -281,8 +323,12 @@ export function RevenueChart({ data, error }: RevenueChartProps) {
 							</div>
 						</div>
 
+						<p id="revenue-chart-range" className="text-muted-foreground mt-3 text-xs">
+							{formatRangeLabel(selectedData)}
+						</p>
+
 						{needsHorizontalScroll ? (
-							<p className="text-muted-foreground mt-2 text-xs md:hidden">
+							<p className="text-muted-foreground mt-1 text-xs md:hidden">
 								Cuộn ngang để xem đầy đủ các ngày trong tháng.
 							</p>
 						) : null}
@@ -313,10 +359,13 @@ export function RevenueChart({ data, error }: RevenueChartProps) {
 
 export function RevenueChartSkeleton() {
 	return (
-		<Card role="status" aria-live="polite" className="gap-0 rounded-2xl py-0 shadow-sm">
+		<Card role="status" aria-live="polite" className="h-full gap-0 rounded-2xl py-0 shadow-sm">
 			<span className="sr-only">Đang tải biểu đồ doanh thu...</span>
 
-			<div aria-hidden="true" className="animate-pulse motion-reduce:animate-none">
+			<div
+				aria-hidden="true"
+				className="flex flex-1 animate-pulse flex-col motion-reduce:animate-none"
+			>
 				<CardHeader className="border-border gap-4 border-b p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-6">
 					<div className="space-y-2">
 						<div className="bg-muted h-5 w-44 rounded-md" />
@@ -325,12 +374,12 @@ export function RevenueChartSkeleton() {
 					<div className="bg-muted h-10 w-40 rounded-lg" />
 				</CardHeader>
 
-				<CardContent className="p-5 sm:p-6">
+				<CardContent className="flex flex-1 flex-col p-5 sm:p-6">
 					<div className="mb-5 space-y-2">
 						<div className="bg-muted h-3 w-24 rounded-md" />
 						<div className="bg-muted h-8 w-40 rounded-md" />
 					</div>
-					<div className="bg-muted h-72 rounded-xl" />
+					<div className="bg-muted min-h-72 flex-1 rounded-xl" />
 				</CardContent>
 			</div>
 		</Card>
