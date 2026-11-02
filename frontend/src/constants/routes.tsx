@@ -1,4 +1,4 @@
-import { ClipboardList, Gauge, Package, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, Gauge, Package, UserCog, Users } from "lucide-react";
 
 export const PATHS = {
 	HOME: "/",
@@ -8,6 +8,10 @@ export const PATHS = {
 	CREATE_ORDER: "/orders/new",
 	CUSTOMERS: "/customers",
 	SERVICES: "/services",
+	STAFF: "/staff",
+	SCHEDULES: "/schedules",
+	// Public staff link page: /s/<token> (no login, excluded from proxy.ts)
+	STAFF_PORTAL: "/s",
 	REPORTS: "/reports",
 	SETTINGS: "/settings"
 } as const;
@@ -15,26 +19,44 @@ export const PATHS = {
 export type PathKey = keyof typeof PATHS;
 export type PathValue = (typeof PATHS)[PathKey];
 
+// adminOnly: hidden from the staff account in the sidebar. The backend and
+// RLS still block those pages, this only hides links that would not work.
 export const APP_ROUTES = [
 	{
 		title: "Tổng quan",
 		href: PATHS.HOME,
-		icon: Gauge
+		icon: Gauge,
+		adminOnly: false
 	},
 	{
 		title: "Đơn hàng",
 		href: PATHS.ORDERS,
-		icon: ClipboardList
+		icon: ClipboardList,
+		adminOnly: false
 	},
 	{
 		title: "Khách hàng",
 		href: PATHS.CUSTOMERS,
-		icon: Users
+		icon: Users,
+		adminOnly: false
 	},
 	{
 		title: "Dịch vụ",
 		href: PATHS.SERVICES,
-		icon: Package
+		icon: Package,
+		adminOnly: false
+	},
+	{
+		title: "Nhân viên",
+		href: PATHS.STAFF,
+		icon: UserCog,
+		adminOnly: true
+	},
+	{
+		title: "Lịch làm",
+		href: PATHS.SCHEDULES,
+		icon: CalendarDays,
+		adminOnly: true
 	}
 	// {
 	//   title: "Reports",

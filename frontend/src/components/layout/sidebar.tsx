@@ -10,6 +10,12 @@ import { APP_ROUTES } from "@/constants/routes";
 type AppNavigationProps = {
 	className?: string;
 	onNavigate?: () => void;
+	// false = hide routes marked adminOnly
+	isAdmin: boolean;
+};
+
+type AppSidebarProps = {
+	isAdmin: boolean;
 };
 
 type AppBrandProps = {
@@ -37,15 +43,16 @@ export function AppBrand({ className }: AppBrandProps) {
 	);
 }
 
-export function AppNavigation({ className, onNavigate }: AppNavigationProps) {
+export function AppNavigation({ className, onNavigate, isAdmin }: AppNavigationProps) {
 	const pathname = usePathname();
+	const routes = APP_ROUTES.filter((route) => isAdmin || !route.adminOnly);
 
 	return (
 		<nav
 			aria-label="Điều hướng chính"
 			className={cn("flex-1 space-y-1.5 px-3 py-4", className)}
 		>
-			{APP_ROUTES.map((route) => {
+			{routes.map((route) => {
 				const Icon = route.icon;
 
 				const isActive =
@@ -73,7 +80,7 @@ export function AppNavigation({ className, onNavigate }: AppNavigationProps) {
 	);
 }
 
-export function AppSidebar() {
+export function AppSidebar({ isAdmin }: AppSidebarProps) {
 	return (
 		<aside
 			aria-label="Thanh điều hướng"
@@ -83,7 +90,7 @@ export function AppSidebar() {
 				<AppBrand />
 			</div>
 
-			<AppNavigation />
+			<AppNavigation isAdmin={isAdmin} />
 		</aside>
 	);
 }

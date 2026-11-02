@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 
 import { env } from "./config/env.js";
 import {authRoutes} from "./modules/auth/auth.routes.js";
@@ -7,6 +8,10 @@ import {servicesRoutes} from "./modules/services/services.routes.js";
 import { customersRoutes } from "./modules/customers/customers.route.js";
 import { ordersRoutes } from "./modules/orders/orders.routes.js";
 import { dashboardRoutes } from "./modules/dashboard/dashboard.routes.js";
+import { staffMembersRoutes } from "./modules/staff-members/staff-members.routes.js";
+import { shiftTemplatesRoutes } from "./modules/shift-templates/shift-templates.routes.js";
+import { schedulesRoutes } from "./modules/schedules/schedules.routes.js";
+import { staffPortalRoutes } from "./modules/staff-portal/staff-portal.routes.js";
 
 export function buildApp() {
   const app = Fastify({
@@ -50,7 +55,13 @@ export function buildApp() {
 
   app.register(cors, {
   origin: env.FRONTEND_URL,
-  methods: ["GET", "HEAD", "POST", "PATCH", "OPTIONS"],
+  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  });
+
+  // global: false = only routes with config.rateLimit are limited
+  // (the public staff link routes). Requests are counted per IP.
+  app.register(rateLimit, {
+    global: false,
   });
 
   app.get("/health", async () => {
@@ -65,5 +76,9 @@ export function buildApp() {
   app.register(customersRoutes,{prefix:"/api/customers"})
   app.register(dashboardRoutes, {prefix: "/api/dashboard" });
   app.register(ordersRoutes, {prefix: "/api/orders",});
+  app.register(staffMembersRoutes, { prefix: "/api/staff-members" });
+  app.register(shiftTemplatesRoutes, { prefix: "/api/shift-templates" });
+  app.register(schedulesRoutes, { prefix: "/api" });
+  app.register(staffPortalRoutes, { prefix: "/api/staff-portal" });
   return app;
 }

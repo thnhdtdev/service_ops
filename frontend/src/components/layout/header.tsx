@@ -35,6 +35,7 @@ type HeaderUser = {
 
 type AppHeaderProps = {
 	user: HeaderUser;
+	isAdmin: boolean;
 };
 
 function getPageTitle(pathname: string) {
@@ -46,6 +47,10 @@ function getPageTitle(pathname: string) {
 
 	if (pathname.startsWith(`${PATHS.CUSTOMERS}/`)) {
 		return "Hồ sơ khách hàng";
+	}
+
+	if (pathname.startsWith(`${PATHS.SCHEDULES}/`)) {
+		return "Lịch làm trong tuần";
 	}
 
 	const route = APP_ROUTES.find((item) => item.href === pathname);
@@ -78,6 +83,18 @@ function getPageDescription(pathname: string) {
 		return "Quản lý giá và trạng thái cung cấp dịch vụ.";
 	}
 
+	if (pathname === PATHS.STAFF) {
+		return "Quản lý nhân viên và link riêng để báo lịch bận, xem lịch làm.";
+	}
+
+	if (pathname === PATHS.SCHEDULES) {
+		return "Tạo lịch theo tuần, quản lý ca mẫu và theo dõi lịch bận của nhân viên.";
+	}
+
+	if (pathname.startsWith(`${PATHS.SCHEDULES}/`)) {
+		return "Xếp nhân viên vào ca, xem ai rảnh hoặc bận, rồi công bố lịch.";
+	}
+
 	if (pathname === PATHS.REPORTS) {
 		return "Xem doanh thu, thống kê đơn hàng và các đơn chưa thanh toán.";
 	}
@@ -89,7 +106,7 @@ function getPageDescription(pathname: string) {
 	return "Quản lý hoạt động giặt ủi và chăm sóc giày.";
 }
 
-export function AppHeader({ user }: AppHeaderProps) {
+export function AppHeader({ user, isAdmin }: AppHeaderProps) {
 	const pathname = usePathname();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -141,7 +158,10 @@ export function AppHeader({ user }: AppHeaderProps) {
 								</SheetDescription>
 								<AppBrand />
 							</SheetHeader>
-							<AppNavigation onNavigate={() => setIsMobileMenuOpen(false)} />
+							<AppNavigation
+								isAdmin={isAdmin}
+								onNavigate={() => setIsMobileMenuOpen(false)}
+							/>
 							<div className="border-border mt-auto border-t px-4 py-4 sm:hidden">
 								<div className="flex items-center justify-between gap-3">
 									<span className="text-muted-foreground text-sm font-medium">
