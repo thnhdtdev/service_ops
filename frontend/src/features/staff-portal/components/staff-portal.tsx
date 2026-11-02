@@ -16,7 +16,7 @@ export function StaffPortal({ token }: StaffPortalProps) {
 
 	return (
 		<main className="bg-background min-h-dvh">
-			<div className="mx-auto max-w-2xl space-y-4 px-4 py-6 sm:py-10">
+			<div className="mx-auto max-w-5xl space-y-4 px-4 py-6 sm:py-10">
 				<header className="flex items-center gap-3">
 					<Image
 						src="/favicons.png"

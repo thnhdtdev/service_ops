@@ -25,6 +25,11 @@ export function getIsoWeekday(date: string): Weekday {
 	return (day === 0 ? 7 : day) as Weekday;
 }
 
+// Monday of the week that contains `date`.
+export function getWeekStart(date: string) {
+	return addDays(date, 1 - getIsoWeekday(date));
+}
+
 export function getWeekdayLabel(date: string) {
 	return WEEKDAY_LABEL[getIsoWeekday(date)];
 }
@@ -46,6 +51,13 @@ export function formatWeekRange(weekStart: string) {
 // "07:00:00" -> "07:00"
 export function formatShiftTime(time: string) {
 	return time.slice(0, 5);
+}
+
+// Today in the browser's local date, as "YYYY-MM-DD".
+export function getTodayDate() {
+	const date = new Date();
+
+	return `${date.getFullYear()}-${padTwo(date.getMonth() + 1)}-${padTwo(date.getDate())}`;
 }
 
 // Next Monday in the browser's local date, as "YYYY-MM-DD".
