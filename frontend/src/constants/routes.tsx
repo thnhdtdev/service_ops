@@ -1,4 +1,4 @@
-import { ClipboardList, Gauge, Package, Users } from "lucide-react";
+import { ClipboardList, Gauge, Package, UserCog, Users } from "lucide-react";
 
 export const PATHS = {
 	HOME: "/",
@@ -8,6 +8,9 @@ export const PATHS = {
 	CREATE_ORDER: "/orders/new",
 	CUSTOMERS: "/customers",
 	SERVICES: "/services",
+	STAFF: "/staff",
+	// Public staff link page: /s/<token> (no login, excluded from proxy.ts)
+	STAFF_PORTAL: "/s",
 	REPORTS: "/reports",
 	SETTINGS: "/settings"
 } as const;
@@ -35,6 +38,11 @@ export const APP_ROUTES = [
 		title: "Dịch vụ",
 		href: PATHS.SERVICES,
 		icon: Package
+	},
+	{
+		title: "Nhân viên",
+		href: PATHS.STAFF,
+		icon: UserCog
 	}
 	// {
 	//   title: "Reports",

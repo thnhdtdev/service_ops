@@ -78,6 +78,10 @@ function getPageDescription(pathname: string) {
 		return "Quản lý giá và trạng thái cung cấp dịch vụ.";
 	}
 
+	if (pathname === PATHS.STAFF) {
+		return "Quản lý nhân viên và link riêng để báo lịch bận, xem lịch làm.";
+	}
+
 	if (pathname === PATHS.REPORTS) {
 		return "Xem doanh thu, thống kê đơn hàng và các đơn chưa thanh toán.";
 	}
