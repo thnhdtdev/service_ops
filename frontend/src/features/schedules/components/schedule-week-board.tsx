@@ -205,38 +205,47 @@ export function ScheduleWeekBoard({ weekId }: ScheduleWeekBoardProps) {
 				</div>
 			) : null}
 
-			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
-				{days.map((day) => (
-					<section
-						key={day.date}
-						aria-label={`${getWeekdayLabel(day.date)}, ${formatDayMonth(day.date)}`}
-						className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-3 shadow-sm"
-					>
-						<h3 className="flex items-baseline justify-between px-1">
-							<span className="text-sm font-semibold">
-								{getWeekdayLabel(day.date)}
-							</span>
-							<span className="text-muted-foreground font-mono text-xs tabular-nums">
-								{formatDayMonth(day.date)}
-							</span>
-						</h3>
+			{/* Columns follow the board's own width (container query), not the screen
+			    width, so the sidebar and page padding are taken into account.
+			    7 columns only when each day still has room for its shift cards. */}
+			<div className="@container">
+				<div className="grid gap-3 @min-[36rem]:grid-cols-2 @min-[60rem]:grid-cols-4 @min-[84rem]:grid-cols-7">
+					{days.map((day) => (
+						<section
+							key={day.date}
+							aria-label={`${getWeekdayLabel(day.date)}, ${formatDayMonth(day.date)}`}
+							className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-3 shadow-sm"
+						>
+							<h3 className="flex items-baseline justify-between px-1">
+								<span className="text-sm font-semibold">
+									{getWeekdayLabel(day.date)}
+								</span>
+								<span className="text-muted-foreground font-mono text-xs tabular-nums">
+									{formatDayMonth(day.date)}
+								</span>
+							</h3>
 
-						{day.shifts.map((shift) => (
-							<ShiftCard
-								key={shift.id}
-								shift={shift}
-								onChanged={refetch}
-								onError={setActionError}
+							{day.shifts.map((shift) => (
+								<ShiftCard
+									key={shift.id}
+									shift={shift}
+									onChanged={refetch}
+									onError={setActionError}
+								/>
+							))}
+
+							{day.shifts.length === 0 ? (
+								<p className="text-muted-foreground px-1 text-xs">Không có ca.</p>
+							) : null}
+
+							<AddShiftDialog
+								weekId={week.id}
+								shiftDate={day.date}
+								onSaved={refetch}
 							/>
-						))}
-
-						{day.shifts.length === 0 ? (
-							<p className="text-muted-foreground px-1 text-xs">Không có ca.</p>
-						) : null}
-
-						<AddShiftDialog weekId={week.id} shiftDate={day.date} onSaved={refetch} />
-					</section>
-				))}
+						</section>
+					))}
+				</div>
 			</div>
 		</div>
 	);

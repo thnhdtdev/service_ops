@@ -66,12 +66,16 @@ export function AssignStaffDialog({ shift, onAssigned }: AssignStaffDialogProps)
 					type="button"
 					variant="outline"
 					size="sm"
-					className="w-full"
+					// h-auto + flex-wrap: in a narrow day column "(N rảnh)" moves to a
+					// second line instead of overflowing the shift card.
+					className="h-auto min-h-8 w-full flex-wrap gap-y-0.5 py-1.5 whitespace-normal"
 					aria-label={`Xếp nhân viên vào ${shiftLabel}`}
 				>
-					<UserPlus aria-hidden="true" data-icon="inline-start" />
-					Xếp nhân viên
-					<span className="text-muted-foreground font-normal">
+					<span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+						<UserPlus aria-hidden="true" />
+						Xếp nhân viên
+					</span>
+					<span className="text-muted-foreground font-normal whitespace-nowrap">
 						({shift.available.length} rảnh)
 					</span>
 				</Button>
