@@ -35,6 +35,7 @@ type HeaderUser = {
 
 type AppHeaderProps = {
 	user: HeaderUser;
+	isAdmin: boolean;
 };
 
 function getPageTitle(pathname: string) {
@@ -105,7 +106,7 @@ function getPageDescription(pathname: string) {
 	return "Quản lý hoạt động giặt ủi và chăm sóc giày.";
 }
 
-export function AppHeader({ user }: AppHeaderProps) {
+export function AppHeader({ user, isAdmin }: AppHeaderProps) {
 	const pathname = usePathname();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -157,7 +158,10 @@ export function AppHeader({ user }: AppHeaderProps) {
 								</SheetDescription>
 								<AppBrand />
 							</SheetHeader>
-							<AppNavigation onNavigate={() => setIsMobileMenuOpen(false)} />
+							<AppNavigation
+								isAdmin={isAdmin}
+								onNavigate={() => setIsMobileMenuOpen(false)}
+							/>
 							<div className="border-border mt-auto border-t px-4 py-4 sm:hidden">
 								<div className="flex items-center justify-between gap-3">
 									<span className="text-muted-foreground text-sm font-medium">

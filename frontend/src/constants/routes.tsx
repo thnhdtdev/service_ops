@@ -19,36 +19,44 @@ export const PATHS = {
 export type PathKey = keyof typeof PATHS;
 export type PathValue = (typeof PATHS)[PathKey];
 
+// adminOnly: hidden from the staff account in the sidebar. The backend and
+// RLS still block those pages, this only hides links that would not work.
 export const APP_ROUTES = [
 	{
 		title: "Tổng quan",
 		href: PATHS.HOME,
-		icon: Gauge
+		icon: Gauge,
+		adminOnly: false
 	},
 	{
 		title: "Đơn hàng",
 		href: PATHS.ORDERS,
-		icon: ClipboardList
+		icon: ClipboardList,
+		adminOnly: false
 	},
 	{
 		title: "Khách hàng",
 		href: PATHS.CUSTOMERS,
-		icon: Users
+		icon: Users,
+		adminOnly: false
 	},
 	{
 		title: "Dịch vụ",
 		href: PATHS.SERVICES,
-		icon: Package
+		icon: Package,
+		adminOnly: false
 	},
 	{
 		title: "Nhân viên",
 		href: PATHS.STAFF,
-		icon: UserCog
+		icon: UserCog,
+		adminOnly: true
 	},
 	{
 		title: "Lịch làm",
 		href: PATHS.SCHEDULES,
-		icon: CalendarDays
+		icon: CalendarDays,
+		adminOnly: true
 	}
 	// {
 	//   title: "Reports",
