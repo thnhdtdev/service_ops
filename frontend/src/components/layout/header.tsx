@@ -100,7 +100,7 @@ function getPageDescription(pathname: string) {
 	}
 
 	if (pathname === PATHS.SETTINGS) {
-		return "Quản lý thiết lập hệ thống và thông tin cửa hàng.";
+		return "Bật thông báo đẩy trên thiết bị này khi tiệm ghi nhận thanh toán.";
 	}
 
 	return "Quản lý hoạt động giặt ủi và chăm sóc giày.";

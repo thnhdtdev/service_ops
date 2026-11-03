@@ -42,7 +42,14 @@ export const metadata: Metadata = {
 	icons: {
 		icon: "/favicons.png",
 		shortcut: "/favicons.png",
-		apple: "/favicons.png"
+		// iPhone home screen icon, served from app/apple-icon.png (180x180).
+		apple: "/apple-icon.png"
+	},
+	// Name under the icon on the iPhone home screen; opens full screen.
+	appleWebApp: {
+		capable: true,
+		title: "ServiceOps",
+		statusBarStyle: "default"
 	}
 };
 

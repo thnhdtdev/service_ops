@@ -12,6 +12,7 @@ import { staffMembersRoutes } from "./modules/staff-members/staff-members.routes
 import { shiftTemplatesRoutes } from "./modules/shift-templates/shift-templates.routes.js";
 import { schedulesRoutes } from "./modules/schedules/schedules.routes.js";
 import { staffPortalRoutes } from "./modules/staff-portal/staff-portal.routes.js";
+import { notificationsRoutes } from "./modules/notifications/notifications.routes.js";
 
 export function buildApp() {
   const app = Fastify({
@@ -80,5 +81,6 @@ export function buildApp() {
   app.register(shiftTemplatesRoutes, { prefix: "/api/shift-templates" });
   app.register(schedulesRoutes, { prefix: "/api" });
   app.register(staffPortalRoutes, { prefix: "/api/staff-portal" });
+  app.register(notificationsRoutes, { prefix: "/api/notifications" });
   return app;
 }
