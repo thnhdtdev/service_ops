@@ -1,6 +1,10 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 
 import { requireAuth } from "../../middleware/auth/auth.middleware.js";
+import {
+	sendPaymentNotification,
+	type PaymentNotificationTarget
+} from "../notifications/notifications.service.js";
 
 import {
 	createOrderSchema,
@@ -15,6 +19,31 @@ import {
 	getOrders,
 	addOrderPayment
 } from "./orders.service.js";
+
+// Sends the push without waiting for it, so the response is not delayed.
+// The payment is already saved: a failed notification is only logged.
+function sendPaymentNotificationInBackground(
+	request: FastifyRequest,
+	payment: PaymentNotificationTarget
+) {
+	sendPaymentNotification(
+		request.accessToken,
+		payment,
+		request.log
+	)
+		.then((result) => {
+			request.log.info(
+				result,
+				"Payment notification sent"
+			);
+		})
+		.catch((error: unknown) => {
+			request.log.error(
+				{ err: error },
+				"Failed to send payment notification"
+			);
+		});
+}
 
 export async function ordersRoutes(
 	app: FastifyInstance
@@ -43,6 +72,16 @@ export async function ordersRoutes(
 				request.accessToken,
 				result.data
 			);
+
+			// The order was paid (fully or partly) when it was created.
+			if (result.data.paid_amount && result.data.paid_amount > 0) {
+				sendPaymentNotificationInBackground(request, {
+					orderId: data.order.id,
+					amount: result.data.paid_amount,
+					method: result.data.payment_method ?? "other",
+					paymentKey: `order-${data.order.id}`
+				});
+			}
 
 			return reply
 				.status(201)
@@ -165,6 +204,15 @@ export async function ordersRoutes(
 				return reply.status(404).send({
 					message:
 						"Order not found"
+				});
+			}
+
+			if (data.status === "success") {
+				sendPaymentNotificationInBackground(request, {
+					orderId: paramsResult.data.id,
+					amount: Number(data.payment.amount),
+					method: data.payment.method,
+					paymentKey: data.payment.id
 				});
 			}
 

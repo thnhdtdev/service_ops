@@ -8,6 +8,7 @@ import type {
 	PushNotificationPayload,
 	PushSubscriptionInput
 } from "./notifications.schema.js";
+import { buildPaymentNotification } from "./notifications.utils.js";
 
 // Every push is signed with these keys. The browser only accepts pushes
 // signed with the private key that matches the public key it subscribed with.
@@ -164,6 +165,41 @@ export async function sendPushToAdmins(
 	const subscriptions = (data ?? []) as StoredPushSubscription[];
 
 	return sendPushToSubscriptions(accessToken, subscriptions, payload, log);
+}
+
+export type PaymentNotificationTarget = {
+	orderId: string;
+	amount: number;
+	method: string;
+	paymentKey: string;
+};
+
+// Called after a payment was recorded (new order paid now, or a later payment).
+// Looks up the order code and customer name, then notifies all admins.
+export async function sendPaymentNotification(
+	accessToken: string,
+	payment: PaymentNotificationTarget,
+	log: FastifyBaseLogger
+) {
+	const supabase = createUserSupabase(accessToken);
+
+	const { data: order, error } = await supabase
+		.from("orders")
+		.select("order_code, customer_name")
+		.eq("id", payment.orderId)
+		.single();
+
+	if (error) {
+		throw error;
+	}
+
+	const payload = buildPaymentNotification({
+		...payment,
+		orderCode: order.order_code,
+		customerName: order.customer_name
+	});
+
+	return sendPushToAdmins(accessToken, payload, log);
 }
 
 // "Gửi thử": only to the devices of the admin who pressed the button.

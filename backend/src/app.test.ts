@@ -18,6 +18,7 @@ import { createScheduleWeekSchema } from "./modules/schedules/schedules.schema.j
 import { updateShiftTemplateSchema } from "./modules/shift-templates/shift-templates.schema.js";
 import { saveBusyTimesSchema } from "./modules/staff-portal/staff-portal.schema.js";
 import { pushSubscriptionSchema } from "./modules/notifications/notifications.schema.js";
+import { buildPaymentNotification } from "./modules/notifications/notifications.utils.js";
 
 test("GET /health returns the API status", async (context) => {
   const app = buildApp();
@@ -253,4 +254,21 @@ test("push subscriptions need an https endpoint and both keys", () => {
   assert.equal(pushSubscriptionSchema.safeParse(subscription).success, true);
   assert.equal(pushSubscriptionSchema.safeParse({ ...subscription, endpoint: "http://push.example.com/1" }).success, false);
   assert.equal(pushSubscriptionSchema.safeParse({ ...subscription, keys: { p256dh: "abc" } }).success, false);
+});
+
+test("payment notification shows amount, method, order and opens the order", () => {
+  const payload = buildPaymentNotification({
+    orderId: "5f0c7a52-0000-4000-8000-000000000001",
+    orderCode: "SB-031126-004",
+    customerName: "Nguyễn Văn A",
+    amount: 200000,
+    method: "bank_transfer",
+    paymentKey: "p1",
+  });
+
+  // Intl puts a non-breaking space before ₫.
+  assert.equal(payload.title, "Đã nhận 200.000\u00a0₫");
+  assert.equal(payload.body, "Chuyển khoản · SB-031126-004 · Nguyễn Văn A");
+  assert.equal(payload.url, "/orders/5f0c7a52-0000-4000-8000-000000000001");
+  assert.equal(payload.tag, "payment-p1");
 });
