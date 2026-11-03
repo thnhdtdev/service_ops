@@ -17,6 +17,7 @@ import {
 import { createScheduleWeekSchema } from "./modules/schedules/schedules.schema.js";
 import { updateShiftTemplateSchema } from "./modules/shift-templates/shift-templates.schema.js";
 import { saveBusyTimesSchema } from "./modules/staff-portal/staff-portal.schema.js";
+import { pushSubscriptionSchema } from "./modules/notifications/notifications.schema.js";
 
 test("GET /health returns the API status", async (context) => {
   const app = buildApp();
@@ -221,4 +222,35 @@ test("busy times accept weekly and one-day items only when valid", () => {
   // A weekly item needs a weekday, a one-day item needs a date.
   assert.equal(saveBusyTimesSchema.safeParse({ busy_times: [{ ...oneDay, repeat_weekly: true }] }).success, false);
   assert.equal(saveBusyTimesSchema.safeParse({ busy_times: Array(51).fill(oneDay) }).success, false);
+});
+
+test("notification routes require login", async (context) => {
+  const app = buildApp();
+
+  context.after(async () => {
+    await app.close();
+  });
+
+  const requests = [
+    { method: "GET", url: "/api/notifications/public-key" },
+    { method: "POST", url: "/api/notifications/subscriptions" },
+    { method: "DELETE", url: "/api/notifications/subscriptions" },
+    { method: "POST", url: "/api/notifications/test" },
+  ] as const;
+
+  for (const request of requests) {
+    const response = await app.inject(request);
+    assert.equal(response.statusCode, 401, `${request.method} ${request.url}`);
+  }
+});
+
+test("push subscriptions need an https endpoint and both keys", () => {
+  const subscription = {
+    endpoint: "https://web.push.apple.com/QGuQyavXutnMH",
+    keys: { p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA", auth: "tBHItJI5svbpez7KI4CCXg" },
+  };
+
+  assert.equal(pushSubscriptionSchema.safeParse(subscription).success, true);
+  assert.equal(pushSubscriptionSchema.safeParse({ ...subscription, endpoint: "http://push.example.com/1" }).success, false);
+  assert.equal(pushSubscriptionSchema.safeParse({ ...subscription, keys: { p256dh: "abc" } }).success, false);
 });
