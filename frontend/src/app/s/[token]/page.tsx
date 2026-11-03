@@ -5,7 +5,7 @@ import { StaffPortal } from "@/features/staff-portal/components/staff-portal";
 // Public page for one staff member, opened from their personal link.
 // Not under (dashboard) and excluded from proxy.ts: no login needed.
 export const metadata: Metadata = {
-	title: "Lịch làm | ServiceOps",
+	title: "Lịch làm",
 	robots: {
 		index: false,
 		follow: false

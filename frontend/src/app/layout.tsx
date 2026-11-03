@@ -12,8 +12,33 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-	title: "ServiceOps",
-	description: "Hệ thống quản lý đơn hàng giặt ủi và chăm sóc giày.",
+	metadataBase: new URL("https://www.skyblue.io.vn"),
+	title: {
+		default: "ServiceOps – Quản lý giặt ủi & chăm sóc giày",
+		template: "%s | ServiceOps"
+	},
+	description:
+		"Quản lý đơn hàng, khách hàng, thanh toán và lịch làm nhân viên cho tiệm giặt ủi và chăm sóc giày.",
+	applicationName: "ServiceOps",
+	openGraph: {
+		type: "website",
+		locale: "vi_VN",
+		url: "/",
+		siteName: "ServiceOps",
+		title: "ServiceOps – Quản lý giặt ủi & chăm sóc giày",
+		description:
+			"Quản lý đơn hàng, khách hàng, thanh toán và lịch làm nhân viên cho tiệm giặt ủi và chăm sóc giày."
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "ServiceOps – Quản lý giặt ủi & chăm sóc giày",
+		description:
+			"Quản lý đơn hàng, khách hàng, thanh toán và lịch làm nhân viên cho tiệm giặt ủi và chăm sóc giày."
+	},
+	robots: {
+		index: false,
+		follow: false
+	},
 	icons: {
 		icon: "/favicons.png",
 		shortcut: "/favicons.png",
