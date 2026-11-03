@@ -1,5 +1,6 @@
 import { AppHeader } from "@/components/layout/header";
 import { AppSidebar } from "@/components/layout/sidebar";
+import { PushSubscriptionSync } from "@/features/notifications/components/push-subscription-sync";
 import { PATHS } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
@@ -26,6 +27,8 @@ export async function DashboardShell({ children }: DashboardShellProps) {
 		<div className="bg-background text-foreground min-h-[100dvh]">
 			<div className="flex min-h-[100dvh]">
 				<AppSidebar isAdmin={isAdmin} />
+				{/* Only admins receive payment notifications. */}
+				{isAdmin ? <PushSubscriptionSync /> : null}
 
 				<div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col">
 					<AppHeader user={currentUser} isAdmin={isAdmin} />

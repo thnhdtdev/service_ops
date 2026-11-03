@@ -1,4 +1,12 @@
-import { CalendarDays, ClipboardList, Gauge, Package, UserCog, Users } from "lucide-react";
+import {
+	CalendarDays,
+	ClipboardList,
+	Gauge,
+	Package,
+	Settings,
+	UserCog,
+	Users
+} from "lucide-react";
 
 export const PATHS = {
 	HOME: "/",
@@ -57,15 +65,16 @@ export const APP_ROUTES = [
 		href: PATHS.SCHEDULES,
 		icon: CalendarDays,
 		adminOnly: true
+	},
+	{
+		title: "Cài đặt",
+		href: PATHS.SETTINGS,
+		icon: Settings,
+		adminOnly: true
 	}
 	// {
 	//   title: "Reports",
 	//   href: PATHS.REPORTS,
 	//   icon: BarChart3,
-	// },
-	// {
-	//   title: "Settings",
-	//   href: PATHS.SETTINGS,
-	//   icon: Settings,
 	// },
 ] as const;
