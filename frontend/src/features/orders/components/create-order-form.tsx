@@ -10,7 +10,11 @@ import { getOrder } from "@/features/orders/api/get-order";
 import { OrderReceipt } from "@/features/orders/components/order-receipt";
 import { RECEIPT_PAGE_STYLE } from "@/features/orders/components/receipt-print-style";
 import { createOrder } from "@/features/orders/api/create-order";
-import type { CustomerSummary } from "@/features/customers/types";
+import {
+	CustomerQuickSearch,
+	type NewCustomerDraft
+} from "@/features/customers/components/customer-quick-search";
+import type { CustomerSuggestion, CustomerSummary } from "@/features/customers/types";
 import { useCustomerLookup } from "@/features/customers/hooks/use-customer-lookup";
 import { normalizeCustomerPhone } from "@/features/customers/utils/normalize-customer-phone";
 import { useActiveServices } from "@/features/services/hooks/use-active-services";
@@ -132,6 +136,33 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 
 		previousMatchedCustomer.current = matchedCustomer;
 	}, [clearErrors, getValues, matchedCustomer, setValue]);
+
+	// Picked in "Tìm khách quen": fill phone and name, then go to the services.
+	// The phone lookup above then confirms the customer as usual.
+	function handleSelectSuggestedCustomer(customer: CustomerSuggestion) {
+		setValue("customerPhone", customer.phone ?? "", {
+			shouldDirty: true,
+			shouldValidate: true
+		});
+		setValue("customerName", customer.name, {
+			shouldDirty: true,
+			shouldValidate: true
+		});
+		setFocus(customer.phone ? "items.0.serviceId" : "customerPhone");
+	}
+
+	// "Tạo khách mới": keep what was typed and go to the first empty field.
+	function handleCreateNewCustomer(draft: NewCustomerDraft) {
+		setValue("customerPhone", draft.phone, { shouldDirty: true });
+		setValue("customerName", draft.name, { shouldDirty: true });
+		setFocus(
+			draft.phone.length < 10
+				? "customerPhone"
+				: draft.name
+					? "items.0.serviceId"
+					: "customerName"
+		);
+	}
 
 	const subtotal = useMemo(() => {
 		return watchedItems.reduce((total, item) => {
@@ -367,6 +398,19 @@ export function CreateOrderForm({ onSuccess }: CreateOrderFormProps) {
 					<h3 className="text-card-foreground text-base font-semibold">
 						Thông tin khách hàng
 					</h3>
+
+					<div className="mt-4 space-y-2">
+						<label htmlFor="customer-quick-search" className="text-sm font-medium">
+							Tìm khách quen
+						</label>
+						<CustomerQuickSearch
+							onSelect={handleSelectSuggestedCustomer}
+							onCreateNew={handleCreateNewCustomer}
+						/>
+						<p className="text-muted-foreground text-xs">
+							Gõ tên, vài số cuối điện thoại hoặc cả hai. Không cần gõ dấu.
+						</p>
+					</div>
 
 					<div className="mt-4 grid gap-4 md:grid-cols-2">
 						<div className="space-y-2">

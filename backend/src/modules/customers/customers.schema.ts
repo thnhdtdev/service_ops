@@ -40,3 +40,15 @@ export type GetCustomersQuery = z.infer<
 export type GetCustomerParams = z.infer<
 	typeof getCustomerParamsSchema
 >;
+
+// Quick search in the create order form: a name, phone digits or both,
+// e.g. "yen 202". Only letters, digits and spaces: the text goes into a
+// LIKE pattern in suggest_customers(), so % and _ must not get through.
+export const customerSuggestQuerySchema = z.object({
+	q: z
+		.string()
+		.trim()
+		.min(2, "Nhập ít nhất 2 ký tự")
+		.max(50, "Từ khóa tối đa 50 ký tự")
+		.regex(/^[\p{L}\p{N} ]+$/u, "Từ khóa chỉ gồm chữ, số và khoảng trắng")
+});

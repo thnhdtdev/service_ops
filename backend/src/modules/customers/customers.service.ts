@@ -1,4 +1,4 @@
-import { normalizePhone } from "./customers.utils.js";
+import { normalizePhone, splitCustomerSearch } from "./customers.utils.js";
 import { GetCustomersQuery } from "./customers.schema.js";
 import { createUserSupabase } from "../../lib/supabase.js";
 import { calculateOrderPaymentSummary } from "../orders/order-payment.utils.js";
@@ -501,4 +501,27 @@ export async function getCustomerById(
               totalOrderValue
           }
         };
+}
+
+// Up to 6 customers for the quick search in the create order form.
+// The matching (accents ignored, phones ending with the digits first)
+// is done by the suggest_customers() database function.
+export async function suggestCustomers(
+  accessToken: string,
+  query: string,
+) {
+  const supabase = createUserSupabase(accessToken);
+
+  const { name, digits } = splitCustomerSearch(query);
+
+  const { data, error } = await supabase.rpc("suggest_customers", {
+    p_name: name,
+    p_digits: digits,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
 }
