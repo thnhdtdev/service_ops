@@ -1,15 +1,17 @@
 import { connection } from "next/server";
 
 import type {
-	DashboardStats
+	DashboardStats,
+	StaffDashboardStats
 } from "@/features/dashboard/types";
 
 import {
 	serverApiFetch
 } from "@/lib/api/server";
 
+// The backend sends revenue only to admins (see DashboardStats types).
 export async function getDashboardStats():
-	Promise<DashboardStats> {
+	Promise<DashboardStats | StaffDashboardStats> {
 	await connection();
 
 	let response: Response;
@@ -38,7 +40,9 @@ export async function getDashboardStats():
 
 	try {
 		return (
-			(await response.json()) as DashboardStats
+			(await response.json()) as
+				| DashboardStats
+				| StaffDashboardStats
 		);
 	} catch {
 		throw new Error(

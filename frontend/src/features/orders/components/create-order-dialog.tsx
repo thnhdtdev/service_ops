@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
 	Dialog,
 	DialogContent,
@@ -14,13 +15,18 @@ import {
 } from "@/components/ui/dialog";
 import { CreateOrderForm } from "@/features/orders/components/create-order-form";
 
-export function CreateOrderDialog() {
+type CreateOrderDialogProps = {
+	// Extra classes for the button, e.g. a bigger button on the dashboard.
+	triggerClassName?: string;
+};
+
+export function CreateOrderDialog({ triggerClassName }: CreateOrderDialogProps = {}) {
 	const [open, setOpen] = useState(false);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button>
+				<Button className={cn(triggerClassName)}>
 					<Plus className="mr-2 size-4" />
 					<span className="hidden sm:inline">Tạo đơn hàng</span>
 					<span className="sm:hidden">Tạo đơn</span>

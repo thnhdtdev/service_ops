@@ -1,12 +1,14 @@
 import type { FastifyInstance } from "fastify";
 
 import { requireAuth } from "../../middleware/auth/auth.middleware.js";
+import { requireRole } from "../../middleware/auth/require-role.middleware.js";
 
 import {
 	getDashboardStats,
 	getRevenueChartData,
 	getServiceMixData
 } from "./dashboard.service.js";
+import { toStaffDashboardStats } from "./dashboard.utils.js";
 
 export async function dashboardRoutes(
 	app: FastifyInstance
@@ -22,14 +24,23 @@ export async function dashboardRoutes(
 					request.accessToken
 				);
 
-			return reply.send(data);
+			// Staff only get order counts, money stays admin-only.
+			return reply.send(
+				request.role === "admin"
+					? data
+					: toStaffDashboardStats(data)
+			);
 		}
 	);
 
+    // Admin only: shows revenue per service.
     app.get(
 	"/service-mix",
 	{
-		preHandler: requireAuth
+		preHandler: [
+			requireAuth,
+			requireRole("admin")
+		]
 	},
 	async (request, reply) => {
 		const data =
@@ -41,10 +52,14 @@ export async function dashboardRoutes(
 	}
     );
 
+    // Admin only: daily revenue.
     app.get(
 	"/revenue-chart",
 	{
-		preHandler: requireAuth
+		preHandler: [
+			requireAuth,
+			requireRole("admin")
+		]
 	},
 	async (request, reply) => {
 		const data =

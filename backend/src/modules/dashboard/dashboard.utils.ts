@@ -67,3 +67,16 @@ export function toVietnamDayBoundary(
 		`${dateKey}T00:00:00+07:00`
 	).toISOString();
 }
+
+// The staff account sees how many orders there are, never money: revenue
+// stays admin-only. Fields are listed one by one (an allowlist), so a money
+// field added to the stats later is not sent to staff by mistake.
+export function toStaffDashboardStats(stats: {
+	ordersToday: number;
+	unpaidOrders: number;
+}) {
+	return {
+		ordersToday: stats.ordersToday,
+		unpaidOrders: stats.unpaidOrders
+	};
+}

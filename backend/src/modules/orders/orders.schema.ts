@@ -106,6 +106,16 @@ export const getOrdersQuerySchema = z.object({
   status: orderStatusSchema.optional(),
 
   payment_status: paymentStatusSchema.optional(),
+
+  // Order code, customer phone or customer name.
+  // Only letters, digits, spaces and "-" are allowed, so the text can be put
+  // safely inside the PostgREST or() filter in getOrders().
+  search: z
+    .string()
+    .trim()
+    .max(50, "Từ khóa tìm kiếm tối đa 50 ký tự")
+    .regex(/^[\p{L}\p{N} -]*$/u, "Từ khóa chỉ gồm chữ, số, khoảng trắng và dấu -")
+    .optional(),
 });
 
 export const getOrderParamsSchema = z.object({
