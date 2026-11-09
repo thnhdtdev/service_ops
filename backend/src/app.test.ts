@@ -19,6 +19,7 @@ import { updateShiftTemplateSchema } from "./modules/shift-templates/shift-templ
 import { saveBusyTimesSchema } from "./modules/staff-portal/staff-portal.schema.js";
 import { pushSubscriptionSchema } from "./modules/notifications/notifications.schema.js";
 import { buildPaymentNotification } from "./modules/notifications/notifications.utils.js";
+import { toStaffDashboardStats } from "./modules/dashboard/dashboard.utils.js";
 
 test("GET /health returns the API status", async (context) => {
   const app = buildApp();
@@ -271,4 +272,29 @@ test("payment notification shows amount, method, order and opens the order", () 
   assert.equal(payload.body, "Chuyển khoản · SB-031126-004 · Nguyễn Văn A");
   assert.equal(payload.url, "/orders/5f0c7a52-0000-4000-8000-000000000001");
   assert.equal(payload.tag, "payment-p1");
+});
+
+test("dashboard stats for staff contain order counts only, no money", () => {
+  const adminStats = {
+    ordersToday: 12,
+    unpaidOrders: 3,
+    ordersWithPaymentToday: 9,
+    todayRevenue: 2450000,
+    todayOrderValue: 3100000,
+  };
+
+  assert.deepEqual(toStaffDashboardStats(adminStats), { ordersToday: 12, unpaidOrders: 3 });
+});
+
+test("dashboard routes require login", async (context) => {
+  const app = buildApp();
+
+  context.after(async () => {
+    await app.close();
+  });
+
+  for (const url of ["/api/dashboard/stats", "/api/dashboard/revenue-chart", "/api/dashboard/service-mix"]) {
+    const response = await app.inject({ method: "GET", url });
+    assert.equal(response.statusCode, 401, url);
+  }
 });

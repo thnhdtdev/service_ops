@@ -1,6 +1,11 @@
-export type DashboardStats = {
+// What the staff account receives: order counts only, no money.
+export type StaffDashboardStats = {
 	ordersToday: number;
 	unpaidOrders: number;
+};
+
+// What an admin receives: the counts plus revenue.
+export type DashboardStats = StaffDashboardStats & {
 	ordersWithPaymentToday: number;
 	todayRevenue: number;
 	todayOrderValue: number;
