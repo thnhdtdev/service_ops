@@ -67,6 +67,8 @@ export type GetOrdersParams = {
 	pageSize?: number;
 	status?: OrderStatus;
 	paymentStatus?: PaymentStatus;
+	// Order code, customer phone or customer name.
+	search?: string;
 };
 
 export type OrderItemDetail = {

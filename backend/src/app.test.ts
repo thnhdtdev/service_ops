@@ -20,6 +20,7 @@ import { saveBusyTimesSchema } from "./modules/staff-portal/staff-portal.schema.
 import { pushSubscriptionSchema } from "./modules/notifications/notifications.schema.js";
 import { buildPaymentNotification } from "./modules/notifications/notifications.utils.js";
 import { toStaffDashboardStats } from "./modules/dashboard/dashboard.utils.js";
+import { getOrdersQuerySchema } from "./modules/orders/orders.schema.js";
 
 test("GET /health returns the API status", async (context) => {
   const app = buildApp();
@@ -296,5 +297,16 @@ test("dashboard routes require login", async (context) => {
   for (const url of ["/api/dashboard/stats", "/api/dashboard/revenue-chart", "/api/dashboard/service-mix"]) {
     const response = await app.inject({ method: "GET", url });
     assert.equal(response.statusCode, 401, url);
+  }
+});
+
+test("order search accepts codes, phones and Vietnamese names, rejects filter syntax", () => {
+  for (const search of ["SB-031126-004", "0901 234 567", "Nguyễn Văn A"]) {
+    assert.equal(getOrdersQuerySchema.safeParse({ search }).success, true, search);
+  }
+
+  // , . ( ) would change the meaning of the PostgREST or() filter.
+  for (const search of ["a,status.eq.paid", "x)", "50%"]) {
+    assert.equal(getOrdersQuerySchema.safeParse({ search }).success, false, search);
   }
 });

@@ -99,6 +99,17 @@ export async function getOrders(accessToken: string, input: GetOrdersInput) {
     query = query.eq("payment_status", input.payment_status);
   }
 
+  if (input.search) {
+    const pattern = `%${input.search}%`;
+    // Phone numbers are often typed with spaces ("0901 234 567") but are
+    // stored without them.
+    const phonePattern = `%${input.search.replace(/\s+/g, "")}%`;
+
+    query = query.or(
+      `order_code.ilike.${pattern},customer_name.ilike.${pattern},customer_phone.ilike.${phonePattern}`,
+    );
+  }
+
   const { data, error, count } = await query;
 
   if (error) {

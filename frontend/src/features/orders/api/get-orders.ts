@@ -21,6 +21,10 @@ export async function getOrders(params: GetOrdersParams = {}): Promise<GetOrders
 		searchParams.set("payment_status", params.paymentStatus);
 	}
 
+	if (params.search) {
+		searchParams.set("search", params.search);
+	}
+
 	const queryString = searchParams.toString();
 
 	const url = queryString ? `/api/orders?${queryString}` : "/api/orders";

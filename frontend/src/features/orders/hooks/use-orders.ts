@@ -10,10 +10,11 @@ export function useOrders({
 	page = 1,
 	pageSize = 20,
 	status,
-	paymentStatus
+	paymentStatus,
+	search
 }: GetOrdersParams = {}) {
 	const [reloadToken, setReloadToken] = useState(0);
-	const queryKey = [page, pageSize, status ?? "", paymentStatus ?? ""].join(":");
+	const queryKey = [page, pageSize, status ?? "", paymentStatus ?? "", search ?? ""].join(":");
 	const requestKey = [queryKey, reloadToken].join(":");
 	const [state, setState] = useState<{
 		queryKey: string;
@@ -38,7 +39,8 @@ export function useOrders({
 					page,
 					pageSize,
 					status,
-					paymentStatus
+					paymentStatus,
+					search
 				});
 
 				if (!isActive) return;
@@ -69,7 +71,7 @@ export function useOrders({
 		return () => {
 			isActive = false;
 		};
-	}, [page, pageSize, paymentStatus, queryKey, requestKey, status]);
+	}, [page, pageSize, paymentStatus, queryKey, requestKey, search, status]);
 
 	const refetch = useCallback(() => {
 		setReloadToken((currentToken) => currentToken + 1);

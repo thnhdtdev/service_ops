@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
 import { DashboardStats } from "@/features/dashboard/components/dashboard-stats";
+import { StaffQuickActions } from "@/features/dashboard/components/staff-quick-actions";
 import { getDashboardStats } from "@/features/dashboard/services/get-dashboard-stats";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import {
@@ -24,6 +25,8 @@ export default async function DashboardPage() {
 	return (
 		<DashboardShell>
 			<div className="space-y-6">
+				{isAdmin ? null : <StaffQuickActions />}
+
 				<DashboardStats stats={dashboardStats} />
 
 				{/* Revenue charts are admin-only (the backend also returns 403 to staff),
