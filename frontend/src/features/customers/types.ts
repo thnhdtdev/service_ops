@@ -6,6 +6,15 @@ export type CustomerSummary = {
 	phone: string | null;
 };
 
+// One result of the quick search in the create order form.
+export type CustomerSuggestion = {
+	id: string;
+	name: string;
+	phone: string | null;
+	// Last order that was not cancelled (null = no order yet).
+	last_order_at: string | null;
+};
+
 export type CustomerListItem = {
 	id: string;
 	name: string;
