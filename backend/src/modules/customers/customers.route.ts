@@ -1,10 +1,39 @@
 import type { FastifyInstance } from "fastify";
 
 import { requireAuth } from "../../middleware/auth/auth.middleware.js";
-import { customerLookupSchema, getCustomerParamsSchema, getCustomersQuerySchema } from "./customers.schema.js";
-import { findCustomerByPhone, getCustomerById, getCustomers } from "./customers.service.js";
+import { customerLookupSchema, customerSuggestQuerySchema, getCustomerParamsSchema, getCustomersQuerySchema } from "./customers.schema.js";
+import { findCustomerByPhone, getCustomerById, getCustomers, suggestCustomers } from "./customers.service.js";
 
 export async function customersRoutes(app: FastifyInstance) {
+  // GET /api/customers/suggest?q=yen 202
+  app.get(
+    "/suggest",
+    {
+      preHandler: requireAuth,
+    },
+    async (request, reply) => {
+      const result = customerSuggestQuerySchema.safeParse(
+        request.query,
+      );
+
+      if (!result.success) {
+        return reply.status(400).send({
+          message: "Invalid query",
+          errors: result.error.flatten(),
+        });
+      }
+
+      const customers = await suggestCustomers(
+        request.accessToken,
+        result.data.q,
+      );
+
+      return reply.send({
+        customers,
+      });
+    },
+  );
+
   app.get(
     "/lookup",
     {

@@ -21,6 +21,8 @@ import { pushSubscriptionSchema } from "./modules/notifications/notifications.sc
 import { buildPaymentNotification } from "./modules/notifications/notifications.utils.js";
 import { toStaffDashboardStats } from "./modules/dashboard/dashboard.utils.js";
 import { getOrdersQuerySchema } from "./modules/orders/orders.schema.js";
+import { customerSuggestQuerySchema } from "./modules/customers/customers.schema.js";
+import { splitCustomerSearch } from "./modules/customers/customers.utils.js";
 
 test("GET /health returns the API status", async (context) => {
   const app = buildApp();
@@ -309,4 +311,30 @@ test("order search accepts codes, phones and Vietnamese names, rejects filter sy
   for (const search of ["a,status.eq.paid", "x)", "50%"]) {
     assert.equal(getOrdersQuerySchema.safeParse({ search }).success, false, search);
   }
+});
+
+test("customer search splits the name from the phone digits", () => {
+  assert.deepEqual(splitCustomerSearch("yen 202"), { name: "yen", digits: "202" });
+  assert.deepEqual(splitCustomerSearch("0901 234 202"), { name: null, digits: "0901234202" });
+  assert.deepEqual(splitCustomerSearch("  Yến   Nhi "), { name: "Yến Nhi", digits: null });
+  assert.deepEqual(splitCustomerSearch("84901234202"), { name: null, digits: "0901234202" });
+});
+
+test("customer suggest query needs 2+ characters and no LIKE wildcards", () => {
+  assert.equal(customerSuggestQuerySchema.safeParse({ q: "yến 202" }).success, true);
+  assert.equal(customerSuggestQuerySchema.safeParse({ q: "y" }).success, false);
+  assert.equal(customerSuggestQuerySchema.safeParse({ q: "%" + "a" }).success, false);
+  assert.equal(customerSuggestQuerySchema.safeParse({ q: "a_b" }).success, false);
+});
+
+test("customer suggest requires login", async (context) => {
+  const app = buildApp();
+
+  context.after(async () => {
+    await app.close();
+  });
+
+  const response = await app.inject({ method: "GET", url: "/api/customers/suggest?q=yen" });
+
+  assert.equal(response.statusCode, 401);
 });
